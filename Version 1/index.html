@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Idea Fusion Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="background-gradient"></div>
+  <div class="grid-overlay"></div>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-beacon"></div>
+      <div class="brand-text">
+        <span class="brand-title">Idea Fusion</span>
+        <span class="brand-subtitle">Enterprise Innovation Hub</span>
+      </div>
+    </div>
+    <nav class="nav-tabs" aria-label="Primary navigation">
+      <button class="tab-button is-active" data-target="overview" type="button">Overview</button>
+      <button class="tab-button" data-target="submit" type="button">Submit Idea</button>
+      <button class="tab-button" data-target="track" type="button">Track Ideas</button>
+    </nav>
+    <div class="session-actions">
+      <button class="pill-button ghost" type="button">Innovation Playbook</button>
+      <button class="pill-button" data-target="submit" type="button">Start Now</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="view is-active" data-view="overview" aria-labelledby="overview-title">
+      <div class="hero">
+        <div class="hero-content">
+          <p class="hero-kicker">Unified innovation pipeline</p>
+          <h1 id="overview-title">Bring tomorrow&apos;s ideas to life today</h1>
+          <p class="hero-text">
+            Capture, accelerate, and celebrate ideas from every corner of the organization. Guided workflows, live tracking, and intelligent insights keep momentum high and teams aligned.
+          </p>
+          <div class="hero-actions">
+            <button class="pill-button" data-target="submit" type="button">Submit your idea</button>
+            <button class="pill-button ghost" data-target="track" type="button">Track submissions</button>
+          </div>
+          <dl class="hero-stats" aria-label="Program momentum">
+            <div>
+              <dt>342</dt>
+              <dd>Ideas captured this quarter</dd>
+            </div>
+            <div>
+              <dt>68%</dt>
+              <dd>Converted into pilots</dd>
+            </div>
+            <div>
+              <dt>47</dt>
+              <dd>Departments engaged</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="hero-visual">
+          <div class="orbital-frame">
+            <div class="pulse"></div>
+            <div class="pulse delayed"></div>
+            <div class="node-grid">
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+            </div>
+          </div>
+          <div class="hero-card">
+            <h2>Next action</h2>
+            <p>Upcoming review wave closes in <strong>3 days</strong></p>
+            <ul>
+              <li>Top theme: AI automation</li>
+              <li>Impact target: Operational resilience</li>
+              <li>Review board: Oct 12</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <section class="insights">
+        <h2>Program intelligence</h2>
+        <div class="insight-grid">
+          <article>
+            <h3>Adaptive intake</h3>
+            <p>Smart prompts tailor submissions for clarity, effort, and feasibility—making review cycles faster.</p>
+          </article>
+          <article>
+            <h3>Portfolio view</h3>
+            <p>Visualize business impact, investment level, and delivery horizon at a glance.</p>
+          </article>
+          <article>
+            <h3>Transparent tracking</h3>
+            <p>Real-time status updates and nudges keep contributors in the loop and engaged.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" data-view="submit" aria-labelledby="submit-title">
+      <header class="view-header">
+        <div>
+          <p class="view-kicker">Submit your idea</p>
+          <h2 id="submit-title">Tell us what you&apos;re imagining</h2>
+          <p>Provide as much context as you can—our advisory board will help shape it into reality.</p>
+        </div>
+        <div class="view-meta">
+          <span class="badge">Next review cycle · Friday 10:00 AM</span>
+          <span class="badge muted">Avg. time to feedback · 4 days</span>
+        </div>
+      </header>
+
+      <form class="idea-form" id="idea-form">
+        <div class="form-group">
+          <label for="submitter">Your name</label>
+          <input id="submitter" name="submitter" placeholder="Jordan Lee" required />
+        </div>
+        <div class="form-group">
+          <label for="team">Team / function</label>
+          <input id="team" name="team" placeholder="Intelligent Automation" required />
+        </div>
+        <div class="form-group">
+          <label for="title">Idea title</label>
+          <input id="title" name="title" placeholder="Augmented agent co-pilot for service desk" required />
+        </div>
+        <div class="form-group full">
+          <label for="summary">Summary</label>
+          <textarea id="summary" name="summary" rows="4" placeholder="Describe the opportunity, who benefits, and what success looks like." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="impact">Business impact focus</label>
+          <select id="impact" name="impact" required>
+            <option value="" disabled selected>Select</option>
+            <option value="efficiency">Operational efficiency</option>
+            <option value="revenue">New revenue</option>
+            <option value="experience">Customer experience</option>
+            <option value="resilience">Risk reduction / resilience</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="horizon">Delivery horizon</label>
+          <select id="horizon" name="horizon" required>
+            <option value="" disabled selected>Select</option>
+            <option value="now">0 - 3 months</option>
+            <option value="mid">3 - 6 months</option>
+            <option value="future">6+ months</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="investment">Estimated effort</label>
+          <select id="investment" name="investment" required>
+            <option value="" disabled selected>Select</option>
+            <option value="light">Light lift</option>
+            <option value="moderate">Moderate</option>
+            <option value="significant">Significant</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tags">Strategic tags</label>
+          <input id="tags" name="tags" placeholder="AI, automation, customer care" />
+        </div>
+        <div class="form-group">
+          <label for="confidence">Confidence</label>
+          <input type="range" id="confidence" name="confidence" min="0" max="100" value="60" />
+          <div class="confidence-output" aria-live="polite">
+            <span>Confidence index:</span>
+            <strong id="confidence-value">60%</strong>
+          </div>
+        </div>
+        <div class="form-group full attachment">
+          <label for="links">Supporting links</label>
+          <input id="links" name="links" placeholder="Add SharePoint, FigJam, or doc URLs" />
+        </div>
+        <div class="form-footer">
+          <label class="switch">
+            <input type="checkbox" id="fast-track" name="fastTrack" />
+            <span class="slider" aria-hidden="true"></span>
+            <span>Flag for fast-track review</span>
+          </label>
+          <button class="pill-button" type="submit">Submit idea</button>
+        </div>
+      </form>
+
+      <section class="preview" aria-live="polite" aria-label="Submission preview">
+        <header>
+          <h3>Live preview</h3>
+          <p>We craft a review-ready summary as you type.</p>
+        </header>
+        <div class="preview-card">
+          <h4 id="preview-title">Augmented agent co-pilot for service desk</h4>
+          <p id="preview-summary">Describe the opportunity, who benefits, and what success looks like.</p>
+          <dl class="preview-attributes">
+            <div>
+              <dt>Impact</dt>
+              <dd id="preview-impact">—</dd>
+            </div>
+            <div>
+              <dt>Horizon</dt>
+              <dd id="preview-horizon">—</dd>
+            </div>
+            <div>
+              <dt>Effort</dt>
+              <dd id="preview-investment">—</dd>
+            </div>
+          </dl>
+          <div class="preview-tags" id="preview-tags"></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" data-view="track" aria-labelledby="track-title">
+      <header class="view-header">
+        <div>
+          <p class="view-kicker">Track your submissions</p>
+          <h2 id="track-title">Your ideas across the pipeline</h2>
+          <p>Follow progress, collaborate with reviewers, and celebrate the wins.</p>
+        </div>
+        <div class="track-tools">
+          <label class="filter">
+            <span>Status</span>
+            <select id="status-filter">
+              <option value="all">All</option>
+              <option value="under-review">Under review</option>
+              <option value="in-progress">In progress</option>
+              <option value="pilot">Pilot</option>
+              <option value="released">Released</option>
+            </select>
+          </label>
+          <label class="filter">
+            <span>Search</span>
+            <input id="search-filter" type="search" placeholder="Find by title or keyword" />
+          </label>
+        </div>
+      </header>
+
+      <section class="pipeline">
+        <div class="pipeline-track">
+          <div class="stage">
+            <span class="dot"></span>
+            <span>Under review</span>
+          </div>
+          <div class="stage">
+            <span class="dot"></span>
+            <span>In progress</span>
+          </div>
+          <div class="stage">
+            <span class="dot"></span>
+            <span>Pilot</span>
+          </div>
+          <div class="stage">
+            <span class="dot"></span>
+            <span>Released</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="idea-board" id="idea-board" role="list" aria-live="polite"></div>
+
+      <template id="idea-card-template">
+        <article class="idea-card" role="listitem">
+          <header>
+            <div>
+              <h3 class="idea-title"></h3>
+              <p class="idea-meta"></p>
+            </div>
+            <span class="status-chip"></span>
+          </header>
+          <p class="idea-summary"></p>
+          <dl class="idea-attributes">
+            <div>
+              <dt>Impact</dt>
+              <dd class="idea-impact"></dd>
+            </div>
+            <div>
+              <dt>Horizon</dt>
+              <dd class="idea-horizon"></dd>
+            </div>
+            <div>
+              <dt>Effort</dt>
+              <dd class="idea-investment"></dd>
+            </div>
+          </dl>
+          <div class="idea-tags"></div>
+          <footer>
+            <span class="idea-updated"></span>
+            <button class="ghost-link" type="button">View collaboration thread</button>
+          </footer>
+        </article>
+      </template>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Innovation Operations · Continuously steering ideas from spark to scale.</p>
+    <div>
+      <span class="badge muted">v2.4 Experimental Layout</span>
+      <span class="badge">Feedback hotline · #ideafusion</span>
+    </div>
+  </footer>
+</body>
+</html>
