@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Idea Fusion · Admin Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="sharepointClient.js" defer></script>
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <div class="background-gradient"></div>
+  <div class="grid-overlay"></div>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-beacon"></div>
+      <div class="brand-text">
+        <span class="brand-title">Idea Fusion</span>
+        <span class="brand-subtitle">Admin Operations</span>
+      </div>
+    </div>
+    <nav class="nav-tabs" aria-label="Utility navigation">
+      <span class="tab-button is-active">Pipeline Console</span>
+    </nav>
+    <div class="session-actions">
+      <a class="pill-button ghost" href="index.html">Back to intake</a>
+      <button class="pill-button" id="refresh-board" type="button">Refresh</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="view-header">
+      <div>
+        <p class="view-kicker">Operational cockpit</p>
+        <h2>Guide every idea from spark to scale</h2>
+        <p>Review submissions, accelerate promising bets, and keep contributors in the loop with transparent outcomes.</p>
+      </div>
+    </section>
+
+    <section class="admin-overview" aria-label="Program metrics">
+      <article class="overview-card">
+        <h3>Total ideas</h3>
+        <strong id="metric-total">0</strong>
+        <span>Across all statuses</span>
+      </article>
+      <article class="overview-card">
+        <h3>Under review</h3>
+        <strong id="metric-under-review">0</strong>
+        <span>Need triage this week</span>
+      </article>
+      <article class="overview-card">
+        <h3>Fast-track</h3>
+        <strong id="metric-fast-track">0</strong>
+        <span>Flagged for acceleration</span>
+      </article>
+      <article class="overview-card">
+        <h3>Launched</h3>
+        <strong id="metric-released">0</strong>
+        <span>In production or scaled</span>
+      </article>
+    </section>
+
+    <section class="admin-toolbar" aria-label="Board filters">
+      <div class="filters">
+        <label class="filter">
+          <span>Status</span>
+          <select id="admin-status-filter">
+            <option value="all">All</option>
+            <option value="under-review">Under review</option>
+            <option value="in-progress">In progress</option>
+            <option value="pilot">Pilot</option>
+            <option value="released">Released</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </label>
+        <label class="filter">
+          <span>Search</span>
+          <input id="admin-search-filter" type="search" placeholder="Find by title, keyword, or team" />
+        </label>
+      </div>
+      <div class="actions">
+        <span class="badge muted">Changes sync live to SharePoint</span>
+      </div>
+    </section>
+
+    <section class="admin-board" id="admin-board" role="list" aria-live="polite"></section>
+
+    <template id="admin-card-template">
+      <article class="idea-card admin-card" role="listitem">
+        <header>
+          <div>
+            <h3 class="idea-title"></h3>
+            <p class="idea-meta"></p>
+          </div>
+          <span class="status-chip"></span>
+        </header>
+        <p class="idea-summary"></p>
+        <dl class="idea-attributes">
+          <div>
+            <dt>Impact</dt>
+            <dd class="idea-impact"></dd>
+          </div>
+          <div>
+            <dt>Horizon</dt>
+            <dd class="idea-horizon"></dd>
+          </div>
+          <div>
+            <dt>Effort</dt>
+            <dd class="idea-investment"></dd>
+          </div>
+        </dl>
+        <div class="idea-tags"></div>
+        <div class="admin-meta">
+          <span class="admin-meta-item confidence"></span>
+          <span class="admin-meta-item fast-track"></span>
+        </div>
+        <textarea class="note-input" placeholder="Add note for submitter or review team"></textarea>
+        <div class="admin-actions">
+          <button type="button" data-action="review">Return to review</button>
+          <button type="button" data-action="accept">Accept</button>
+          <button type="button" data-action="pilot">Move to pilot</button>
+          <button type="button" data-action="release">Release</button>
+          <button type="button" data-action="reject">Reject</button>
+        </div>
+        <footer>
+          <div class="admin-footer-actions">
+            <a class="ghost-link admin-link" href="#" target="_blank" rel="noreferrer noopener">Supporting link</a>
+            <button class="ghost-link" data-action="save-note" type="button">Save note</button>
+          </div>
+          <span class="idea-updated"></span>
+        </footer>
+      </article>
+    </template>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Innovation Hub — Ideas Portal (Prototype)</title>
+  <meta name="description" content="Single‑file prototype for a modern, futuristic ideas portal with three views: Home, Submit, Track." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-0: #0b0f17;           /* page */
+      --bg-1: #0f1522;           /* surfaces */
+      --bg-2: #12192a;           /* elevated */
+      --txt-0: #e6ecf8;          /* primary text */
+      --txt-1: #b2bfdc;          /* secondary */
+      --brand: #6ae3ff;          /* accent */
+      --brand-2:#9b8cff;         /* accent 2 */
+      --ok: #2ec27e;             /* status */
+      --warn:#f6c445;
+      --err: #ff6b6b;
+      --muted:#2a3550;
+      --glass: rgba(255,255,255,0.06);
+      --rad: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"; 
+      color:var(--txt-0); background: radial-gradient(1200px 800px at 80% -10%, #15213d 0%, transparent 55%),
+                          radial-gradient(1000px 700px at -10% 120%, #1b1140 0%, transparent 50%),
+                          var(--bg-0);
+      letter-spacing:.1px;
+    }
+    a{color:inherit}
+    .container{max-width:1200px; margin:0 auto; padding:28px;}
+
+    /* Topbar */
+    .topbar{
+      position:sticky; top:0; z-index:50; backdrop-filter: saturate(140%) blur(10px);
+      background: linear-gradient(180deg, rgba(10,14,22,.85), rgba(10,14,22,.55));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .brand{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.4px}
+    .logo{
+      width:38px; height:38px; border-radius:12px; display:grid; place-items:center; 
+      background: conic-gradient(from 200deg, var(--brand), var(--brand-2));
+      box-shadow:0 0 0 2px rgba(255,255,255,.06) inset, 0 10px 30px rgba(106,227,255,.25);
+    }
+    .logo svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+
+    nav{display:flex; gap:8px}
+    .tab{
+      appearance:none; border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      color:var(--txt-1); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; transition:all .18s ease;
+    }
+    .tab[aria-current="page"], .tab:hover{color:var(--txt-0); border-color: rgba(255,255,255,.15); transform:translateY(-1px)}
+    .cta{
+      background: linear-gradient(90deg, var(--brand) 0%, var(--brand-2) 100%); border:none; color:#08101c; font-weight:800;
+      padding:10px 16px; border-radius:12px; cursor:pointer; box-shadow:0 12px 30px rgba(155,140,255,.25);
+    }
+
+    /* Shell */
+    .shell{display:grid; grid-template-columns: 260px 1fr; gap:22px; margin-top:22px}
+    @media (max-width: 980px){ .shell{grid-template-columns: 1fr} }
+
+    /* Sidebar */
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--rad); box-shadow: var(--shadow); 
+    }
+    .panel-header{padding:18px 18px 10px; display:flex; justify-content:space-between; align-items:center}
+    .panel-body{padding:0 18px 18px}
+    .tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:var(--txt-1)}
+
+    /* Cards grid */
+    .grid{display:grid; grid-template-columns: repeat(12, 1fr); gap:22px}
+    .card{grid-column: span 6; background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08); border-radius: var(--rad); padding:18px; box-shadow: var(--shadow);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .card:hover{transform: translateY(-3px); border-color: rgba(255,255,255,.16)}
+    @media (max-width: 900px){ .card{grid-column: span 12} }
+
+    .kpis{display:grid; grid-template-columns: repeat(12, 1fr); gap:22px; margin: 6px 0 22px}
+    .kpi{grid-column: span 3; background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10); border-radius: 16px; padding:16px; box-shadow: var(--shadow)}
+    .kpi .v{font-size:clamp(20px, 2.8vw, 32px); font-weight:900; background: linear-gradient(90deg, #fff, #bfe9ff); -webkit-background-clip:text; -webkit-text-fill-color: transparent}
+    .kpi small{color:var(--txt-1)}
+    @media (max-width: 980px){ .kpi{grid-column: span 6} }
+    @media (max-width: 600px){ .kpi{grid-column: span 12} }
+
+    /* Forms */
+    .form{display:grid; gap:16px}
+    .row{display:grid; grid-template-columns: repeat(12, 1fr); gap:16px}
+    .col-6{grid-column: span 6}
+    .col-4{grid-column: span 4}
+    .col-8{grid-column: span 8}
+    .col-12{grid-column: span 12}
+    @media (max-width: 900px){ .col-6,.col-4,.col-8{grid-column: span 12} }
+
+    .field{display:flex; flex-direction:column; gap:8px}
+    .field label{font-weight:600; color:var(--txt-1)}
+    .input, textarea, select{
+      background: var(--glass); border:1px solid rgba(255,255,255,.10); color:var(--txt-0);
+      padding:12px 14px; border-radius:12px; outline: none; font: inherit;
+    }
+    .hint{font-size:12px; color:var(--txt-1)}
+
+    .btn{appearance:none; border:none; padding:12px 16px; font-weight:800; border-radius:12px; cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg, var(--brand), var(--brand-2)); color:#08101c}
+    .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.12); color:var(--txt-0)}
+
+    /* Table */
+    table{width:100%; border-collapse:separate; border-spacing:0 10px}
+    thead th{font-size:12px; color:var(--txt-1); text-align:left; font-weight:700; padding:0 12px}
+    tbody tr{background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.10)}
+    tbody td{padding:14px 12px}
+    tbody tr{border-radius:12px}
+    tbody tr td:first-child{border-top-left-radius:12px; border-bottom-left-radius:12px}
+    tbody tr td:last-child{border-top-right-radius:12px; border-bottom-right-radius:12px}
+
+    .status{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700}
+    .s-sub{background:rgba(106,227,255,.14); color:#bfeeff; border:1px solid rgba(106,227,255,.35)}
+    .s-rev{background:rgba(246,196,69,.12); color:#ffe6a6; border:1px solid rgba(246,196,69,.35)}
+    .s-acc{background:rgba(46,194,126,.12); color:#b8f3d6; border:1px solid rgba(46,194,126,.35)}
+    .s-rej{background:rgba(255,107,107,.12); color:#ffc2c2; border:1px solid rgba(255,107,107,.35)}
+
+    /* Router views */
+    .view{display:none; animation: fade .28s ease both}
+    .view.active{display:block}
+    @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+    @media (prefers-reduced-motion: reduce){ .view{animation:none} .card, .tab{transition:none} }
+
+    /* Hero */
+    .hero{display:grid; grid-template-columns: 1.2fr .8fr; gap:26px; align-items:center; margin-top:12px}
+    .hero h1{font-size: clamp(28px, 3.4vw, 48px); margin:.2rem 0 .6rem; line-height:1.1}
+    .hero p{color:var(--txt-1); margin:0 0 1rem}
+    .halo{
+      position:relative; isolation:isolate; background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); 
+      border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:20px; box-shadow: var(--shadow);
+    }
+    .halo:after{
+      content:""; position:absolute; inset:-2px; z-index:-1; border-radius:inherit; pointer-events:none;
+      background: radial-gradient(600px 300px at 90% 0%, rgba(106,227,255,.25), transparent 60%),
+                  radial-gradient(400px 260px at 20% 100%, rgba(155,140,255,.25), transparent 60%);
+      filter: blur(20px);
+    }
+
+    /* Progress */
+    .progress{height:10px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background: rgba(255,255,255,.04); overflow:hidden}
+    .progress > i{display:block; height:100%; width:var(--w,0%); background: linear-gradient(90deg, var(--brand), var(--brand-2))}
+
+    /* Toast */
+    .toast{position:fixed; right:22px; bottom:22px; background:rgba(20,26,38,.95); border:1px solid rgba(255,255,255,.12);
+      padding:14px 16px; border-radius:12px; display:none; box-shadow: var(--shadow)}
+    .toast.show{display:block; animation:fade .24s ease both}
+
+    /* Search and chips */
+    .searchbar{display:flex; gap:10px}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.10); cursor:pointer; color:var(--txt-1)}
+    .pill.active{color:#06121f; background:linear-gradient(90deg, var(--brand), var(--brand-2)); border:none; font-weight:800}
+
+    /* Footer */
+    footer{opacity:.7; font-size:12px; text-align:center; padding:24px 12px}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:16px">
+      <div class="brand" aria-label="Innovation Hub Home" role="link" tabindex="0" data-nav="#home">
+        <div class="logo" aria-hidden="true">
+          <!-- simple spark icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l2.2 5.6L20 10l-5.6 2.2L12 18l-2.4-5.8L4 10l5.6-2.4L12 2z" fill="#08101c"/>
+          </svg>
+        </div>
+        <span>Innovation Hub</span>
+      </div>
+      <nav aria-label="Primary">
+        <button class="tab" data-nav="#home">Home</button>
+        <button class="tab" data-nav="#submit">Submit idea</button>
+        <button class="tab" data-nav="#track">Track</button>
+      </nav>
+      <button class="cta" data-nav="#submit">+ New idea</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HOME VIEW -->
+    <section class="view active" id="home" aria-labelledby="home-title">
+      <div class="hero">
+        <div>
+          <span class="tag" aria-hidden="true">Quarterly theme: <strong style="margin-left:6px;color:#fff">AI for Efficiency</strong></span>
+          <h1 id="home-title">Bring the future to work.</h1>
+          <p>Pitch product, process, or customer experience ideas. Collaborate openly, track progress transparently, and turn sparks into outcomes.</p>
+          <div class="searchbar" style="margin-top:12px">
+            <input id="q" class="input" placeholder="Search ideas… (e.g., ‘call center knowledge bot’)" style="flex:1"/>
+            <button class="btn ghost" id="doSearch">Search</button>
+            <button class="btn primary" data-nav="#submit">Share an idea</button>
+          </div>
+          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px">
+            <span class="pill active" data-chip="all">All</span>
+            <span class="pill" data-chip="Process">Process</span>
+            <span class="pill" data-chip="Product">Product</span>
+            <span class="pill" data-chip="Customer">Customer</span>
+            <span class="pill" data-chip="Tech">Tech</span>
+          </div>
+        </div>
+        <div class="halo">
+          <div class="kpis">
+            <div class="kpi"><div class="v" id="kpi-total">0</div><small>Total ideas</small></div>
+            <div class="kpi"><div class="v" id="kpi-accepted">0</div><small>Accepted</small></div>
+            <div class="kpi"><div class="v" id="kpi-inreview">0</div><small>In review</small></div>
+            <div class="kpi"><div class="v" id="kpi-participants">0</div><small>Participants</small></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
+              <strong>Quarter progress</strong>
+              <small class="hint">Goal: 150 ideas</small>
+            </div>
+            <div class="progress" aria-label="progress toward goal" role="progressbar" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0">
+              <i id="progressbar" style="--w:0%"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shell" style="margin-top:26px">
+        <aside class="panel">
+          <div class="panel-header">
+            <strong>Filters</strong>
+            <button class="btn ghost" id="clearFilters" style="padding:6px 10px; font-size:12px">Reset</button>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Status</label>
+              <select id="flt-status" class="input">
+                <option value="">Any</option>
+                <option>Submitted</option>
+                <option>In review</option>
+                <option>Accepted</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+            <div class="field" style="margin-top:12px">
+              <label>Category</label>
+              <select id="flt-cat" class="input">
+                <option value="">Any</option>
+                <option>Process</option>
+                <option>Product</option>
+                <option>Customer</option>
+                <option>Tech</option>
+              </select>
+            </div>
+            <div class="field" style="margin-top:12px">
+              <label>Department</label>
+              <input id="flt-dept" class="input" placeholder="e.g., Retail Banking"/>
+            </div>
+          </div>
+        </aside>
+
+        <section>
+          <div class="grid" id="ideasGrid" aria-live="polite" aria-busy="false"></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- SUBMIT VIEW -->
+    <section class="view" id="submit" aria-labelledby="submit-title">
+      <h2 id="submit-title" style="margin:6px 0 16px">Submit your idea</h2>
+      <form id="ideaForm" class="form" novalidate>
+        <div class="row">
+          <div class="col-8 field">
+            <label for="title">Title</label>
+            <input id="title" class="input" required placeholder="Concise, specific headline"/>
+            <small class="hint">Good: “Smart triage for contact center knowledge articles”</small>
+          </div>
+          <div class="col-4 field">
+            <label for="category">Category</label>
+            <select id="category" class="input" required>
+              <option value="">Select</option>
+              <option>Process</option>
+              <option>Product</option>
+              <option>Customer</option>
+              <option>Tech</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 field">
+            <label for="department">Department (optional)</label>
+            <input id="department" class="input" placeholder="e.g., Contact Center"/>
+          </div>
+          <div class="col-6 field">
+            <label for="tags">Tags (comma‑separated)</label>
+            <input id="tags" class="input" placeholder="AI, customer, automation"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 field">
+            <label for="problem">Problem / Opportunity</label>
+            <textarea id="problem" rows="3" required placeholder="What’s the pain point or opportunity?"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 field">
+            <label for="solution">Proposed solution</label>
+            <textarea id="solution" rows="4" required placeholder="What do you propose and how would it work?"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 field">
+            <label for="impact">Expected impact</label>
+            <select id="impact" class="input" required>
+              <option value="">Select</option>
+              <option>Cost reduction</option>
+              <option>Revenue growth</option>
+              <option>Customer experience</option>
+              <option>Risk & compliance</option>
+              <option>Operational efficiency</option>
+            </select>
+          </div>
+          <div class="col-6 field">
+            <label for="effort">Estimated effort</label>
+            <select id="effort" class="input" required>
+              <option value="">Select</option>
+              <option>Low (≤ 2 weeks)</option>
+              <option>Medium (≤ 2 months)</option>
+              <option>High (> 2 months)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 field">
+            <label for="owner">Your name</label>
+            <input id="owner" class="input" placeholder="First Last"/>
+          </div>
+          <div class="col-6 field">
+            <label for="email">Work email</label>
+            <input id="email" type="email" class="input" placeholder="you@company.com"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 field">
+            <label for="attachment">Attachment (placeholder)</label>
+            <input id="attachment" class="input" type="file" disabled aria-disabled="true" title="Mocked in prototype" />
+            <small class="hint">In this prototype, files aren’t uploaded. We’ll wire to backend later.</small>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12" style="display:flex; gap:10px; align-items:center">
+            <input id="anonymous" type="checkbox" />
+            <label for="anonymous" class="hint">Submit anonymously</label>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:6px">
+          <button class="btn primary" type="submit">Submit idea</button>
+          <button class="btn ghost" type="button" data-nav="#home">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- TRACK VIEW -->
+    <section class="view" id="track" aria-labelledby="track-title">
+      <h2 id="track-title" style="margin:6px 0 16px">Track your submissions</h2>
+      <div class="panel">
+        <div class="panel-header"><strong>Your ideas</strong><small class="hint" id="myCount">0 items</small></div>
+        <div class="panel-body" style="padding-bottom:4px">
+          <table aria-describedby="track-title">
+            <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Updated</th><th>Progress</th><th></th></tr></thead>
+            <tbody id="myIdeas"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <footer>
+    Innovation Hub prototype • v0.1 • Built for rapid iteration · No heavy animation libs · Minimal motion
+  </footer>
+
+  <script>
+  ;(()=>{
+    const $ = (sel, ctx=document)=>ctx.querySelector(sel);
+    const $$ = (sel, ctx=document)=>Array.from(ctx.querySelectorAll(sel));
+
+    // Lightweight hash router
+    function navTo(hash){
+      const target = hash || window.location.hash || '#home';
+      $$('.view').forEach(v=>v.classList.toggle('active', '#'+v.id===target));
+      $$('.tab').forEach(t=> t.setAttribute('aria-current', t.dataset.nav===target ? 'page' : 'false'));
+    }
+    addEventListener('hashchange', ()=>navTo());
+    $$('.tab,[data-nav]').forEach(b=> b.addEventListener('click', ()=>{ location.hash = b.dataset.nav; }));
+    $('.brand').addEventListener('keydown', (e)=>{ if(e.key==='Enter') location.hash = '#home'; });
+
+    // Demo data seed (idempotent)
+    const storeKey = 'ideas.portal.v1';
+    const meKey = 'ideas.portal.me';
+    const seed = () => ([
+      {id:crypto.randomUUID(), title:'AI triage for knowledge articles', category:'Process', dept:'Contact Center', tags:['AI','KM'], status:'In review', owner:'Ayesha K', email:'ayesha@example.com', updated:Date.now()-86400000*3, progress:40, impact:'Operational efficiency', effort:'Medium', problem:'Agents struggle to find the right article quickly.', solution:'Use LLM to classify intents and surface top matches + snippets.', self:false},
+      {id:crypto.randomUUID(), title:'Proactive fraud warning in app', category:'Product', dept:'Risk', tags:['fraud','push'], status:'Submitted', owner:'Samir R', email:'samir@example.com', updated:Date.now()-86400000*1, progress:10, impact:'Risk & compliance', effort:'High', problem:'Fraud cases spike post‑campaigns.', solution:'ML model to detect risky patterns and push warning banners.', self:false},
+      {id:crypto.randomUUID(), title:'One‑tap card freeze widget', category:'Customer', dept:'Cards', tags:['CX','widget'], status:'Accepted', owner:'Maryam A', email:'maryam@example.com', updated:Date.now()-86400000*12, progress:100, impact:'Customer experience', effort:'Low', problem:'Slow card freeze flow.', solution:'Add quick action on home screen.', self:false},
+      {id:crypto.randomUUID(), title:'Self‑serve API sandbox', category:'Tech', dept:'Engineering', tags:['API','devrel'], status:'In review', owner:'Dev Guild', email:'dev@example.com', updated:Date.now()-86400000*5, progress:55, impact:'Revenue growth', effort:'Medium', problem:'External partners wait for access.', solution:'Hosted sandbox with sample data + keys.', self:false},
+    ]);
+
+    function load(){
+      const raw = localStorage.getItem(storeKey);
+      return raw ? JSON.parse(raw) : seed();
+    }
+    function save(list){ localStorage.setItem(storeKey, JSON.stringify(list)); }
+
+    let ideas = load();
+
+    // Stats
+    function renderKPIs(){
+      $('#kpi-total').textContent = ideas.length;
+      $('#kpi-accepted').textContent = ideas.filter(i=>i.status==='Accepted').length;
+      $('#kpi-inreview').textContent = ideas.filter(i=>i.status==='In review').length;
+      const owners = new Set(ideas.map(i=>i.owner));
+      $('#kpi-participants').textContent = owners.size;
+      const goal = 150; const now = ideas.length; const pct = Math.min(100, Math.round(now/goal*100));
+      $('#progressbar').style.setProperty('--w', pct+'%');
+      $('.progress').setAttribute('aria-valuenow', now);
+    }
+
+    // Grid render
+    function badge(status){
+      const cls = status==='Submitted' ? 's-sub' : status==='In review' ? 's-rev' : status==='Accepted' ? 's-acc' : 's-rej';
+      return `<span class="status ${cls}"></span><strong>${status}</strong>`;
+    }
+    function card(i){
+      const t = new Date(i.updated).toLocaleDateString();
+      const tags = (i.tags||[]).slice(0,3).map(x=>`<span class="tag">#${x}</span>`).join(' ');
+      return `<article class="card" data-cat="${i.category}" data-status="${i.status}" data-dept="${i.dept||''}" data-title="${i.title.toLowerCase()}">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px">
+          <div>
+            <h3 style="margin:.2rem 0 .4rem">${i.title}</h3>
+            <div style="display:flex; gap:8px; align-items:center; color:var(--txt-1)">
+              <span class="tag">${i.category}</span>
+              ${(i.dept?`<span class="tag">${i.dept}</span>`:'')}
+              ${tags}
+            </div>
+          </div>
+          <div class="status ${i.status==='Submitted'?'s-sub':i.status==='In review'?'s-rev':i.status==='Accepted'?'s-acc':'s-rej'}">${i.status}</div>
+        </div>
+        <p style="color:var(--txt-1); margin:.8rem 0">${i.problem}</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:center">
+          <div>
+            <small class="hint">Updated</small>
+            <div>${t}</div>
+          </div>
+          <div>
+            <small class="hint">Progress</small>
+            <div class="progress" title="${i.progress}%"><i style="--w:${i.progress}%"></i></div>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function renderGrid(){
+      const wrap = $('#ideasGrid');
+      wrap.setAttribute('aria-busy','true');
+      const q = ($('#q').value||'').trim().toLowerCase();
+      const st = $('#flt-status').value;
+      const cat = $('#flt-cat').value;
+      const dept = ($('#flt-dept').value||'').trim().toLowerCase();
+      const chip = $('.pill.active')?.dataset.chip;
+
+      const filtered = ideas.filter(i=>{
+        if (st && i.status!==st) return false;
+        if (cat && i.category!==cat) return false;
+        if (chip && chip!=='all' && i.category!==chip) return false;
+        if (dept && !(i.dept||'').toLowerCase().includes(dept)) return false;
+        if (q && !(i.title+ ' ' + i.problem + ' ' + (i.tags||[]).join(' ')).toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      wrap.innerHTML = filtered.map(card).join('');
+      wrap.setAttribute('aria-busy','false');
+    }
+
+    // Filters + chips
+    $('#clearFilters').addEventListener('click', ()=>{
+      $('#flt-status').value=''; $('#flt-cat').value=''; $('#flt-dept').value=''; $('#q').value='';
+      $$('.pill').forEach(p=>p.classList.toggle('active', p.dataset.chip==='all'));
+      renderGrid();
+    });
+    $('#doSearch').addEventListener('click', renderGrid);
+    $('#q').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); renderGrid(); }});
+    $$('.pill').forEach(p=> p.addEventListener('click', ()=>{ $$('.pill').forEach(x=>x.classList.remove('active')); p.classList.add('active'); renderGrid(); }));
+    ['flt-status','flt-cat','flt-dept'].forEach(id=> $('#'+id).addEventListener('change', renderGrid));
+
+    // Submit form
+    function toast(msg){ const t=$('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2600); }
+    $('#ideaForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const f = new FormData(e.currentTarget);
+      const required = ['title','category','problem','solution','impact','effort'];
+      for (const k of required){ if(!f.get(k) || (k==='category' && f.get(k)==='')){ toast('Please fill required fields.'); return; } }
+
+      const me = $('#anonymous').checked ? 'Anonymous' : ($('#owner').value||'Anonymous');
+      const item = {
+        id: crypto.randomUUID(),
+        title: $('#title').value.trim(),
+        category: $('#category').value,
+        dept: $('#department').value.trim(),
+        tags: ($('#tags').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+        status: 'Submitted',
+        owner: me,
+        email: $('#email').value.trim(),
+        updated: Date.now(),
+        progress: 8,
+        impact: $('#impact').value,
+        effort: $('#effort').value,
+        problem: $('#problem').value.trim(),
+        solution: $('#solution').value.trim(),
+        self: true,
+      };
+      ideas = [item, ...ideas];
+      save(ideas);
+      localStorage.setItem(meKey, JSON.stringify({name: me, email: item.email}));
+      e.currentTarget.reset();
+      $('#anonymous').checked = false;
+      toast('Idea submitted! You can track it in the Track tab.');
+      renderKPIs(); renderGrid(); renderMyIdeas();
+      location.hash = '#track';
+    });
+
+    // Track view render
+    function row(i){
+      const t = new Date(i.updated).toLocaleString();
+      const statusCls = i.status==='Submitted'?'s-sub': i.status==='In review'?'s-rev': i.status==='Accepted'?'s-acc':'s-rej';
+      return `<tr>
+        <td style="font-weight:700">${i.title}</td>
+        <td>${i.category}</td>
+        <td><span class="status ${statusCls}">${i.status}</span></td>
+        <td><span class="hint">${t}</span></td>
+        <td><div class="progress" title="${i.progress}%"><i style="--w:${i.progress}%"></i></div></td>
+        <td style="text-align:right">
+          <button class="btn ghost" data-action="advance" data-id="${i.id}" style="padding:6px 10px; font-size:12px">Advance</button>
+          <button class="btn ghost" data-action="delete" data-id="${i.id}" style="padding:6px 10px; font-size:12px">Delete</button>
+        </td>
+      </tr>`;
+    }
+
+    function renderMyIdeas(){
+      const mine = ideas.filter(i=> i.self);
+      $('#myIdeas').innerHTML = mine.length ? mine.map(row).join('') : `<tr><td colspan="6" class="hint">No submissions yet. Submit an idea to see it here.</td></tr>`;
+      $('#myCount').textContent = `${mine.length} item${mine.length!==1?'s':''}`;
+    }
+
+    // Actions in track view (simulate workflow)
+    $('#track').addEventListener('click', (e)=>{
+      const btn = e.target.closest('button[data-action]'); if(!btn) return;
+      const id = btn.dataset.id; const act = btn.dataset.action;
+      const idx = ideas.findIndex(x=>x.id===id); if(idx<0) return;
+      if (act==='delete'){
+        ideas.splice(idx,1); save(ideas); toast('Deleted.'); renderKPIs(); renderGrid(); renderMyIdeas(); return;
+      }
+      if (act==='advance'){
+        const s = ideas[idx].status;
+        const flow = ['Submitted','In review','Accepted'];
+        const ni = Math.min(flow.indexOf(s)+1, flow.length-1);
+        ideas[idx].status = flow[ni];
+        ideas[idx].progress = Math.min(100, ideas[idx].progress + (ni===1?25:45));
+        ideas[idx].updated = Date.now();
+        save(ideas); toast('Status advanced.'); renderKPIs(); renderGrid(); renderMyIdeas();
+      }
+    });
+
+    // Init
+    navTo(); renderKPIs(); renderGrid(); renderMyIdeas();
+
+    // Restore identity if we have it
+    try{ const me = JSON.parse(localStorage.getItem(meKey)||'null'); if(me){ $('#owner').value=me.name||''; $('#email').value=me.email||''; } }catch{}
+  })();
+  </script>
+</body>
+</html>
