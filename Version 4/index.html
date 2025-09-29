@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovation Portal - Spark Your Next Big Idea</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-lightbulb nav-icon"></i>
+                <span class="brand-text">Innovation Portal</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-view="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-btn" data-view="submit">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Submit Idea</span>
+                </button>
+                <button class="nav-btn" data-view="track">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Track Ideas</span>
+                </button>
+            </div>
+            <div class="user-profile">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home View -->
+        <section id="home-view" class="view active">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            Transform Your <span class="gradient-text">Ideas</span> Into Reality
+                        </h1>
+                        <p class="hero-subtitle">
+                            Join our innovation community where brilliant minds collaborate to shape the future. 
+                            Every great breakthrough starts with a single idea.
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" data-action="submit-idea">
+                                <i class="fas fa-rocket"></i>
+                                Submit Your Idea
+                            </button>
+                            <button class="btn btn-secondary" data-action="explore">
+                                <i class="fas fa-compass"></i>
+                                Explore Ideas
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="innovation-grid">
+                            <div class="grid-item" style="--delay: 0s">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="grid-item" style="--delay: 0.2s">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <div class="grid-item" style="--delay: 0.4s">
+                                <i class="fas fa-dna"></i>
+                            </div>
+                            <div class="grid-item" style="--delay: 0.6s">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="grid-item" style="--delay: 0.8s">
+                                <i class="fas fa-satellite"></i>
+                            </div>
+                            <div class="grid-item" style="--delay: 1s">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <div class="container">
+                    <h2 class="section-title">Why Choose Our Platform?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Secure & Confidential</h3>
+                            <p>Your ideas are protected with enterprise-grade security and confidentiality measures.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Collaborative Environment</h3>
+                            <p>Connect with like-minded innovators and build upon each other's creativity.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Real-time Tracking</h3>
+                            <p>Monitor your idea's progress from submission to implementation with detailed analytics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3>Recognition & Rewards</h3>
+                            <p>Get recognized for your contributions and earn rewards for innovative solutions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="1247">0</div>
+                            <div class="stat-label">Ideas Submitted</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="89">0</div>
+                            <div class="stat-label">Ideas Implemented</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="456">0</div>
+                            <div class="stat-label">Active Innovators</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="23">0</div>
+                            <div class="stat-label">Departments Engaged</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Submit Idea View -->
+        <section id="submit-view" class="view">
+            <div class="container">
+                <div class="submit-header">
+                    <h1 class="page-title">Submit Your Idea</h1>
+                    <p class="page-subtitle">Share your innovative thinking and help shape our organization's future</p>
+                </div>
+
+                <div class="submit-content">
+                    <div class="submit-form-container">
+                        <form id="idea-form" class="idea-form">
+                            <div class="form-section">
+                                <h3 class="section-header">Basic Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="idea-title">Idea Title*</label>
+                                        <input type="text" id="idea-title" name="title" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="category">Category*</label>
+                                        <select id="category" name="category" required>
+                                            <option value="">Select a category</option>
+                                            <option value="technology">Technology & Innovation</option>
+                                            <option value="process">Process Improvement</option>
+                                            <option value="product">Product Development</option>
+                                            <option value="customer">Customer Experience</option>
+                                            <option value="sustainability">Sustainability</option>
+                                            <option value="workplace">Workplace Enhancement</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="department">Department*</label>
+                                        <select id="department" name="department" required>
+                                            <option value="">Select your department</option>
+                                            <option value="engineering">Engineering</option>
+                                            <option value="marketing">Marketing</option>
+                                            <option value="sales">Sales</option>
+                                            <option value="hr">Human Resources</option>
+                                            <option value="finance">Finance</option>
+                                            <option value="operations">Operations</option>
+                                            <option value="it">Information Technology</option>
+                                            <option value="rd">Research & Development</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-header">Idea Details</h3>
+                                <div class="form-group">
+                                    <label for="description">Description*</label>
+                                    <textarea id="description" name="description" rows="4" placeholder="Describe your idea in detail..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="problem">Problem Statement*</label>
+                                    <textarea id="problem" name="problem" rows="3" placeholder="What problem does this idea solve?" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="solution">Proposed Solution*</label>
+                                    <textarea id="solution" name="solution" rows="3" placeholder="How would you implement this idea?" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-header">Impact & Resources</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="impact">Expected Impact</label>
+                                        <select id="impact" name="impact">
+                                            <option value="">Select impact level</option>
+                                            <option value="low">Low - Minor improvements</option>
+                                            <option value="medium">Medium - Significant improvements</option>
+                                            <option value="high">High - Major transformation</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="timeline">Implementation Timeline</label>
+                                        <select id="timeline" name="timeline">
+                                            <option value="">Select timeline</option>
+                                            <option value="immediate">Immediate (< 1 month)</option>
+                                            <option value="short">Short-term (1-3 months)</option>
+                                            <option value="medium">Medium-term (3-6 months)</option>
+                                            <option value="long">Long-term (6+ months)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="resources">Required Resources</label>
+                                    <textarea id="resources" name="resources" rows="2" placeholder="What resources would be needed to implement this idea?"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-header">Additional Information</h3>
+                                <div class="form-group">
+                                    <label for="benefits">Expected Benefits</label>
+                                    <textarea id="benefits" name="benefits" rows="2" placeholder="What are the expected benefits and outcomes?"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="attachments">Supporting Documents</label>
+                                    <div class="file-upload-area" id="file-upload-area">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Drag and drop files here or click to browse</p>
+                                        <input type="file" id="attachments" name="attachments" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.png">
+                                    </div>
+                                    <div id="file-list" class="file-list"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="save-draft">
+                                    <i class="fas fa-save"></i>
+                                    Save as Draft
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Submit Idea
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="submit-sidebar">
+                        <div class="tips-card">
+                            <h4><i class="fas fa-lightbulb"></i> Tips for a Great Idea</h4>
+                            <ul>
+                                <li>Be specific about the problem you're solving</li>
+                                <li>Explain the potential impact clearly</li>
+                                <li>Consider feasibility and resources needed</li>
+                                <li>Provide supporting evidence or examples</li>
+                                <li>Think about scalability and long-term benefits</li>
+                            </ul>
+                        </div>
+
+                        <div class="progress-card">
+                            <h4><i class="fas fa-tasks"></i> Submission Progress</h4>
+                            <div class="progress-item">
+                                <span>Basic Information</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="basic-progress"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <span>Idea Details</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="details-progress"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <span>Impact & Resources</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="impact-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Track Ideas View -->
+        <section id="track-view" class="view">
+            <div class="container">
+                <div class="track-header">
+                    <h1 class="page-title">Track Your Ideas</h1>
+                    <p class="page-subtitle">Monitor the progress of your submitted ideas and see their impact</p>
+                </div>
+
+                <div class="track-controls">
+                    <div class="filter-group">
+                        <select id="status-filter" class="filter-select">
+                            <option value="">All Statuses</option>
+                            <option value="draft">Draft</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="under-review">Under Review</option>
+                            <option value="approved">Approved</option>
+                            <option value="in-development">In Development</option>
+                            <option value="implemented">Implemented</option>
+                            <option value="declined">Declined</option>
+                        </select>
+                        <select id="category-filter" class="filter-select">
+                            <option value="">All Categories</option>
+                            <option value="technology">Technology & Innovation</option>
+                            <option value="process">Process Improvement</option>
+                            <option value="product">Product Development</option>
+                            <option value="customer">Customer Experience</option>
+                            <option value="sustainability">Sustainability</option>
+                            <option value="workplace">Workplace Enhancement</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-ideas" placeholder="Search your ideas...">
+                        </div>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="toggle-btn" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ideas-overview">
+                    <div class="overview-grid">
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number">12</div>
+                                <div class="overview-label">Total Ideas</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number">5</div>
+                                <div class="overview-label">Under Review</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number">3</div>
+                                <div class="overview-label">Implemented</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number">850</div>
+                                <div class="overview-label">Impact Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ideas-container">
+                    <div id="ideas-list" class="ideas-list">
+                        <!-- Ideas will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="idea-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Idea Details</h2>
+                <button class="modal-close" id="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-text"></span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

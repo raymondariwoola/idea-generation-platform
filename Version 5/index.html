@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovation Portal - The Future of Ideas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Enhanced Navigation with glassmorphism from V3 + functionality from V4 -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2l2.2 5.6L20 10l-5.6 2.2L12 18l-2.4-5.8L4 10l5.6-2.4L12 2z" fill="#08101c"/>
+                    </svg>
+                </div>
+                <span class="brand-text">Innovation Portal</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-view="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-btn" data-view="submit">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Submit Idea</span>
+                </button>
+                <button class="nav-btn" data-view="track">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Track Ideas</span>
+                </button>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-cta" data-action="submit-idea">
+                    <i class="fas fa-plus"></i>
+                    <span>New Idea</span>
+                </button>
+                <div class="user-profile">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+        <!-- HOME VIEW - Enhanced version combining V3 & V4 -->
+        <section id="home-view" class="view active">
+            <!-- Hero Section with V4's animations + V3's glassmorphism -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <div class="quarterly-theme">
+                            <span class="theme-tag">Quarterly theme: <strong>AI for Efficiency</strong></span>
+                        </div>
+                        <h1 class="hero-title">
+                            Transform Your <span class="gradient-text">Ideas</span> Into Reality
+                        </h1>
+                        <p class="hero-subtitle">
+                            Pitch product, process, or customer experience ideas. Collaborate openly, 
+                            track progress transparently, and turn sparks into breakthrough outcomes.
+                        </p>
+                        
+                        <!-- Enhanced Search from V3 -->
+                        <div class="search-section">
+                            <div class="search-bar">
+                                <div class="search-input-container">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="global-search" placeholder="Search ideas... (e.g., 'call center knowledge bot')" class="search-input">
+                                </div>
+                                <button class="btn btn-ghost" id="do-search">Search</button>
+                                <button class="btn btn-primary" data-action="submit-idea">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Share an Idea
+                                </button>
+                            </div>
+                            
+                            <!-- Category Pills from V3 -->
+                            <div class="category-pills">
+                                <span class="pill active" data-chip="all">All</span>
+                                <span class="pill" data-chip="Process">Process</span>
+                                <span class="pill" data-chip="Product">Product</span>
+                                <span class="pill" data-chip="Customer">Customer</span>
+                                <span class="pill" data-chip="Tech">Technology</span>
+                                <span class="pill" data-chip="Sustainability">Sustainability</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced KPI Dashboard from V3 with V4 styling -->
+                    <div class="hero-visual">
+                        <div class="kpi-dashboard">
+                            <div class="dashboard-header">
+                                <h3>Innovation Metrics</h3>
+                                <div class="quarter-progress">
+                                    <div class="progress-info">
+                                        <span>Quarter Progress</span>
+                                        <small>Goal: 150 ideas</small>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" id="quarter-progress"></div>
+                                        </div>
+                                        <span class="progress-text">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="kpi-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-icon">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <div class="kpi-number" id="kpi-total">0</div>
+                                        <div class="kpi-label">Total Ideas</div>
+                                    </div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <div class="kpi-number" id="kpi-accepted">0</div>
+                                        <div class="kpi-label">Accepted</div>
+                                    </div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <div class="kpi-number" id="kpi-inreview">0</div>
+                                        <div class="kpi-label">In Review</div>
+                                    </div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <div class="kpi-number" id="kpi-participants">0</div>
+                                        <div class="kpi-label">Participants</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Ideas Grid with V3's filtering + V4's cards -->
+            <div class="ideas-section">
+                <div class="container">
+                    <div class="ideas-layout">
+                        <!-- Sidebar Filters from V3 -->
+                        <aside class="filters-sidebar">
+                            <div class="filter-panel">
+                                <div class="filter-header">
+                                    <h4>Filters</h4>
+                                    <button class="btn-reset" id="clear-filters">Reset</button>
+                                </div>
+                                <div class="filter-content">
+                                    <div class="filter-group">
+                                        <label>Status</label>
+                                        <select id="filter-status" class="filter-select">
+                                            <option value="">Any</option>
+                                            <option value="Submitted">Submitted</option>
+                                            <option value="In review">In Review</option>
+                                            <option value="Accepted">Accepted</option>
+                                            <option value="Rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label>Category</label>
+                                        <select id="filter-category" class="filter-select">
+                                            <option value="">Any</option>
+                                            <option value="Process">Process</option>
+                                            <option value="Product">Product</option>
+                                            <option value="Customer">Customer</option>
+                                            <option value="Tech">Technology</option>
+                                            <option value="Sustainability">Sustainability</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label>Department</label>
+                                        <input type="text" id="filter-department" class="filter-input" placeholder="e.g., Engineering">
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Ideas Grid -->
+                        <section class="ideas-main">
+                            <div class="ideas-header">
+                                <h2>Innovation Ideas</h2>
+                                <div class="view-controls">
+                                    <button class="view-toggle active" data-view="grid">
+                                        <i class="fas fa-th"></i>
+                                    </button>
+                                    <button class="view-toggle" data-view="list">
+                                        <i class="fas fa-list"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="ideas-grid" id="ideas-grid"></div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Features Section from V4 -->
+            <div class="features-section">
+                <div class="container">
+                    <h2 class="section-title">Why Choose Our Platform?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Secure & Confidential</h3>
+                            <p>Your ideas are protected with enterprise-grade security and confidentiality measures.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Collaborative Environment</h3>
+                            <p>Connect with like-minded innovators and build upon each other's creativity.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Real-time Tracking</h3>
+                            <p>Monitor your idea's progress from submission to implementation with detailed analytics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3>Recognition & Rewards</h3>
+                            <p>Get recognized for your contributions and earn rewards for innovative solutions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBMIT VIEW - Enhanced form combining V3 & V4 -->
+        <section id="submit-view" class="view">
+            <div class="container">
+                <div class="submit-header">
+                    <h1 class="page-title">Submit Your Innovative Idea</h1>
+                    <p class="page-subtitle">Transform your vision into reality by sharing your innovative thinking with our community</p>
+                </div>
+
+                <div class="submit-layout">
+                    <div class="submit-form-container">
+                        <form id="idea-form" class="enhanced-form">
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                                    <div class="progress-indicator">
+                                        <div class="progress-fill" id="basic-progress"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group col-8">
+                                        <label for="idea-title">Idea Title*</label>
+                                        <input type="text" id="idea-title" name="title" required placeholder="Concise, specific headline">
+                                        <small class="hint">Good: "Smart triage for contact center knowledge articles"</small>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="category">Category*</label>
+                                        <select id="category" name="category" required>
+                                            <option value="">Select category</option>
+                                            <option value="Process">Process Improvement</option>
+                                            <option value="Product">Product Development</option>
+                                            <option value="Customer">Customer Experience</option>
+                                            <option value="Tech">Technology & Innovation</option>
+                                            <option value="Sustainability">Sustainability</option>
+                                            <option value="Workplace">Workplace Enhancement</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="department">Department</label>
+                                        <input type="text" id="department" name="department" placeholder="e.g., Contact Center">
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="tags">Tags (comma-separated)</label>
+                                        <input type="text" id="tags" name="tags" placeholder="AI, customer, automation">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Problem & Solution -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3><i class="fas fa-lightbulb"></i> Problem & Solution</h3>
+                                    <div class="progress-indicator">
+                                        <div class="progress-fill" id="solution-progress"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group col-12">
+                                        <label for="problem">Problem / Opportunity*</label>
+                                        <textarea id="problem" name="problem" rows="3" required placeholder="What's the pain point or opportunity you've identified?"></textarea>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label for="solution">Proposed Solution*</label>
+                                        <textarea id="solution" name="solution" rows="4" required placeholder="What do you propose and how would it work?"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Impact & Implementation -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3><i class="fas fa-chart-bar"></i> Impact & Implementation</h3>
+                                    <div class="progress-indicator">
+                                        <div class="progress-fill" id="impact-progress"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group col-6">
+                                        <label for="impact">Expected Impact*</label>
+                                        <select id="impact" name="impact" required>
+                                            <option value="">Select impact type</option>
+                                            <option value="Cost reduction">Cost Reduction</option>
+                                            <option value="Revenue growth">Revenue Growth</option>
+                                            <option value="Customer experience">Customer Experience</option>
+                                            <option value="Risk & compliance">Risk & Compliance</option>
+                                            <option value="Operational efficiency">Operational Efficiency</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="effort">Estimated Effort*</label>
+                                        <select id="effort" name="effort" required>
+                                            <option value="">Select effort level</option>
+                                            <option value="Low">Low (≤ 2 weeks)</option>
+                                            <option value="Medium">Medium (≤ 2 months)</option>
+                                            <option value="High">High (> 2 months)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label for="resources">Required Resources</label>
+                                        <textarea id="resources" name="resources" rows="2" placeholder="What resources, skills, or support would be needed?"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submitter Information -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3><i class="fas fa-user"></i> Your Information</h3>
+                                    <div class="progress-indicator">
+                                        <div class="progress-fill" id="submitter-progress"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group col-6">
+                                        <label for="owner">Your Name</label>
+                                        <input type="text" id="owner" name="owner" placeholder="First Last">
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="email">Work Email</label>
+                                        <input type="email" id="email" name="email" placeholder="you@company.com">
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label for="attachments">Supporting Documents</label>
+                                        <div class="file-upload-area" id="file-upload-area">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <p>Drag and drop files here or click to browse</p>
+                                            <input type="file" id="attachments" name="attachments" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.png">
+                                        </div>
+                                        <div id="file-list" class="file-list"></div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="checkbox-group">
+                                            <input type="checkbox" id="anonymous" name="anonymous">
+                                            <label for="anonymous">Submit anonymously</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-ghost" data-action="cancel">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="save-draft">
+                                    <i class="fas fa-save"></i>
+                                    Save Draft
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Submit Idea
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Enhanced Sidebar -->
+                    <div class="submit-sidebar">
+                        <div class="tips-panel">
+                            <h4><i class="fas fa-lightbulb"></i> Tips for Success</h4>
+                            <div class="tips-list">
+                                <div class="tip-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Be specific about the problem you're solving</span>
+                                </div>
+                                <div class="tip-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Explain the potential impact clearly</span>
+                                </div>
+                                <div class="tip-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Consider feasibility and resources needed</span>
+                                </div>
+                                <div class="tip-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Provide supporting evidence or examples</span>
+                                </div>
+                                <div class="tip-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Think about scalability and long-term benefits</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress-panel">
+                            <h4><i class="fas fa-tasks"></i> Overall Progress</h4>
+                            <div class="overall-progress">
+                                <div class="progress-circle">
+                                    <div class="progress-ring">
+                                        <div class="progress-text">0%</div>
+                                    </div>
+                                </div>
+                                <p>Complete all sections to submit your idea</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRACK VIEW - Enhanced tracking combining V3 table + V4 cards -->
+        <section id="track-view" class="view">
+            <div class="container">
+                <div class="track-header">
+                    <h1 class="page-title">Track Your Ideas</h1>
+                    <p class="page-subtitle">Monitor the progress of your submitted ideas and see their impact</p>
+                </div>
+
+                <!-- Overview Stats -->
+                <div class="track-overview">
+                    <div class="overview-grid">
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number" id="my-total">0</div>
+                                <div class="overview-label">Your Ideas</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number" id="my-pending">0</div>
+                                <div class="overview-label">Pending Review</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number" id="my-accepted">0</div>
+                                <div class="overview-label">Accepted</div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="overview-content">
+                                <div class="overview-number" id="my-score">0</div>
+                                <div class="overview-label">Impact Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Table View -->
+                <div class="track-content">
+                    <div class="track-panel">
+                        <div class="panel-header">
+                            <h3>Your Submissions</h3>
+                            <div class="panel-controls">
+                                <button class="view-mode active" data-mode="table">
+                                    <i class="fas fa-table"></i> Table
+                                </button>
+                                <button class="view-mode" data-mode="cards">
+                                    <i class="fas fa-th-large"></i> Cards
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <!-- Table View -->
+                            <div class="table-view active" id="table-view">
+                                <table class="ideas-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Status</th>
+                                            <th>Updated</th>
+                                            <th>Progress</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="my-ideas-table"></tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Cards View -->
+                            <div class="cards-view" id="cards-view">
+                                <div class="my-ideas-grid" id="my-ideas-cards"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Enhanced Modal from V4 -->
+    <div id="idea-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Idea Details</h2>
+                <button class="modal-close" id="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Enhanced Notifications -->
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-text"></span>
+            <button class="notification-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
