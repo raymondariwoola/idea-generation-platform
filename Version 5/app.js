@@ -296,10 +296,8 @@ class InnovationPortal {
                 sectionCount++;
             });
 
-            // Handle optional attachments
-            const attachmentProgress = this.calculateAttachmentProgress();
-            totalProgress += attachmentProgress;
-            sectionCount++;
+            // Note: Attachments are completely excluded from progress calculation
+            // Users can submit with or without attachments regardless of completion
 
             const overallProgress = totalProgress / sectionCount;
             this.updateOverallProgress(overallProgress);
@@ -328,7 +326,12 @@ class InnovationPortal {
         // Listen for attachment checkbox changes
         const attachmentToggle = document.getElementById('attachment-toggle');
         if (attachmentToggle) {
-            attachmentToggle.addEventListener('change', updateProgress);
+            attachmentToggle.addEventListener('change', (e) => {
+                // Update file upload visibility based on toggle state
+                this.toggleFileUploadVisibility(e.target.checked);
+                // Update progress calculation
+                updateProgress();
+            });
         }
 
         // Initial progress calculation
@@ -353,33 +356,73 @@ class InnovationPortal {
         const toggleHTML = `
             <div class="attachment-toggle-container">
                 <label class="toggle-switch">
-                    <input type="checkbox" id="attachment-toggle" checked>
+                    <input type="checkbox" id="attachment-toggle">
                     <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">Include attachments in progress calculation</span>
-                <small class="toggle-hint">Uncheck if you don't plan to upload files</small>
+                <div class="toggle-content">
+                    <span class="toggle-label">Add supporting documents (optional)</span>
+                    <small class="toggle-hint">Attachments don't affect form completion progress</small>
+                </div>
             </div>
         `;
 
         // Insert before the file upload area
         fileUploadArea.insertAdjacentHTML('beforebegin', toggleHTML);
+        
+        // Set initial state: hide file upload area
+        this.toggleFileUploadVisibility(false);
     }
 
-    calculateAttachmentProgress() {
-        const attachmentToggle = document.getElementById('attachment-toggle');
-        const fileInput = document.getElementById('attachments');
+    toggleFileUploadVisibility(show) {
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileRestrictions = document.querySelector('.file-restrictions');
+        const fileList = document.getElementById('file-list');
         
-        // If toggle is unchecked, consider attachments as complete (100%)
-        if (!attachmentToggle || !attachmentToggle.checked) {
-            return 100;
+        if (fileUploadArea) {
+            if (show) {
+                fileUploadArea.style.display = 'flex';
+                fileUploadArea.style.opacity = '1';
+                fileUploadArea.style.transform = 'translateY(0)';
+                fileUploadArea.style.pointerEvents = 'auto';
+                
+                // Enable the file input
+                const fileInput = document.getElementById('attachments');
+                if (fileInput) {
+                    fileInput.disabled = false;
+                }
+            } else {
+                fileUploadArea.style.opacity = '0';
+                fileUploadArea.style.transform = 'translateY(-10px)';
+                fileUploadArea.style.pointerEvents = 'none';
+                
+                // After animation, hide completely
+                setTimeout(() => {
+                    if (fileUploadArea.style.opacity === '0') {
+                        fileUploadArea.style.display = 'none';
+                    }
+                }, 300);
+                
+                // Disable and clear the file input
+                const fileInput = document.getElementById('attachments');
+                if (fileInput) {
+                    fileInput.disabled = true;
+                    fileInput.value = '';
+                    
+                    // Clear any uploaded files from memory
+                    this.uploadedFiles = [];
+                }
+                
+                // Clear file list display
+                if (fileList) {
+                    fileList.innerHTML = '';
+                }
+            }
         }
-
-        // If toggle is checked, check if files are uploaded
-        if (fileInput && fileInput.files && fileInput.files.length > 0) {
-            return 100;
+        
+        // Show/hide file restrictions
+        if (fileRestrictions) {
+            fileRestrictions.style.display = show ? 'block' : 'none';
         }
-
-        return 0;
     }
 
     updateSectionProgress(progressId, fieldIds) {
