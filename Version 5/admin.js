@@ -60,7 +60,7 @@ class InnovationAdminPortal {
             await this.loadData();
             this.renderCurrentView();
             this.startRealTimeUpdates();
-            console.log('🚀 Innovation Admin Portal V5 initialized for authorized user');
+            // console.log('🚀 Innovation Admin Portal V5 initialized for authorized user');
         } catch (error) {
             console.error('Admin portal initialization failed:', error);
             this.showAuthenticationError(error);
@@ -217,7 +217,7 @@ class InnovationAdminPortal {
     }
     
     logAdminAccess() {
-        console.log(`Admin access granted to ${this.currentAdmin.email} (${this.currentAdmin.role})`);
+        // console.log(`Admin access granted to ${this.currentAdmin.email} (${this.currentAdmin.role})`);
         
         // Optional: Log to SharePoint list for audit trail
         this.logAuditEvent('ADMIN_ACCESS_GRANTED', {

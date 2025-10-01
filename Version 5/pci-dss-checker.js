@@ -228,7 +228,7 @@
         }
       });
       
-      console.log(`[PCI DSS Checker] Monitoring ${inputs.length} input fields`);
+    //   console.log(`[PCI DSS Checker] Monitoring ${inputs.length} input fields`);
     }
     
     // Attach to specific element
@@ -328,7 +328,7 @@
         <span>Sensitive data detected and redacted</span>
       `;
       
-      console.log(`${detections.map(d => d.description).join(', ')} detected and redacted`);
+    //   console.log(`${detections.map(d => d.description).join(', ')} detected and redacted`);
       // Insert warning
       if (element.parentElement) {
         element.parentElement.style.position = 'relative';
@@ -359,7 +359,7 @@
     detachAll() {
       // This would require keeping track of all elements, 
       // which WeakMap doesn't allow iteration
-      console.log('[PCI DSS Checker] Manual detach not fully supported with WeakMap');
+    //   console.log('[PCI DSS Checker] Manual detach not fully supported with WeakMap');
     }
   }
   

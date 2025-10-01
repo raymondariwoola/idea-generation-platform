@@ -215,7 +215,7 @@
         }
       });
       
-      console.log(`[XSS Protection] Monitoring ${inputs.length} input fields`);
+    //   console.log(`[XSS Protection] Monitoring ${inputs.length} input fields`);
     }
     
     // Attach to specific element

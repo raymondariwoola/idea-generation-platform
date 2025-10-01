@@ -43,7 +43,7 @@ class InnovationPortal {
         await this.loadSampleData();
         this.renderAll();
         this.animateKPIs();
-        console.log('🚀 Innovation Portal V5 initialized with SharePoint integration');
+        // console.log('🚀 Innovation Portal V5 initialized with SharePoint integration');
     }
 
     // ===== NAVIGATION SYSTEM =====
@@ -303,7 +303,7 @@ class InnovationPortal {
             this.updateOverallProgress(overallProgress);
             
             // Debug logging
-            console.log(`📊 Progress Update: ${Math.round(overallProgress)}% (${Math.round(totalProgress)}/${sectionCount * 100})`);
+            // console.log(`📊 Progress Update: ${Math.round(overallProgress)}% (${Math.round(totalProgress)}/${sectionCount * 100})`);
         };
 
         // Add listeners to all form fields including textareas and selects
