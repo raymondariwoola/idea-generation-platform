@@ -522,6 +522,12 @@ class OnboardingTutorial {
       this.scrollListener = null;
     }
 
+    // Remove spotlight element
+    const spotlight = document.querySelector('.tutorial-spotlight');
+    if (spotlight) {
+      spotlight.remove();
+    }
+
     // Fade out and remove
     this.tooltip?.classList.remove('tutorial-tooltip-visible');
     this.overlay?.classList.add('tutorial-overlay-fade-out');
