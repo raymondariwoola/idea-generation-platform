@@ -93,6 +93,13 @@ class InnovationPortal {
             if (viewName === 'home') {
                 this.renderIdeasGrid();
                 this.updateKPIs();
+                
+                // Start home tutorial for first-time visitors
+                if (window.tutorialManager) {
+                    setTimeout(() => {
+                        window.tutorialManager.startForView('home');
+                    }, 1000);
+                }
             } else if (viewName === 'track') {
                 this.renderTrackingView();
             } else if (viewName === 'submit') {
@@ -100,6 +107,13 @@ class InnovationPortal {
                 setTimeout(() => {
                     this.setupFormProgress();
                 }, 100);
+                
+                // Start submit tutorial for first-time visitors
+                if (window.tutorialManager) {
+                    setTimeout(() => {
+                        window.tutorialManager.startForView('submit');
+                    }, 1000);
+                }
             }
 
             // Update URL hash for better UX
@@ -1708,6 +1722,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hash = window.location.hash.slice(1);
     if (hash && ['home', 'submit', 'track'].includes(hash)) {
         app.switchView(hash);
+    } else {
+        // Default to home view and start home tutorial if first visit
+        if (window.tutorialManager) {
+            setTimeout(() => {
+                window.tutorialManager.startForView('home');
+            }, 1000);
+        }
     }
 });
 
