@@ -24,16 +24,23 @@
       // Pattern definitions
       this.patterns = {
         // Credit card patterns (Visa, MasterCard, Amex, Discover)
+        // Matches: 4532123456789010, 4532-1234-5678-9010, 4532 1234 5678 9010
         creditCard: {
-          regex: /\b(?:\d{4}[\s\-]?){3}\d{4}\b|\b\d{13,19}\b/g,
+          regex: /\d(?:[\s\-]?\d){12,18}/g,
           test: (match) => this.isValidCreditCard(match),
           description: 'Credit Card Number'
         },
         
-        // Account numbers (8-17 digits)
+        // Account numbers (8-11 digits) - only match if NOT a valid credit card
         accountNumber: {
-          regex: /\b\d{8,17}\b/g,
-          test: (match) => this.isLikelyAccountNumber(match),
+          regex: /\d(?:[\s\-]?\d){7,10}/g,
+          test: (match) => {
+            const cleaned = match.replace(/[\s\-]/g, '');
+            // Must be 8-17 digits, not a credit card, and not all repeating
+            return cleaned.length >= 8 && cleaned.length <= 17 && 
+                   !this.isValidCreditCard(match) && 
+                   this.isLikelyAccountNumber(match);
+          },
           description: 'Account Number'
         },
         
@@ -45,25 +52,25 @@
         },
         
         // Passport numbers (various formats)
-        passport: {
-          regex: /\b[A-Z]{1,2}\d{6,9}\b/g,
-          test: (match) => this.isLikelyPassport(match),
-          description: 'Passport Number'
-        },
+        // passport: {
+        //   regex: /\b[A-Z]{1,2}\d{6,9}\b/g,
+        //   test: (match) => this.isLikelyPassport(match),
+        //   description: 'Passport Number'
+        // },
         
         // SSN/National ID (XXX-XX-XXXX or 9 digits)
-        ssn: {
-          regex: /\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b/g,
-          test: () => true,
-          description: 'SSN/National ID'
-        },
+        // ssn: {
+        //   regex: /\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b/g,
+        //   test: () => true,
+        //   description: 'SSN/National ID'
+        // },
         
         // CVV/CVC codes (3-4 digits preceded by CVV/CVC keywords)
-        cvv: {
-          regex: /\b(cvv|cvc|cid|security\s?code)[\s:]*\d{3,4}\b/gi,
-          test: () => true,
-          description: 'CVV/CVC Code'
-        },
+        // cvv: {
+        //   regex: /\b(cvv|cvc|cid|security\s?code)[\s:]*\d{3,4}\b/gi,
+        //   test: () => true,
+        //   description: 'CVV/CVC Code'
+        // },
         
         // IBAN (International Bank Account Number)
         iban: {
@@ -73,11 +80,11 @@
         },
         
         // PIN patterns (4-6 digits with PIN keyword)
-        pin: {
-          regex: /\b(pin|password|passcode)[\s:]*\d{4,6}\b/gi,
-          test: () => true,
-          description: 'PIN Code'
-        }
+        // pin: {
+        //   regex: /\b(pin|password|passcode)[\s:]*\d{4,6}\b/gi,
+        //   test: () => true,
+        //   description: 'PIN Code'
+        // }
       };
       
       this.attachedElements = new WeakMap();
@@ -114,8 +121,8 @@
     // Check if number looks like an account number
     isLikelyAccountNumber(number) {
       const cleaned = number.replace(/[\s\-]/g, '');
-      // Account numbers are typically 8-17 digits and not credit cards
-      if (cleaned.length < 8 || cleaned.length > 17) return false;
+      // Account numbers are typically 8-11 digits and not credit cards
+      if (cleaned.length < 8 || cleaned.length > 11) return false;
       if (this.isValidCreditCard(number)) return false; // Already caught by CC check
       
       // Check if it has repeating patterns that might be test data
@@ -136,12 +143,29 @@
       
       const detections = [];
       
-      for (const [type, pattern] of Object.entries(this.patterns)) {
+      // Define priority order: credit cards FIRST, then others
+      const priorityOrder = ['creditCard', 'emiratesId', 'iban', 'accountNumber'];
+      
+      // Process patterns in priority order
+      for (const type of priorityOrder) {
+        if (!this.patterns[type]) continue;
+        
+        const pattern = this.patterns[type];
         const matches = text.matchAll(pattern.regex);
         
         for (const match of matches) {
           const value = match[0];
-          if (pattern.test(value)) {
+          
+          // Check if this range already detected by higher priority pattern
+          const overlaps = detections.some(d => {
+            const dEnd = d.index + d.length;
+            const mEnd = match.index + value.length;
+            return (match.index >= d.index && match.index < dEnd) ||
+                   (mEnd > d.index && mEnd <= dEnd) ||
+                   (match.index <= d.index && mEnd >= dEnd);
+          });
+          
+          if (!overlaps && pattern.test(value)) {
             detections.push({
               type,
               value,
@@ -213,10 +237,13 @@
       
       const handler = (e) => this.handleInput(e, element);
       const blurHandler = (e) => this.handleBlur(e, element);
+      const pasteHandler = (e) => this.handlePaste(e, element);
       
       element.addEventListener('input', handler);
       element.addEventListener('blur', blurHandler);
-      element.addEventListener('paste', (e) => this.handlePaste(e, element));
+      element.addEventListener('change', blurHandler); // Also check on change
+      element.addEventListener('paste', pasteHandler);
+      element.addEventListener('change', (e) => this.handleBlur(e, element));
       
       this.attachedElements.set(element, { handler, blurHandler });
       
@@ -255,7 +282,7 @@
         element.value = this.sanitize(element.value);
         
         if (this.showWarning) {
-          this.showWarningMessage(element, detections, true);
+          this.showWarningMessage(element, detections);
         }
       }
     }
@@ -283,12 +310,12 @@
       
       if (pastedText !== sanitized) {
         const detections = this.detectSensitiveData(pastedText);
-        this.showWarningMessage(element, detections, true);
+        this.showWarningMessage(element, detections);
       }
     }
     
     // Show warning message
-    showWarningMessage(element, detections, persist = false) {
+    showWarningMessage(element, detections) {
       // Remove existing warning
       const existing = element.parentElement?.querySelector('.pci-warning');
       if (existing) existing.remove();
@@ -298,23 +325,23 @@
       warning.className = 'pci-warning';
       warning.innerHTML = `
         <i class="fas fa-shield-alt"></i>
-        <span>Sensitive data detected and redacted: ${detections.map(d => d.description).join(', ')}</span>
+        <span>Sensitive data detected and redacted</span>
       `;
       
+      console.log(`${detections.map(d => d.description).join(', ')} detected and redacted`);
       // Insert warning
       if (element.parentElement) {
         element.parentElement.style.position = 'relative';
         element.parentElement.appendChild(warning);
         
-        // Auto-remove after duration
-        if (!persist) {
-          setTimeout(() => {
-            if (warning.parentElement) {
-              warning.style.opacity = '0';
-              setTimeout(() => warning.remove(), 300);
-            }
-          }, this.warningDuration);
-        }
+        // Always auto-remove after duration with fade-out animation
+        setTimeout(() => {
+          if (warning.parentElement) {
+            warning.style.opacity = '0';
+            warning.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => warning.remove(), 300);
+          }
+        }, this.warningDuration);
       }
     }
     

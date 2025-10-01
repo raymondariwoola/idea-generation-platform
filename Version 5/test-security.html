@@ -61,9 +61,13 @@
 
     <div class="test-section">
         <h2>Test PCI DSS Detection</h2>
-        <p>Try entering a credit card number:</p>
-        <input type="text" id="pci-test" placeholder="Try: 4532 1234 5678 9010">
-        <p><small>Should auto-redact to: XXXXXXXX (Not PCI DSS Compliant)</small></p>
+        <p><strong></strong>Try these credit card formats:</strong></p>
+        <input type="text" id="pci-test1" placeholder="With spaces: 4532 1234 5678 9010" style="margin: 5px 0;">
+        <input type="text" id="pci-test2" placeholder="With dashes: 4532-1234-5678-9010" style="margin: 5px 0;">
+        <input type="text" id="pci-test3" placeholder="No spaces: 4532123456789010" style="margin: 5px 0;">
+        <input type="text" id="pci-test4" placeholder="Try pasting: 4532 1234 5678 9010" style="margin: 5px 0;">
+        <p><small>✅ Should auto-redact to: XXXXXXXX (Not PCI DSS Compliant)</small></p>
+        <p><small>💡 Try typing AND pasting to test both methods</small></p>
     </div>
 
     <div class="test-section">
