@@ -283,6 +283,9 @@ class InnovationPortal {
             'submitter-progress': ['owner', 'email']
         };
 
+        // Add attachment checkbox for optional file uploads
+        this.createAttachmentToggle();
+
         const updateProgress = () => {
             let totalProgress = 0;
             let sectionCount = 0;
@@ -292,6 +295,11 @@ class InnovationPortal {
                 totalProgress += sectionProgress;
                 sectionCount++;
             });
+
+            // Handle optional attachments
+            const attachmentProgress = this.calculateAttachmentProgress();
+            totalProgress += attachmentProgress;
+            sectionCount++;
 
             const overallProgress = totalProgress / sectionCount;
             this.updateOverallProgress(overallProgress);
@@ -311,10 +319,16 @@ class InnovationPortal {
             }
         });
 
-        // Also listen for file upload changes
+        // Listen for file upload changes
         const fileInput = document.getElementById('attachments');
         if (fileInput) {
             fileInput.addEventListener('change', updateProgress);
+        }
+
+        // Listen for attachment checkbox changes
+        const attachmentToggle = document.getElementById('attachment-toggle');
+        if (attachmentToggle) {
+            attachmentToggle.addEventListener('change', updateProgress);
         }
 
         // Initial progress calculation
@@ -327,6 +341,45 @@ class InnovationPortal {
             submitButton.classList.add('disabled');
             submitButton.innerHTML = '<i class="fas fa-tasks"></i> Complete Form (0%)';
         }
+    }
+
+    createAttachmentToggle() {
+        const fileUploadArea = document.getElementById('file-upload-area');
+        if (!fileUploadArea) return;
+
+        // Check if toggle already exists
+        if (document.getElementById('attachment-toggle')) return;
+
+        const toggleHTML = `
+            <div class="attachment-toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="attachment-toggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Include attachments in progress calculation</span>
+                <small class="toggle-hint">Uncheck if you don't plan to upload files</small>
+            </div>
+        `;
+
+        // Insert before the file upload area
+        fileUploadArea.insertAdjacentHTML('beforebegin', toggleHTML);
+    }
+
+    calculateAttachmentProgress() {
+        const attachmentToggle = document.getElementById('attachment-toggle');
+        const fileInput = document.getElementById('attachments');
+        
+        // If toggle is unchecked, consider attachments as complete (100%)
+        if (!attachmentToggle || !attachmentToggle.checked) {
+            return 100;
+        }
+
+        // If toggle is checked, check if files are uploaded
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            return 100;
+        }
+
+        return 0;
     }
 
     updateSectionProgress(progressId, fieldIds) {
@@ -377,24 +430,27 @@ class InnovationPortal {
     }
 
     updateOverallProgress(percentage) {
-        // Update the percentage text
+        // Update the percentage text with smooth counting animation
         const progressTextElement = document.querySelector('.overall-progress .progress-text');
         if (progressTextElement) {
-            progressTextElement.textContent = `${Math.round(percentage)}%`;
+            this.animateNumber(progressTextElement, parseInt(progressTextElement.textContent), Math.round(percentage));
         }
 
-        // Update circular progress ring using CSS custom properties
-        const progressRing = document.querySelector('.progress-ring');
-        if (progressRing) {
-            // Set CSS custom property for the progress
-            progressRing.style.setProperty('--progress', percentage);
-            
-            // Add completion class when 100%
+        // Update SVG circular progress with fluid animation
+        this.updateSVGProgress(percentage);
+        
+        // Add completion class when 100%
+        const progressContainer = document.querySelector('.progress-circle');
+        if (progressContainer) {
             if (percentage === 100) {
-                progressRing.classList.add('complete');
-                this.showNotification('🎉 Form completed! Ready to submit your idea.', 'success');
+                progressContainer.classList.add('complete');
+                if (!progressContainer.querySelector('.completion-celebration')) {
+                    this.addCompletionCelebration(progressContainer);
+                }
             } else {
-                progressRing.classList.remove('complete');
+                progressContainer.classList.remove('complete');
+                const celebration = progressContainer.querySelector('.completion-celebration');
+                if (celebration) celebration.remove();
             }
         }
 
@@ -417,7 +473,7 @@ class InnovationPortal {
         if (progressMessage) {
             if (percentage === 100) {
                 progressMessage.textContent = '✅ Ready to submit your brilliant idea!';
-                progressMessage.style.color = '#00d4ff';
+                progressMessage.style.color = '#00ff88';
             } else if (percentage >= 75) {
                 progressMessage.textContent = '🚀 Almost there! Just a few more fields.';
                 progressMessage.style.color = '#fbbf24';
@@ -432,6 +488,108 @@ class InnovationPortal {
                 progressMessage.style.color = '#9ca3af';
             }
         }
+    }
+
+    updateSVGProgress(percentage) {
+        let svgProgress = document.querySelector('.svg-progress');
+        
+        // Create SVG if it doesn't exist
+        if (!svgProgress) {
+            const progressRing = document.querySelector('.progress-ring');
+            if (progressRing) {
+                progressRing.innerHTML = `
+                    <svg class="svg-progress" width="80" height="80" viewBox="0 0 80 80">
+                        <defs>
+                            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00ff88;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <!-- Background circle -->
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+                        <!-- Progress circle -->
+                        <circle class="progress-path" cx="40" cy="40" r="35" fill="none" 
+                                stroke="url(#progressGradient)" stroke-width="4" 
+                                stroke-linecap="round" 
+                                stroke-dasharray="219.8" 
+                                stroke-dashoffset="219.8"
+                                filter="url(#glow)"
+                                transform="rotate(-90 40 40)"/>
+                        <!-- Center percentage text -->
+                        <text class="progress-text" x="40" y="40" text-anchor="middle" dy=".3em" 
+                              fill="#e8f0ff" font-size="14" font-weight="700" font-family="Inter, sans-serif">0%</text>
+                    </svg>
+                `;
+                svgProgress = document.querySelector('.svg-progress');
+            }
+        }
+
+        // Animate the progress path
+        const progressPath = document.querySelector('.progress-path');
+        if (progressPath) {
+            const circumference = 219.8;
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            // Smooth animation
+            progressPath.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            progressPath.style.strokeDashoffset = offset;
+            
+            // Add pulsing effect for completion
+            if (percentage === 100) {
+                progressPath.style.animation = 'progressPulse 2s ease-in-out infinite';
+            } else {
+                progressPath.style.animation = 'none';
+            }
+        }
+    }
+
+    animateNumber(element, start, end) {
+        const duration = 600;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+            const current = Math.round(start + (end - start) * easeOutCubic);
+            
+            element.textContent = `${current}%`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+
+    addCompletionCelebration(container) {
+        const celebration = document.createElement('div');
+        celebration.className = 'completion-celebration';
+        celebration.innerHTML = `
+            <div class="sparkle sparkle-1">✨</div>
+            <div class="sparkle sparkle-2">🎉</div>
+            <div class="sparkle sparkle-3">⭐</div>
+            <div class="sparkle sparkle-4">💫</div>
+        `;
+        container.appendChild(celebration);
+        
+        // Remove celebration after animation
+        setTimeout(() => {
+            if (celebration.parentNode) {
+                celebration.remove();
+            }
+        }, 3000);
     }
 
     handleFiles(files) {

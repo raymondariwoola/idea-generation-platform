@@ -1273,52 +1273,91 @@ html, body {
 .progress-ring {
     width: 100%;
     height: 100%;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    --progress: 0;
 }
 
-.progress-ring::before {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    border: 4px solid transparent;
-    border-radius: 50%;
-    background: conic-gradient(
-        var(--brand-primary) 0deg,
-        var(--brand-primary) calc(var(--progress) * 3.6deg),
-        transparent calc(var(--progress) * 3.6deg),
-        transparent 360deg
-    );
-    mask: radial-gradient(circle closest-side, transparent 70%, black 70%);
-    -webkit-mask: radial-gradient(circle closest-side, transparent 70%, black 70%);
-    transition: all 0.6s ease-in-out;
+/* SVG Progress Styling */
+.svg-progress {
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    border-radius: 70%;
 }
 
-.progress-ring.complete::before {
-    background: conic-gradient(
-        var(--brand-primary) 0deg,
-        #00ff88 360deg
-    );
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-    animation: progressPulse 2s ease-in-out infinite;
+.progress-circle.complete .svg-progress {
+    transform: scale(1.05);
 }
 
+/* Progress pulse animation for completion */
 @keyframes progressPulse {
     0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.6));
         transform: scale(1);
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
     }
     50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        filter: drop-shadow(0 0 16px rgba(0, 255, 136, 0.8));
+        transform: scale(1.02);
+    }
+}
+
+/* Celebration sparkles */
+.completion-celebration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.sparkle {
+    position: absolute;
+    font-size: 12px;
+    animation: sparkleFloat 2s ease-out;
+}
+
+.sparkle-1 {
+    top: -20px;
+    left: -10px;
+    animation-delay: 0s;
+}
+
+.sparkle-2 {
+    top: -15px;
+    right: -15px;
+    animation-delay: 0.3s;
+}
+
+.sparkle-3 {
+    bottom: -20px;
+    left: -15px;
+    animation-delay: 0.6s;
+}
+
+.sparkle-4 {
+    bottom: -15px;
+    right: -10px;
+    animation-delay: 0.9s;
+}
+
+@keyframes sparkleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.3);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-5px) scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(-15px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-25px) scale(0.8);
     }
 }
 
@@ -1332,18 +1371,56 @@ html, body {
 
 /* Section completion indicators */
 .section-checkmark {
-    animation: checkmarkAppear 0.5s ease-in-out;
+    animation: checkmarkAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.6));
 }
 
 @keyframes checkmarkAppear {
     0% {
         opacity: 0;
-        transform: scale(0.5);
+        transform: scale(0.3) rotate(-180deg);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.1) rotate(0deg);
     }
     100% {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) rotate(0deg);
     }
+}
+
+/* Progress indicator enhancements */
+.progress-indicator {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill {
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(90deg, #00d4ff, #7c3aed, #00ff88);
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Form section hover effects */
+.form-section {
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
 }
 
 /* Enhanced submit button states */
@@ -1370,6 +1447,121 @@ html, body {
     font-size: 0.9rem;
     font-weight: 500;
     transition: color 0.3s ease;
+}
+
+/* Attachment Toggle Styling */
+.attachment-toggle-container {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #00d4ff, #7c3aed);
+    border-color: #00d4ff;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-label {
+    color: #e8f0ff;
+    font-weight: 500;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.toggle-hint {
+    color: #9ca3af;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Enhanced hover effects */
+.toggle-switch:hover .toggle-slider {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+input:checked + .toggle-slider:hover {
+    background: linear-gradient(135deg, #00c4ef, #6c2bd9);
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+}
+
+/* Mobile responsiveness for progress and toggles */
+@media (max-width: 768px) {
+    .attachment-toggle-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .toggle-switch {
+        align-self: flex-end;
+    }
+    
+    .progress-circle {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .svg-progress {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .progress-text {
+        font-size: 12px;
+    }
 }
 
 /* ===== TRACK VIEW ===== */
