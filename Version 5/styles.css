@@ -1279,6 +1279,7 @@ html, body {
     align-items: center;
     justify-content: center;
     position: relative;
+    --progress: 0;
 }
 
 .progress-ring::before {
@@ -1289,15 +1290,86 @@ html, body {
     right: -4px;
     bottom: -4px;
     border: 4px solid transparent;
-    border-top-color: var(--brand-primary);
     border-radius: 50%;
-    transition: transform var(--transition);
+    background: conic-gradient(
+        var(--brand-primary) 0deg,
+        var(--brand-primary) calc(var(--progress) * 3.6deg),
+        transparent calc(var(--progress) * 3.6deg),
+        transparent 360deg
+    );
+    mask: radial-gradient(circle closest-side, transparent 70%, black 70%);
+    -webkit-mask: radial-gradient(circle closest-side, transparent 70%, black 70%);
+    transition: all 0.6s ease-in-out;
+}
+
+.progress-ring.complete::before {
+    background: conic-gradient(
+        var(--brand-primary) 0deg,
+        #00ff88 360deg
+    );
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+    animation: progressPulse 2s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+    }
 }
 
 .progress-text {
     font-size: 1rem;
     font-weight: 700;
     color: var(--text-primary);
+    z-index: 1;
+    position: relative;
+}
+
+/* Section completion indicators */
+.section-checkmark {
+    animation: checkmarkAppear 0.5s ease-in-out;
+}
+
+@keyframes checkmarkAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Enhanced submit button states */
+.submit-btn {
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.submit-btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #9ca3af !important;
+}
+
+.submit-btn:not(.disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 212, 255, 0.4);
+}
+
+/* Progress panel enhancements */
+.overall-progress p {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 /* ===== TRACK VIEW ===== */

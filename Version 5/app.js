@@ -95,6 +95,11 @@ class InnovationPortal {
                 this.updateKPIs();
             } else if (viewName === 'track') {
                 this.renderTrackingView();
+            } else if (viewName === 'submit') {
+                // Initialize progress tracking for submit form
+                setTimeout(() => {
+                    this.setupFormProgress();
+                }, 100);
             }
 
             // Update URL hash for better UX
@@ -290,19 +295,38 @@ class InnovationPortal {
 
             const overallProgress = totalProgress / sectionCount;
             this.updateOverallProgress(overallProgress);
+            
+            // Debug logging
+            console.log(`📊 Progress Update: ${Math.round(overallProgress)}% (${Math.round(totalProgress)}/${sectionCount * 100})`);
         };
 
-        // Add listeners to all form fields
+        // Add listeners to all form fields including textareas and selects
         const allFields = Object.values(sections).flat();
         allFields.forEach(fieldId => {
             const field = document.getElementById(fieldId);
             if (field) {
                 field.addEventListener('input', updateProgress);
                 field.addEventListener('change', updateProgress);
+                field.addEventListener('blur', updateProgress);
             }
         });
 
+        // Also listen for file upload changes
+        const fileInput = document.getElementById('attachments');
+        if (fileInput) {
+            fileInput.addEventListener('change', updateProgress);
+        }
+
+        // Initial progress calculation
         updateProgress();
+        
+        // Initialize submit button state
+        const submitButton = document.querySelector('.submit-btn');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add('disabled');
+            submitButton.innerHTML = '<i class="fas fa-tasks"></i> Complete Form (0%)';
+        }
     }
 
     updateSectionProgress(progressId, fieldIds) {
@@ -311,26 +335,102 @@ class InnovationPortal {
 
         const filledFields = fieldIds.filter(fieldId => {
             const field = document.getElementById(fieldId);
-            return field && field.value.trim() !== '';
+            if (!field) return false;
+            
+            // Handle different field types
+            if (field.tagName === 'SELECT') {
+                return field.value && field.value !== '';
+            } else if (field.tagName === 'TEXTAREA') {
+                return field.value.trim().length >= 10; // Require minimum content for text areas
+            } else {
+                return field.value.trim() !== '';
+            }
         });
 
         const percentage = (filledFields.length / fieldIds.length) * 100;
+        
+        // Update section progress bar with animation
+        progressBar.style.transition = 'width 0.4s ease';
         progressBar.style.width = `${percentage}%`;
+        
+        // Update section progress indicator (add checkmark when complete)
+        const sectionElement = progressBar.closest('.form-section');
+        if (sectionElement) {
+            const header = sectionElement.querySelector('h3');
+            if (header) {
+                const checkmark = header.querySelector('.section-checkmark');
+                if (percentage === 100) {
+                    if (!checkmark) {
+                        const check = document.createElement('i');
+                        check.className = 'fas fa-check-circle section-checkmark';
+                        check.style.color = '#00d4ff';
+                        check.style.marginLeft = '8px';
+                        header.appendChild(check);
+                    }
+                } else if (checkmark) {
+                    checkmark.remove();
+                }
+            }
+        }
+        
         return percentage;
     }
 
     updateOverallProgress(percentage) {
-        const progressText = document.querySelector('.progress-text');
-        const progressRing = document.querySelector('.progress-ring::before');
-        
-        if (progressText) {
-            progressText.textContent = `${Math.round(percentage)}%`;
+        // Update the percentage text
+        const progressTextElement = document.querySelector('.overall-progress .progress-text');
+        if (progressTextElement) {
+            progressTextElement.textContent = `${Math.round(percentage)}%`;
         }
 
-        // Update circular progress
+        // Update circular progress ring using CSS custom properties
+        const progressRing = document.querySelector('.progress-ring');
         if (progressRing) {
-            const rotation = (percentage / 100) * 360;
-            progressRing.style.transform = `rotate(${rotation}deg)`;
+            // Set CSS custom property for the progress
+            progressRing.style.setProperty('--progress', percentage);
+            
+            // Add completion class when 100%
+            if (percentage === 100) {
+                progressRing.classList.add('complete');
+                this.showNotification('🎉 Form completed! Ready to submit your idea.', 'success');
+            } else {
+                progressRing.classList.remove('complete');
+            }
+        }
+
+        // Enable/disable submit button based on completion
+        const submitButton = document.querySelector('.submit-btn');
+        if (submitButton) {
+            if (percentage === 100) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('disabled');
+                submitButton.innerHTML = '<i class="fas fa-rocket"></i> Submit Idea';
+            } else {
+                submitButton.disabled = true;
+                submitButton.classList.add('disabled');
+                submitButton.innerHTML = `<i class="fas fa-tasks"></i> Complete Form (${Math.round(percentage)}%)`;
+            }
+        }
+
+        // Update progress message
+        const progressMessage = document.querySelector('.overall-progress p');
+        if (progressMessage) {
+            if (percentage === 100) {
+                progressMessage.textContent = '✅ Ready to submit your brilliant idea!';
+                progressMessage.style.color = '#00d4ff';
+            } else if (percentage >= 75) {
+                progressMessage.textContent = '🚀 Almost there! Just a few more fields.';
+                progressMessage.style.color = '#fbbf24';
+            } else if (percentage >= 50) {
+                progressMessage.textContent = '⚡ Great progress! Keep going.';
+                progressMessage.style.color = '#8b5cf6';
+            } else if (percentage >= 25) {
+                progressMessage.textContent = '📝 Good start! Continue filling out the form.';
+                progressMessage.style.color = '#06b6d4';
+            } else {
+                progressMessage.textContent = 'Complete all sections to submit your idea';
+                progressMessage.style.color = '#9ca3af';
+            }
         }
     }
 
