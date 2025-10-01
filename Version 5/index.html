@@ -263,6 +263,22 @@
                     <p class="page-subtitle">Transform your vision into reality by sharing your innovative thinking with our community</p>
                 </div>
 
+                <!-- PCI DSS Compliance Notice -->
+                <div class="security-notice">
+                    <div class="security-notice-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="security-notice-content">
+                        <h4><i class="fas fa-lock"></i> Security & Compliance Notice</h4>
+                        <p><strong>PCI DSS Compliance:</strong> Do not enter sensitive information such as credit card numbers, account numbers, CVV codes, Emirates ID, passport numbers, or any other personally identifiable information (PII). The system automatically detects and redacts such data for your protection.</p>
+                        <!-- <div class="security-badges">
+                            <span class="security-badge"><i class="fas fa-check-circle"></i> PCI DSS Protected</span>
+                            <span class="security-badge"><i class="fas fa-check-circle"></i> XSS Protection</span>
+                            <span class="security-badge"><i class="fas fa-check-circle"></i> Data Sanitization</span>
+                        </div> -->
+                    </div>
+                </div>
+
                 <div class="submit-layout">
                     <div class="submit-form-container">
                         <form id="idea-form" class="enhanced-form">
@@ -593,6 +609,14 @@
         </div>
     </div>
 
+    <!-- Security Libraries -->
+    <script src="pci-dss-checker.js"></script>
+    <script src="xss-protection.js"></script>
+    
+    <!-- SharePoint Helpers -->
+    <script src="sp-helpers.js"></script>
+    
+    <!-- Main Application -->
     <script src="app.js"></script>
 </body>
 </html>

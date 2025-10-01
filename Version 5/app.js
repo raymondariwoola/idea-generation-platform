@@ -697,6 +697,9 @@ class InnovationPortal {
             return;
         }
 
+        // Failsafe: Final sanitization before submission
+        const sanitizedData = this.sanitizeFormData(formData);
+
         this.showLoading(true);
         
         try {
@@ -715,7 +718,7 @@ class InnovationPortal {
             
             // Save idea to SharePoint
             const ideaData = {
-                ...formData,
+                ...sanitizedData,
                 attachmentUrls
             };
             
@@ -724,7 +727,7 @@ class InnovationPortal {
             // Update local state
             const idea = {
                 id: savedIdea.d.Id.toString(),
-                ...formData,
+                ...sanitizedData,
                 status: 'Submitted',
                 updated: Date.now(),
                 progress: 25,
@@ -786,6 +789,46 @@ class InnovationPortal {
         };
     }
 
+    sanitizeFormData(data) {
+        // Failsafe: Apply both PCI DSS and XSS sanitization before submission
+        const sanitized = {};
+        
+        // Check if security libraries are available
+        const hasPCIChecker = typeof window.pciChecker !== 'undefined';
+        const hasXSSProtection = typeof window.xssProtection !== 'undefined';
+        
+        for (const [key, value] of Object.entries(data)) {
+            if (typeof value === 'string') {
+                let clean = value;
+                
+                // Apply PCI DSS sanitization
+                if (hasPCIChecker) {
+                    clean = window.pciChecker.sanitize(clean);
+                }
+                
+                // Apply XSS protection
+                if (hasXSSProtection) {
+                    clean = window.xssProtection.sanitize(clean);
+                }
+                
+                sanitized[key] = clean;
+            } else {
+                sanitized[key] = value;
+            }
+        }
+        
+        // Log if any sanitization occurred
+        const changed = Object.keys(data).some(key => 
+            typeof data[key] === 'string' && data[key] !== sanitized[key]
+        );
+        
+        if (changed) {
+            console.warn('⚠️ Form data was sanitized before submission for security compliance');
+        }
+        
+        return sanitized;
+    }
+    
     validateForm(data) {
         const required = ['title', 'category', 'problem', 'solution', 'impact', 'effort'];
         const missing = required.filter(field => !data[field] || data[field].trim() === '');
