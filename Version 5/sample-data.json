@@ -1,0 +1,319 @@
+{
+  "ideas": [
+    {
+      "id": "1",
+      "title": "AI-Powered Code Review Assistant",
+      "category": "Tech",
+      "dept": "Engineering",
+      "problem": "Manual code reviews are time-consuming and can miss subtle issues.",
+      "solution": "Deploy machine learning models trained on best practices to provide instant analysis.",
+      "impact": "Operational efficiency",
+      "effort": "Medium",
+      "resources": "ML engineer, cloud computing resources",
+      "owner": "Alice Johnson",
+      "email": "alice@company.com",
+      "tags": ["AI", "automation", "code-quality"],
+      "status": "Submitted",
+      "priority": "High",
+      "submitted": 1727654400000,
+      "updated": 1727740800000,
+      "votes": 15,
+      "attachmentUrls": [],
+      "comments": [
+        {
+          "id": "c1",
+          "author": "Tech Lead",
+          "message": "Great concept! Would love to see a proof of concept.",
+          "timestamp": 1727740800000
+        },
+        {
+          "id": "c2",
+          "author": "CTO",
+          "message": "Aligns with our AI strategy. Lets schedule a review.",
+          "timestamp": 1727784000000
+        }
+      ],
+      "adminNotes": "High priority - strategic alignment with company AI initiatives",
+      "estimatedROI": "$250,000 annually",
+      "implementationDate": null,
+      "statusHistory": [
+        {
+          "status": "Submitted",
+          "timestamp": 1727654400000,
+          "by": "Alice Johnson"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Employee Wellness Dashboard",
+      "category": "Process",
+      "dept": "Human Resources",
+      "problem": "Employee burnout affecting productivity and satisfaction.",
+      "solution": "Comprehensive dashboard tracking wellness metrics with personalized recommendations.",
+      "impact": "Customer experience",
+      "effort": "High",
+      "resources": "Full-stack developer, UX designer, health partnerships",
+      "owner": "Michael Chen",
+      "email": "michael@company.com",
+      "tags": ["wellness", "dashboard", "analytics"],
+      "status": "In review",
+      "priority": "Medium",
+      "submitted": 1727222400000,
+      "updated": 1727568000000,
+      "votes": 8,
+      "attachmentUrls": ["wellness-mockup.pdf"],
+      "comments": [
+        {
+          "id": "c3",
+          "author": "HR Director",
+          "message": "This could really help with retention issues.",
+          "timestamp": 1727395200000
+        }
+      ],
+      "adminNotes": "Promising concept, needs budget approval and privacy compliance review",
+      "estimatedROI": "$180,000 annually",
+      "implementationDate": null,
+      "statusHistory": [
+        {
+          "status": "Submitted",
+          "timestamp": 1727222400000,
+          "by": "Michael Chen"
+        },
+        {
+          "status": "In review",
+          "timestamp": 1727568000000,
+          "by": "Admin"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Sustainable Office Energy Management",
+      "category": "Sustainability",
+      "dept": "Operations",
+      "problem": "Energy consumption inefficient with unnecessary usage during off-hours.",
+      "solution": "IoT sensors and smart controls to optimize energy usage throughout buildings.",
+      "impact": "Cost reduction",
+      "effort": "Low",
+      "resources": "IoT hardware, electrical contractor, BMS integration",
+      "owner": "Sarah Williams",
+      "email": "sarah@company.com",
+      "tags": ["IoT", "energy", "sustainability"],
+      "status": "Accepted",
+      "priority": "High",
+      "submitted": 1726790400000,
+      "updated": 1727395200000,
+      "votes": 22,
+      "attachmentUrls": ["energy-analysis.xlsx", "iot-proposal.pdf"],
+      "comments": [
+        {
+          "id": "c4",
+          "author": "CFO",
+          "message": "Excellent ROI projections. Approved for implementation.",
+          "timestamp": 1727049600000
+        },
+        {
+          "id": "c5",
+          "author": "Facilities Manager",
+          "message": "Ready to coordinate with electrical contractors.",
+          "timestamp": 1727395200000
+        }
+      ],
+      "adminNotes": "Approved for pilot program - Q2 implementation planned",
+      "estimatedROI": "$75,000 annually",
+      "implementationDate": "2025-11-15T00:00:00.000Z",
+      "statusHistory": [
+        {
+          "status": "Submitted",
+          "timestamp": 1726790400000,
+          "by": "Sarah Williams"
+        },
+        {
+          "status": "In review",
+          "timestamp": 1726963200000,
+          "by": "Admin"
+        },
+        {
+          "status": "Accepted",
+          "timestamp": 1727395200000,
+          "by": "Executive Committee"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Customer Journey Analytics Platform",
+      "category": "Customer",
+      "dept": "Marketing",
+      "problem": "Customer data siloed across departments, difficult to understand complete journey.",
+      "solution": "Real-time analytics platform tracking interactions across all touchpoints.",
+      "impact": "Revenue growth",
+      "effort": "Medium",
+      "resources": "Data engineers, cloud infrastructure, CRM integration",
+      "owner": "David Rodriguez",
+      "email": "david@company.com",
+      "tags": ["analytics", "customer", "journey"],
+      "status": "Rejected",
+      "priority": "Low",
+      "submitted": 1726358400000,
+      "updated": 1726963200000,
+      "votes": 5,
+      "attachmentUrls": ["customer-journey-map.png"],
+      "comments": [
+        {
+          "id": "c6",
+          "author": "Finance Director",
+          "message": "Budget constraints this quarter. Good idea though.",
+          "timestamp": 1726963200000
+        }
+      ],
+      "adminNotes": "Budget constraints, revisit next quarter - solid technical approach",
+      "estimatedROI": "$320,000 annually",
+      "implementationDate": null,
+      "statusHistory": [
+        {
+          "status": "Submitted",
+          "timestamp": 1726358400000,
+          "by": "David Rodriguez"
+        },
+        {
+          "status": "In review",
+          "timestamp": 1726617600000,
+          "by": "Admin"
+        },
+        {
+          "status": "Rejected",
+          "timestamp": 1726963200000,
+          "by": "Finance Committee"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Automated Inventory Optimization",
+      "category": "Process",
+      "dept": "Operations",
+      "problem": "Manual inventory management leads to overstocking and stockouts.",
+      "solution": "Machine learning algorithm to predict demand and optimize inventory levels.",
+      "impact": "Cost reduction",
+      "effort": "Medium",
+      "resources": "Data scientist, inventory management system integration",
+      "owner": "Jennifer Walsh",
+      "email": "jennifer@company.com",
+      "tags": ["machine-learning", "inventory", "optimization"],
+      "status": "Accepted",
+      "priority": "High",
+      "submitted": 1726963200000,
+      "updated": 1727827200000,
+      "votes": 18,
+      "attachmentUrls": ["inventory-analysis.xlsx"],
+      "comments": [
+        {
+          "id": "c7",
+          "author": "Operations Director",
+          "message": "This addresses our biggest pain point!",
+          "timestamp": 1727481600000
+        }
+      ],
+      "adminNotes": "High impact project - fast-tracked for Q1 implementation",
+      "estimatedROI": "$450,000 annually",
+      "implementationDate": "2025-11-01T00:00:00.000Z",
+      "statusHistory": [
+        {
+          "status": "Submitted",
+          "timestamp": 1726963200000,
+          "by": "Jennifer Walsh"
+        },
+        {
+          "status": "In review",
+          "timestamp": 1727308800000,
+          "by": "Admin"
+        },
+        {
+          "status": "Accepted",
+          "timestamp": 1727827200000,
+          "by": "Executive Committee"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Customer Feedback Sentiment Analysis",
+      "category": "Customer",
+      "dept": "Customer Service",
+      "problem": "Difficult to quickly identify and prioritize negative customer feedback.",
+      "solution": "AI-powered sentiment analysis to automatically categorize and route feedback.",
+      "impact": "Customer experience",
+      "effort": "Low",
+      "resources": "NLP engineer, API integrations",
+      "owner": "Robert Kim",
+      "email": "robert@company.com",
+      "tags": ["AI", "sentiment", "customer-service"],
+      "status": "In review",
+      "priority": "Medium",
+      "submitted": 1727481600000,
+      "updated": 1727740800000,
+      "votes": 12,
+      "attachmentUrls": [],
+      "comments": [],
+      "adminNotes": "Technical feasibility confirmed - awaiting budget allocation",
+      "estimatedROI": "$125,000 annually",
+      "implementationDate": null,
+      "statusHistory": [
+        {
+          "status": "Submitted",
+          "timestamp": 1727481600000,
+          "by": "Robert Kim"
+        },
+        {
+          "status": "In review",
+          "timestamp": 1727740800000,
+          "by": "Admin"
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "Alice Johnson",
+      "email": "alice@company.com",
+      "dept": "Engineering",
+      "submissions": 3,
+      "accepted": 1
+    },
+    {
+      "id": "2",
+      "name": "Michael Chen",
+      "email": "michael@company.com",
+      "dept": "Human Resources",
+      "submissions": 2,
+      "accepted": 0
+    },
+    {
+      "id": "3",
+      "name": "Sarah Williams",
+      "email": "sarah@company.com",
+      "dept": "Operations",
+      "submissions": 4,
+      "accepted": 2
+    },
+    {
+      "id": "4",
+      "name": "David Rodriguez",
+      "email": "david@company.com",
+      "dept": "Marketing",
+      "submissions": 2,
+      "accepted": 0
+    },
+    {
+      "id": "5",
+      "name": "Jennifer Walsh",
+      "email": "jennifer@company.com",
+      "dept": "Operations",
+      "submissions": 3,
+      "accepted": 1
+    }
+  ]
+}
