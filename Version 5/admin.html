@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovation Portal - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <!-- Admin Navigation -->
+    <header class="admin-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2l2.2 5.6L20 10l-5.6 2.2L12 18l-2.4-5.8L4 10l5.6-2.4L12 2z" fill="#08101c"/>
+                    </svg>
+                </div>
+                <div class="brand-info">
+                    <span class="brand-text">Innovation Portal</span>
+                    <span class="brand-subtitle">Admin Dashboard</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-view="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-btn" data-view="ideas">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Ideas</span>
+                </button>
+                <button class="nav-btn" data-view="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </button>
+                <button class="nav-btn" data-view="users">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </button>
+                <button class="nav-btn" data-view="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            <div class="nav-actions">
+                <div class="notification-center">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </div>
+                <div class="admin-profile">
+                    <div class="profile-info">
+                        <span class="admin-name">Admin User</span>
+                        <span class="admin-role">System Administrator</span>
+                    </div>
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+                <a href="index.html" class="btn-portal">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>User Portal</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Admin Content -->
+    <main class="admin-content">
+        <!-- DASHBOARD VIEW -->
+        <section id="dashboard-view" class="admin-view active">
+            <div class="admin-container">
+                <div class="dashboard-header">
+                    <div class="header-content">
+                        <h1 class="dashboard-title">Innovation Dashboard</h1>
+                        <p class="dashboard-subtitle">Manage and track innovation across the organization</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="export-data">
+                            <i class="fas fa-download"></i>
+                            Export Data
+                        </button>
+                        <button class="btn btn-primary" id="bulk-actions">
+                            <i class="fas fa-tasks"></i>
+                            Bulk Actions
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin KPI Grid -->
+                <div class="admin-kpi-grid">
+                    <div class="kpi-card priority">
+                        <div class="kpi-header">
+                            <div class="kpi-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="kpi-trend">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+12%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-number" id="pending-review">0</div>
+                            <div class="kpi-label">Pending Review</div>
+                            <div class="kpi-sublabel">Requires immediate attention</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card success">
+                        <div class="kpi-header">
+                            <div class="kpi-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="kpi-trend">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+8%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-number" id="total-approved">0</div>
+                            <div class="kpi-label">Approved Ideas</div>
+                            <div class="kpi-sublabel">This quarter</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card info">
+                        <div class="kpi-header">
+                            <div class="kpi-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="kpi-trend">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+25%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-number" id="total-submissions">0</div>
+                            <div class="kpi-label">Total Submissions</div>
+                            <div class="kpi-sublabel">All time</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card engagement">
+                        <div class="kpi-header">
+                            <div class="kpi-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="kpi-trend">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+15%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-number" id="active-users">0</div>
+                            <div class="kpi-label">Active Contributors</div>
+                            <div class="kpi-sublabel">Last 30 days</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Panel -->
+                <div class="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions-grid">
+                        <button class="quick-action-btn" data-action="review-pending">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Review Pending</span>
+                            <small id="pending-count">0 items</small>
+                        </button>
+                        <button class="quick-action-btn" data-action="export-report">
+                            <i class="fas fa-file-excel"></i>
+                            <span>Export Report</span>
+                            <small>Download analytics</small>
+                        </button>
+                        <button class="quick-action-btn" data-action="send-notifications">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Send Updates</span>
+                            <small>Notify submitters</small>
+                        </button>
+                        <button class="quick-action-btn" data-action="manage-categories">
+                            <i class="fas fa-tags"></i>
+                            <span>Manage Categories</span>
+                            <small>Update options</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="recent-activity-panel">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list" id="recent-activity">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- IDEAS MANAGEMENT VIEW -->
+        <section id="ideas-view" class="admin-view">
+            <div class="admin-container">
+                <div class="ideas-header">
+                    <h1>Ideas Management</h1>
+                    <div class="ideas-controls">
+                        <div class="search-bar">
+                            <div class="search-input-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="admin-search" placeholder="Search ideas..." class="search-input">
+                            </div>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="status-filter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="Submitted">Submitted</option>
+                                <option value="In review">In Review</option>
+                                <option value="Accepted">Accepted</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                            <select id="category-filter" class="filter-select">
+                                <option value="">All Categories</option>
+                                <option value="Process">Process</option>
+                                <option value="Product">Product</option>
+                                <option value="Customer">Customer</option>
+                                <option value="Tech">Technology</option>
+                                <option value="Sustainability">Sustainability</option>
+                            </select>
+                            <select id="priority-filter" class="filter-select">
+                                <option value="">All Priority</option>
+                                <option value="High">High Priority</option>
+                                <option value="Medium">Medium Priority</option>
+                                <option value="Low">Low Priority</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions Bar -->
+                <div class="bulk-actions-bar" id="bulk-actions-bar" style="display: none;">
+                    <div class="bulk-selection">
+                        <span id="selected-count">0 selected</span>
+                    </div>
+                    <div class="bulk-buttons">
+                        <button class="btn btn-ghost" data-bulk="approve">
+                            <i class="fas fa-check"></i>
+                            Approve Selected
+                        </button>
+                        <button class="btn btn-ghost" data-bulk="reject">
+                            <i class="fas fa-times"></i>
+                            Reject Selected
+                        </button>
+                        <button class="btn btn-ghost" data-bulk="priority">
+                            <i class="fas fa-flag"></i>
+                            Set Priority
+                        </button>
+                        <button class="btn btn-ghost" data-bulk="assign">
+                            <i class="fas fa-user-tag"></i>
+                            Assign Reviewer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ideas Table -->
+                <div class="ideas-table-container">
+                    <table class="admin-ideas-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all" class="table-checkbox">
+                                </th>
+                                <th>Idea</th>
+                                <th>Submitter</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-ideas-tbody">
+                            <!-- Ideas will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span>Showing <span id="page-start">1</span> to <span id="page-end">10</span> of <span id="total-items">0</span> ideas</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-ghost" id="prev-page" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                            Previous
+                        </button>
+                        <div class="page-numbers" id="page-numbers">
+                            <!-- Page numbers will be populated by JavaScript -->
+                        </div>
+                        <button class="btn btn-ghost" id="next-page">
+                            Next
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ANALYTICS VIEW -->
+        <section id="analytics-view" class="admin-view">
+            <div class="admin-container">
+                <div class="analytics-header">
+                    <h1>Analytics & Insights</h1>
+                    <div class="date-range-picker">
+                        <select id="time-range">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 3 months</option>
+                            <option value="365">Last year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="analytics-grid">
+                    <div class="chart-panel">
+                        <h3>Submission Trends</h3>
+                        <div class="chart-container">
+                            <canvas id="submissions-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <h3>Category Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <h3>Status Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="status-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <h3>Department Participation</h3>
+                        <div class="chart-container">
+                            <canvas id="department-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- USERS VIEW -->
+        <section id="users-view" class="admin-view">
+            <div class="admin-container">
+                <h1>User Management</h1>
+                <div class="users-content">
+                    <div class="user-stats">
+                        <div class="stat-card">
+                            <h3>Top Contributors</h3>
+                            <div class="contributor-list" id="top-contributors">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Department Activity</h3>
+                            <div class="department-activity" id="department-activity">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section id="settings-view" class="admin-view">
+            <div class="admin-container">
+                <h1>System Settings</h1>
+                <div class="settings-content">
+                    <div class="settings-grid">
+                        <div class="settings-panel">
+                            <h3>General Settings</h3>
+                            <div class="setting-item">
+                                <label>Auto-approve threshold</label>
+                                <input type="number" value="5" min="1" max="10">
+                            </div>
+                            <div class="setting-item">
+                                <label>Notification frequency</label>
+                                <select>
+                                    <option>Immediate</option>
+                                    <option>Daily digest</option>
+                                    <option>Weekly digest</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-panel">
+                            <h3>Categories</h3>
+                            <div class="category-management" id="category-management">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Modals -->
+    <div id="idea-details-modal" class="admin-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="modal-idea-title">Idea Details</h2>
+                <button class="modal-close" id="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-idea-body">
+                <!-- Idea details content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <div class="admin-actions">
+                    <button class="btn btn-success" id="approve-idea">
+                        <i class="fas fa-check"></i>
+                        Approve
+                    </button>
+                    <button class="btn btn-warning" id="request-changes">
+                        <i class="fas fa-edit"></i>
+                        Request Changes
+                    </button>
+                    <button class="btn btn-danger" id="reject-idea">
+                        <i class="fas fa-times"></i>
+                        Reject
+                    </button>
+                    <button class="btn btn-secondary" id="assign-reviewer">
+                        <i class="fas fa-user-tag"></i>
+                        Assign Reviewer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div id="comments-modal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Comments</h2>
+                <button class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Admin Comments</label>
+                    <textarea id="admin-comments" rows="4" placeholder="Add your comments for the submitter..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="notify-submitter">
+                        Notify submitter via email
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-action="cancel">Cancel</button>
+                <button class="btn btn-primary" id="save-comments">Save Comments</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="admin-notification" class="admin-notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-text"></span>
+            <button class="notification-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

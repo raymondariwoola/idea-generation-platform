@@ -12,38 +12,20 @@ class InnovationPortal {
             id: 'user123'
         };
         this.drafts = this.loadDrafts();
-        
-        // SharePoint Configuration
-        this.sharePointConfig = {
-            siteUrl: window.location.origin, // Adjust as needed
-            listName: 'InnovationIdeas',
-            libraryName: 'IdeaAttachments',
-            maxFileSize: 10 * 1024 * 1024, // 10MB
-            allowedFileTypes: ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.doc', '.docx', '.txt'],
-            allowedMimeTypes: [
-                'image/jpeg', 'image/png', 'image/gif',
-                'application/pdf',
-                'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'text/plain'
-            ]
-        };
-        
-        this.uploadedFiles = [];
         this.init();
     }
 
-    async init() {
+    init() {
         this.setupNavigation();
         this.setupSearch();
         this.setupFilters();
         this.setupSubmitForm();
         this.setupTrackingView();
         this.setupModals();
-        await this.loadSampleData();
+        this.loadSampleData();
         this.renderAll();
         this.animateKPIs();
-        console.log('🚀 Innovation Portal V5 initialized with SharePoint integration');
+        console.log('🚀 Innovation Portal V5 initialized');
     }
 
     // ===== NAVIGATION SYSTEM =====
@@ -339,57 +321,24 @@ class InnovationPortal {
         if (!fileList) return;
 
         files.forEach(file => {
-            // Validate file size
-            if (file.size > this.sharePointConfig.maxFileSize) {
-                this.showNotification(`File "${file.name}" is too large. Maximum ${this.formatFileSize(this.sharePointConfig.maxFileSize)} allowed.`, 'error');
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                this.showNotification('File size too large. Maximum 10MB allowed.', 'error');
                 return;
             }
-
-            // Validate file type
-            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-            const isValidType = this.sharePointConfig.allowedFileTypes.includes(fileExtension) || 
-                               this.sharePointConfig.allowedMimeTypes.includes(file.type);
-            
-            if (!isValidType) {
-                this.showNotification(`File type "${fileExtension}" is not allowed. Supported types: Images, PDF, Word documents, and Text files.`, 'error');
-                return;
-            }
-
-            // Check if file already exists
-            if (this.uploadedFiles.find(f => f.name === file.name && f.size === file.size)) {
-                this.showNotification(`File "${file.name}" is already selected.`, 'warning');
-                return;
-            }
-
-            // Add to uploaded files array
-            this.uploadedFiles.push(file);
 
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
-            fileItem.dataset.fileName = file.name;
-            
-            const fileIcon = this.getFileIcon(fileExtension);
-            const fileSize = this.formatFileSize(file.size);
-            
             fileItem.innerHTML = `
-                <div class="file-info">
-                    <i class="${fileIcon}" style="margin-right: 0.5rem; color: var(--brand-primary);"></i>
-                    <div>
-                        <span class="file-name">${file.name}</span>
-                        <span class="file-size">${fileSize}</span>
-                    </div>
-                </div>
-                <button type="button" class="file-remove" onclick="app.removeFile('${file.name}')">
+                <span class="file-name">${file.name}</span>
+                <button type="button" class="file-remove" onclick="this.parentElement.remove()">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             fileList.appendChild(fileItem);
         });
-        
-        this.updateFileUploadUI();
     }
 
-    async submitIdea() {
+    submitIdea() {
         const formData = this.getFormData();
         
         if (!this.validateForm(formData)) {
@@ -398,43 +347,22 @@ class InnovationPortal {
 
         this.showLoading(true);
         
-        try {
-            // Upload files to SharePoint first
-            const attachmentUrls = [];
-            if (this.uploadedFiles.length > 0) {
-                this.showNotification('Uploading files...', 'info');
-                
-                for (const file of this.uploadedFiles) {
-                    const timestamp = new Date().getTime();
-                    const fileName = `${timestamp}_${file.name}`;
-                    const fileUrl = await this.uploadFileToSharePoint(file, fileName);
-                    attachmentUrls.push(fileUrl);
-                }
-            }
-            
-            // Save idea to SharePoint
-            const ideaData = {
-                ...formData,
-                attachmentUrls
-            };
-            
-            const savedIdea = await this.saveIdeaToSharePoint(ideaData);
-            
-            // Update local state
+        // Simulate API call
+        setTimeout(() => {
             const idea = {
-                id: savedIdea.d.Id.toString(),
+                id: this.generateId(),
                 ...formData,
                 status: 'Submitted',
                 updated: Date.now(),
-                progress: 25,
+                progress: Math.floor(Math.random() * 20) + 10,
                 owner: formData.anonymous ? 'Anonymous' : (formData.owner || 'Anonymous'),
                 self: true,
                 votes: 0,
-                comments: [],
-                attachmentUrls
+                comments: []
             };
 
             this.ideas.unshift(idea);
+            this.saveIdeas();
             this.clearForm();
             this.showLoading(false);
             this.showNotification('Idea submitted successfully! 🎉', 'success');
@@ -442,12 +370,7 @@ class InnovationPortal {
             setTimeout(() => {
                 this.switchView('track');
             }, 1500);
-            
-        } catch (error) {
-            console.error('Submission error:', error);
-            this.showLoading(false);
-            this.showNotification('Failed to submit idea. Please try again.', 'error');
-        }
+        }, 2000);
     }
 
     saveDraft() {
@@ -504,12 +427,6 @@ class InnovationPortal {
             
             const fileList = document.getElementById('file-list');
             if (fileList) fileList.innerHTML = '';
-            
-            // Reset uploaded files array
-            this.uploadedFiles = [];
-            
-            // Reset file upload UI
-            this.updateFileUploadUI();
 
             // Reset progress bars
             document.querySelectorAll('.progress-fill').forEach(bar => {
@@ -954,20 +871,8 @@ class InnovationPortal {
         }
     }
 
-    // ===== DATA LOADING (SHAREPOINT INTEGRATION) =====
-    async loadSampleData() {
-        try {
-            // Try to load from SharePoint first
-            const sharepointIdeas = await this.loadIdeasFromSharePoint();
-            if (sharepointIdeas.length > 0) {
-                this.ideas = sharepointIdeas;
-                return;
-            }
-        } catch (error) {
-            console.warn('Could not load from SharePoint, using sample data:', error);
-        }
-        
-        // Fallback to sample data if SharePoint is not available
+    // ===== SAMPLE DATA (ENHANCED V3) =====
+    loadSampleData() {
         if (this.ideas.length === 0) {
             this.ideas = [
                 {
@@ -1045,207 +950,6 @@ class InnovationPortal {
             ];
             this.saveIdeas();
         }
-    }
-
-    // ===== SHAREPOINT API METHODS =====
-    async getRequestDigest() {
-        try {
-            const response = await fetch(`${this.sharePointConfig.siteUrl}/_api/contextinfo`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json;odata=verbose',
-                    'Content-Type': 'application/json;odata=verbose'
-                }
-            });
-            
-            const data = await response.json();
-            return data.d.GetContextWebInformation.FormDigestValue;
-        } catch (error) {
-            console.error('Error getting request digest:', error);
-            throw error;
-        }
-    }
-
-    async uploadFileToSharePoint(file, fileName) {
-        try {
-            const digest = await this.getRequestDigest();
-            const arrayBuffer = await file.arrayBuffer();
-            
-            const response = await fetch(
-                `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.libraryName}')/RootFolder/Files/Add(url='${fileName}',overwrite=true)`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json;odata=verbose',
-                        'Content-Type': 'application/json;odata=verbose',
-                        'X-RequestDigest': digest
-                    },
-                    body: arrayBuffer
-                }
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Upload failed: ${response.statusText}`);
-            }
-            
-            const result = await response.json();
-            return result.d.ServerRelativeUrl;
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            throw error;
-        }
-    }
-
-    async saveIdeaToSharePoint(ideaData) {
-        try {
-            const digest = await this.getRequestDigest();
-            
-            const response = await fetch(
-                `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json;odata=verbose',
-                        'Content-Type': 'application/json;odata=verbose',
-                        'X-RequestDigest': digest
-                    },
-                    body: JSON.stringify({
-                        '__metadata': { 'type': `SP.Data.${this.sharePointConfig.listName}ListItem` },
-                        'Title': ideaData.title,
-                        'Category': ideaData.category,
-                        'Department': ideaData.dept,
-                        'Problem': ideaData.problem,
-                        'Solution': ideaData.solution,
-                        'ExpectedImpact': ideaData.impact,
-                        'EstimatedEffort': ideaData.effort,
-                        'RequiredResources': ideaData.resources,
-                        'SubmitterName': ideaData.owner,
-                        'SubmitterEmail': ideaData.email,
-                        'Tags': ideaData.tags ? ideaData.tags.join(';') : '',
-                        'Status': 'Submitted',
-                        'AttachmentUrls': ideaData.attachmentUrls ? ideaData.attachmentUrls.join(';') : '',
-                        'IsAnonymous': ideaData.anonymous
-                    })
-                }
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Save failed: ${response.statusText}`);
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Error saving idea to SharePoint:', error);
-            throw error;
-        }
-    }
-
-    async loadIdeasFromSharePoint() {
-        try {
-            const response = await fetch(
-                `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items?$orderby=Created desc`,
-                {
-                    headers: {
-                        'Accept': 'application/json;odata=verbose'
-                    }
-                }
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Load failed: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            return data.d.results.map(item => ({
-                id: item.Id.toString(),
-                title: item.Title,
-                category: item.Category,
-                dept: item.Department,
-                problem: item.Problem,
-                solution: item.Solution,
-                impact: item.ExpectedImpact,
-                effort: item.EstimatedEffort,
-                resources: item.RequiredResources,
-                owner: item.IsAnonymous ? 'Anonymous' : item.SubmitterName,
-                email: item.SubmitterEmail,
-                tags: item.Tags ? item.Tags.split(';') : [],
-                status: item.Status || 'Submitted',
-                updated: new Date(item.Modified).getTime(),
-                progress: this.calculateProgress(item.Status),
-                self: item.SubmitterEmail === this.currentUser.email,
-                votes: item.Votes || 0,
-                attachmentUrls: item.AttachmentUrls ? item.AttachmentUrls.split(';') : []
-            }));
-        } catch (error) {
-            console.error('Error loading ideas from SharePoint:', error);
-            return [];
-        }
-    }
-
-    calculateProgress(status) {
-        const progressMap = {
-            'Submitted': 25,
-            'In review': 60,
-            'Accepted': 100,
-            'Rejected': 0
-        };
-        return progressMap[status] || 25;
-    }
-
-    // ===== FILE MANAGEMENT UTILITIES =====
-    removeFile(fileName) {
-        this.uploadedFiles = this.uploadedFiles.filter(file => file.name !== fileName);
-        
-        const fileItem = document.querySelector(`[data-file-name="${fileName}"]`);
-        if (fileItem) {
-            fileItem.remove();
-        }
-        
-        this.updateFileUploadUI();
-        this.showNotification(`File "${fileName}" removed.`, 'info');
-    }
-
-    updateFileUploadUI() {
-        const fileUploadArea = document.getElementById('file-upload-area');
-        const fileCount = this.uploadedFiles.length;
-        const maxFiles = 5; // Reasonable limit
-        
-        if (fileUploadArea) {
-            const uploadText = fileUploadArea.querySelector('p');
-            if (uploadText) {
-                if (fileCount >= maxFiles) {
-                    uploadText.innerHTML = `Maximum ${maxFiles} files allowed. Remove files to add more.`;
-                    fileUploadArea.style.opacity = '0.6';
-                    fileUploadArea.style.pointerEvents = 'none';
-                } else {
-                    uploadText.innerHTML = `Drag and drop files here or click to browse<br><small>Max ${this.formatFileSize(this.sharePointConfig.maxFileSize)} per file • ${fileCount}/${maxFiles} files selected</small>`;
-                    fileUploadArea.style.opacity = '1';
-                    fileUploadArea.style.pointerEvents = 'auto';
-                }
-            }
-        }
-    }
-
-    getFileIcon(extension) {
-        const iconMap = {
-            '.pdf': 'fas fa-file-pdf',
-            '.doc': 'fas fa-file-word',
-            '.docx': 'fas fa-file-word',
-            '.txt': 'fas fa-file-alt',
-            '.jpg': 'fas fa-file-image',
-            '.jpeg': 'fas fa-file-image',
-            '.png': 'fas fa-file-image',
-            '.gif': 'fas fa-file-image'
-        };
-        return iconMap[extension] || 'fas fa-file';
-    }
-
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     // ===== UTILITY METHODS =====
@@ -1357,9 +1061,20 @@ function debounce(func, wait) {
 // ===== INITIALIZATION =====
 let app;
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     app = new InnovationPortal();
     
+    // Load existing data
+    app.ideas = app.loadIdeas();
+    
+    // If no data, load samples
+    if (app.ideas.length === 0) {
+        app.loadSampleData();
+    }
+    
+    // Initial render
+    app.renderAll();
+
     // Handle URL hash for deep linking
     const hash = window.location.hash.slice(1);
     if (hash && ['home', 'submit', 'track'].includes(hash)) {

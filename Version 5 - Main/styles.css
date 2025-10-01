@@ -774,7 +774,6 @@ html, body {
     margin-bottom: 1rem;
     display: -webkit-box;
     -webkit-line-clamp: 3;
-    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1038,43 +1037,8 @@ html, body {
     margin-bottom: 0.5rem;
 }
 
-.file-upload-area p small {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    display: block;
-    margin-top: 0.5rem;
-}
-
 .file-upload-area input[type="file"] {
     display: none;
-}
-
-.file-restrictions {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: var(--bg-elevated);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--border-radius-sm);
-}
-
-.restriction-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.restriction-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-}
-
-.restriction-item i {
-    color: var(--brand-primary);
-    width: 16px;
-    font-size: 0.9rem;
 }
 
 .file-list {
@@ -1096,27 +1060,9 @@ html, body {
     margin-bottom: 0;
 }
 
-.file-info {
-    display: flex;
-    align-items: center;
-    flex: 1;
-}
-
-.file-info > div {
-    display: flex;
-    flex-direction: column;
-}
-
 .file-name {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.file-size {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 0.1rem;
 }
 
 .file-remove {
@@ -1127,7 +1073,6 @@ html, body {
     padding: 0.25rem;
     border-radius: 0.25rem;
     transition: var(--transition);
-    font-size: 0.9rem;
 }
 
 .file-remove:hover {
@@ -1744,27 +1689,6 @@ html, body {
     
     .form-actions {
         flex-direction: column;
-    }
-    
-    .file-restrictions {
-        padding: 0.75rem;
-    }
-    
-    .restriction-info {
-        gap: 0.75rem;
-    }
-    
-    .restriction-item {
-        font-size: 0.8rem;
-        gap: 0.5rem;
-    }
-    
-    .file-upload-area {
-        padding: 1.5rem 1rem;
-    }
-    
-    .file-upload-area i {
-        font-size: 1.5rem;
     }
     
     .modal-content {
