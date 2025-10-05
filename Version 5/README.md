@@ -1,483 +1,435 @@
-# 🚀 Innovation Portal V5
+# Innovation Portal V5
 
-**Enterprise-grade platform for submitting and tracking innovative ideas with SharePoint integration, advanced security, and intelligent onboarding.**
+Enterprise-grade platform for capturing, evaluating, and tracking innovation ideas with SharePoint integration, advanced security controls, and intelligent onboarding.
 
-[![Security](https://img.shields.io/badge/Security-PCI%20DSS%20%2B%20XSS-green)]()
-[![Tutorial](https://img.shields.io/badge/Onboarding-Context--Aware-blue)]()
-[![SharePoint](https://img.shields.io/badge/SharePoint-Integrated-orange)]()
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-success)]()
-
----
-
-## ✨ Key Features
-
-### 🎯 Core Functionality
-- **Idea Submission** - Intuitive form with real-time progress tracking
-- **Idea Gallery** - Browse, search, and filter submitted ideas
-- **Track Ideas** - Monitor your submissions and their status
-- **Enhanced Admin Dashboard** - Comprehensive admin controls with bulk operations and real-time analytics
-- **Anonymous Submissions** - Optional anonymous idea submission
-
-### 🔒 Enterprise Security (NEW!)
-- **PCI DSS Compliance** - Auto-detects and redacts credit cards, account numbers, Emirates ID, passports, SSN
-- **XSS Protection** - Prevents script injection and malicious code attacks
-- **Visual Security Banner** - Modern indicators showing active protections
-- **Admin Access Control** - SharePoint group-based permissions with audit logging
-
-### 🎓 Smart Onboarding (NEW!)
-- **Context-Aware Tutorials** - Separate tutorials for Home (7 steps) and Submit (8 steps)
-- **First-Time Detection** - Auto-runs once per section, never repeats
-- **SVG Mask Cutouts** - Transparent holes in overlay for highlighted elements
-- **Auto-Scroll** - Smoothly centers elements in viewport
-
-### 📊 Advanced Admin Features (ENHANCED!)
-- **Bulk Operations** - Select and manage multiple ideas simultaneously
-- **Real-Time Charts** - Interactive analytics with Chart.js integration
-- **Advanced Filtering** - Date ranges, multi-category, and department filters
-- **CSV Export** - Export all or selected ideas with comprehensive data
-- **Enhanced Sample Data** - 35+ realistic ideas for thorough testing
-- **Status Workflow** - Visual status tracking with history and timestamps
-
-### 🎨 Modern Design
-- **Glassmorphism UI** - Frosted glass effects with gradient borders
-- **Dark Theme** - Professional dark color scheme throughout
-- **Smooth Animations** - Cubic-bezier easing and transitions
-- **Fully Responsive** - Mobile-first design with breakpoints
-- **Font Awesome 6.4.0** - Modern icons
-
-### 📦 SharePoint Integration
-- **REST API Helpers** - `sp-helpers.js` for easy operations
-- **File Attachments** - Upload and manage documents (max 10MB, 5 files)
-- **User Profile Management** - Automatic user info retrieval
-- **List CRUD Operations** - Create, read, update, delete ideas
+## Contents
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+  - [SharePoint Deployment](#sharepoint-deployment)
+  - [Local Development](#local-development)
+- [Project Structure](#project-structure)
+- [Architecture](#architecture)
+  - [Core Experience](#core-experience)
+  - [Admin Dashboard](#admin-dashboard)
+  - [Security Stack](#security-stack)
+  - [Onboarding System](#onboarding-system)
+  - [SharePoint Helpers](#sharepoint-helpers)
+- [Data Model](#data-model)
+- [Security Implementation](#security-implementation)
+  - [PCI DSS Detection Patterns](#pci-dss-detection-patterns)
+  - [Sanitization Flow](#sanitization-flow)
+  - [Testing and Validation](#testing-and-validation)
+  - [Security Troubleshooting](#security-troubleshooting)
+- [Admin Dashboard Enhancements](#admin-dashboard-enhancements)
+  - [Bulk Operations](#bulk-operations)
+  - [Analytics Suite](#analytics-suite)
+  - [Filtering and Search](#filtering-and-search)
+  - [Export Capabilities](#export-capabilities)
+  - [Future Admin Enhancements](#future-admin-enhancements)
+- [Local Testing Workflow](#local-testing-workflow)
+- [Tutorial System](#tutorial-system)
+  - [Console Commands](#console-commands)
+  - [Storage and Completion Tracking](#storage-and-completion-tracking)
+  - [Customization](#customization)
+  - [Tutorial Troubleshooting](#tutorial-troubleshooting)
+- [SharePoint Helper Reference](#sharepoint-helper-reference)
+- [Sample Data Reference](#sample-data-reference)
+- [Performance](#performance)
+- [Compliance](#compliance)
+- [Roadmap and Opportunities](#roadmap-and-opportunities)
+- [Support](#support)
+- [Changelog and Bug Fixes](#changelog-and-bug-fixes)
 
 ---
 
-## 📂 Project Structure
+## Overview
+Innovation Portal V5 blends the lightweight feel of Version 3 with the feature depth of Version 4. The platform delivers a modern glassmorphism interface, context-aware onboarding, and enterprise-grade security that keeps sensitive data out of SharePoint lists.
 
+Key goals:
+- Maintain a futuristic but performant user experience across desktop and mobile.
+- Provide administrators with deep insight and tooling without overwhelming end users.
+- Keep security always-on with PCI DSS redaction and XSS sanitization.
+- Ensure the documentation is centralized, comprehensive, and easy to keep current.
+
+---
+
+## Quick Start
+
+### SharePoint Deployment
+1. **Upload Files**: Copy everything in `Version 5/` to your SharePoint Site Assets (or equivalent) library.
+2. **Reference Pages**: Publish `index.html` for idea submitters and `admin.html` for administrators.
+3. **Create Lists**:
+   - `InnovationIdeas` (main list) with fields shown in [Data Model](#data-model).
+   - `IdeaAttachments` (document library) with versioning enabled and a 10 MB limit.
+   - `Innovation Portal Administrators` (SharePoint group) containing authorized admins.
+4. **Configure Permissions**: Grant the admin group Full Control or Design rights. End users only need Contribute access to `InnovationIdeas`.
+5. **Verify Script Order**: Ensure `pci-dss-checker.js`, `xss-protection.js`, and `sp-helpers.js` load before `app.js` or `admin.js`.
+6. **Test Authentication**: Open `admin.html` as a real admin to confirm access, charts, and bulk actions.
+
+### Local Development
+1. **Start a Static Server** (examples):
+   ```powershell
+   cd "d:\GitHub\idea-generation-platform\Version 5"
+   python -m http.server 8000
+   ```
+2. **Open the Portal**:
+   - User view: `http://localhost:8000/index.html`
+   - Admin view: `http://localhost:8000/admin.html`
+3. **Automatic Data Fallback**:
+   - Loads `sample-data.json` first (6 ideas, 5 users).
+   - Falls back to SharePoint if the JSON is missing.
+   - Uses built-in sample data as a final safety net.
+4. **Mock Security**: Security libraries run locally. Console logs confirm detections without sending data anywhere.
+5. **Tutorial Testing**: Run `tutorialManager.resetAll()` in the console and reload to replay onboarding flows.
+
+---
+
+## Project Structure
 ```
 Version 5/
-├── index.html                    # Main portal page
-├── admin.html                    # Admin dashboard
-├── app.js                        # Main application logic
-├── admin.js                      # Admin functionality
-├── styles.css                    # Main styling
-├── admin-styles.css              # Admin styling
-├── pci-dss-checker.js           # PCI DSS compliance (350+ lines)
-├── xss-protection.js            # XSS attack prevention (250+ lines)
-├── sp-helpers.js                # SharePoint REST API helpers
-├── onboarding-tutorial.js       # Context-aware tutorials (630+ lines)
-├── onboarding-tutorial.css      # Tutorial styling (360+ lines)
-├── SECURITY-GUIDE.md            # Complete security documentation
-├── TUTORIAL-GUIDE.md            # Tutorial system documentation
-├── SP-Helpers-Guide.md          # SharePoint helpers reference
-└── README.md                    # This file
+|-- index.html               # Main idea submission portal
+|-- admin.html               # Administrator dashboard
+|-- styles.css               # Main portal styling
+|-- admin-styles.css         # Admin-specific styling
+|-- app.js                   # Portal application logic
+|-- admin.js                 # Admin dashboard logic
+|-- onboarding-tutorial.js   # Context-aware onboarding system
+|-- onboarding-tutorial.css  # Tutorial styling
+|-- pci-dss-checker.js       # PCI DSS redaction engine
+|-- xss-protection.js        # XSS sanitization utility
+|-- sp-helpers.js            # SharePoint REST helper client
+|-- sample-data.json         # Local development data
+|-- test-security.html       # Manual security regression page
+\`-- README.md                # This consolidated guide
 ```
 
 ---
 
-## 🚀 Quick Start
+## Architecture
 
-### 1. SharePoint Setup
+### Core Experience
+- Single-page experience driven by `app.js` with views for Home, Submit, and Track.
+- Persistent drafts stored in `localStorage` (`innovation-portal-v5-drafts`).
+- Global search with debounced input, category pills, and advanced filters.
+- Status dictionary loaded from SharePoint with local fallback for consistent labeling.
 
-**Create Lists:**
+### Admin Dashboard
+- Managed by `admin.js` with modular sections for dashboard, ideas, analytics, users, and settings.
+- Uses `sp-helpers.js` for all SharePoint interactions, removing redundant fetch logic.
+- Supports bulk operations, CSV exports, advanced filtering, and real analytics via Chart.js.
+- Sample data provides realistic workflows without requiring SharePoint connectivity during development.
 
-**InnovationIdeas** (Main list):
-```
-Title                 (Single line) - Idea title
-Category              (Choice) - Process, Product, Customer, Technology, Sustainability, Workplace
-Department            (Single line) - Submitter's department
-Problem               (Multiple lines) - Problem statement
-Solution              (Multiple lines) - Proposed solution
-ExpectedImpact        (Choice) - Cost reduction, Revenue growth, Customer experience, etc.
-EstimatedEffort       (Choice) - Low, Medium, High
-RequiredResources     (Multiple lines) - Required resources
-SubmitterName         (Single line) - Submitter's name
-SubmitterEmail        (Single line) - Submitter's email
-Tags                  (Single line) - Semicolon-separated tags
-Status                (Choice) - Submitted, In review, Accepted, Rejected
-AttachmentUrls        (Multiple lines) - Semicolon-separated file URLs
-IsAnonymous           (Yes/No) - Anonymous submission flag
-Votes                 (Number) - Vote count
-```
+### Security Stack
+- `pci-dss-checker.js` performs pattern scanning, redaction, and warning surfaces on all text inputs and textareas.
+- `xss-protection.js` sanitizes strings before persistence, defending against script injection and inline event abuse.
+- Security banner components provide real-time visual feedback and reinforce safe data handling.
 
-**IdeaAttachments** (Document library):
-- Standard document library for file uploads
-- Enable versioning
-- Set 10MB file size limit
+### Onboarding System
+- `onboarding-tutorial.js` delivers step-based tours per context (Home or Submit) with SVG mask cutouts.
+- `TutorialManager` singleton governs initialization, storage, and replay logic.
+- Steps scroll to elements smoothly, highlight hot spots, and explain key actions.
 
-**Innovation Portal Administrators** (SharePoint group):
-- Create group for admin access
-- Add authorized users
-- Grant Full Control or Design permissions
+### SharePoint Helpers
+- `sp-helpers.js` wraps REST calls with digest management, user resolution, and list/file helpers.
+- Provides consistent logging, batching options, and easier unit testing by allowing mocks.
 
-### 2. Configuration
+---
 
-**Update Site URL** (in `app.js` and `admin.js`):
+## Data Model
+
+### InnovationIdeas List
+| Field | Type | Notes |
+|-------|------|-------|
+| Title | Single line | Idea title |
+| Category | Choice | Process, Product, Customer, Technology, Sustainability, Workplace |
+| Department | Single line | Submitter department |
+| Problem | Multiple lines | Problem statement |
+| Solution | Multiple lines | Proposed solution |
+| ExpectedImpact | Choice | Cost reduction, Revenue growth, Customer experience, etc. |
+| EstimatedEffort | Choice | Low, Medium, High |
+| RequiredResources | Multiple lines | Resources needed |
+| SubmitterName | Single line | Name of submitter |
+| SubmitterEmail | Single line | Email of submitter |
+| Tags | Single line | Semicolon-separated keywords |
+| Status | Choice | Submitted, In review, Accepted, Rejected, Deferred, etc. |
+| AttachmentUrls | Multiple lines | Semicolon-separated SharePoint URLs |
+| IsAnonymous | Yes/No | Tracks anonymous submissions |
+| Votes | Number | Idea upvotes |
+| StatusHistory | Multiple lines | JSON string with status timeline |
+| AdminNotes | Multiple lines | Internal notes |
+| EstimatedROI | Single line | Optional ROI commentary |
+| ImplementationDate | Date | When the idea was delivered |
+
+### Sample Data Entities
+- Six ideas covering multiple departments, statuses, and ROI scenarios.
+- Five user profiles with submission and acceptance counts.
+- Mirrors production schema for drop-in local testing.
+
+---
+
+## Security Implementation
+
+Security is delivered through layered defense:
+1. **Detection and Redaction**: Sensitive patterns are replaced in real time with non-sensitive placeholders.
+2. **Sanitization**: All outbound strings pass through XSS scrubbing before SharePoint persistence.
+3. **Access Control**: Admin features locked behind SharePoint group checks with optional fallback emails.
+4. **Visual Feedback**: Banners and warnings inform users when content is redacted or blocked.
+
+### PCI DSS Detection Patterns
+- **Credit Cards**: 13-19 digits with optional separators validated through the Luhn algorithm.
+- **Bank / Account Numbers**: 8-17 digits once confirmed not to be valid credit cards.
+- **Emirates ID**: `784-YYYY-NNNNNNN-N` format.
+- **SSN / National IDs**: `XXX-XX-XXXX` and regional variants.
+- **Passport Numbers**: Common UAE formats with alphanumeric prefixes.
+- **IBAN**: International standard including country codes and spacing.
+- **CVV / PIN**: Keyword proximity checks to catch 3-4 digit codes.
+
+Detection order prioritizes credit cards, then accounts, followed by national identifiers to reduce false positives.
+
+### Sanitization Flow
 ```javascript
-siteUrl: 'https://yourtenant.sharepoint.com/sites/yoursite' // Update this!
+sanitizeFormData(data) {
+    const sanitized = {};
+
+    for (const [key, value] of Object.entries(data)) {
+        if (typeof value !== 'string') {
+            sanitized[key] = value;
+            continue;
+        }
+
+        let clean = value;
+
+        if (window.pciChecker) {
+            clean = window.pciChecker.sanitize(clean);
+        }
+
+        if (window.xssProtection) {
+            clean = window.xssProtection.sanitize(clean);
+        }
+
+        sanitized[key] = clean;
+    }
+
+    return sanitized;
+}
 ```
+- Invoke `sanitizeFormData()` before saving to SharePoint or local storage.
+- PCI checker attaches `input`, `blur`, `change`, and `paste` listeners to every monitored field.
+- XSS protection removes scripts, dangerous protocols, inline events, and disallowed tags.
 
-**Update Admin Fallback Emails** (in `admin.js`):
+### Testing and Validation
+1. Open `test-security.html` locally.
+2. Type or paste sample numbers (Visa, MasterCard, Emirate ID, SSN). All should be redacted.
+3. Confirm warning messages appear and console logs show detections.
+4. Submit a form through `index.html` and verify sanitized payloads in SharePoint.
+5. Run console checks:
+   ```javascript
+   console.log('PCI Checker', window.pciChecker);
+   console.log('XSS Protection', window.xssProtection);
+   ```
+
+### Security Troubleshooting
+| Symptom | Resolution |
+|---------|------------|
+| Sensitive data stored unredacted | Confirm security scripts load before `app.js`. Ensure `sanitizeFormData()` runs before persistence. |
+| Redaction misses spaced cards | Verify updated regex `/\d([\s\-]?\d){12,18}/g` is deployed. Clear cache. |
+| Admin blocked from dashboard | Check SharePoint group membership or fallback email list in `admin.js`. |
+| Warning UI missing | Ensure security banner markup from `index.html` is intact and styles from `styles.css` are loaded. |
+
+---
+
+## Admin Dashboard Enhancements
+
+### Bulk Operations
+- Multi-select ideas to approve, reject, or move back to review in a single action.
+- "Select all" toggle honors filters and pagination.
+- Progress notifications surface completion status and errors.
+
+### Analytics Suite
+- Chart.js powers five live charts: submission trends, category mix, status distribution, department participation, and ROI analysis.
+- Responsive canvases resize with the layout for kiosks, desktops, or tablets.
+- Real sample data drives the visuals for local testing.
+
+### Filtering and Search
+- Combined filters for status, priority, category, department, and date ranges.
+- Debounced text search improves performance on large datasets.
+- Filter states persist until reset, even after performing bulk actions.
+
+### Export Capabilities
+- CSV export includes all rich fields with proper escaping and ISO date formatting.
+- Supports exporting either visible results or only selected ideas.
+- Uses `Blob` streaming to keep the UI responsive.
+
+### Future Admin Enhancements
+- Real-time notifications through WebSockets.
+- Virtualized table rendering for thousands of ideas.
+- Enhanced audit logging and activity timelines.
+- Configurable analytics widgets per administrator.
+- External integration hooks (Teams, Power Automate).
+
+---
+
+## Local Testing Workflow
+- `admin.js` first attempts to load `sample-data.json`. Missing JSON triggers a graceful fallback to SharePoint.
+- When SharePoint is unavailable, built-in fixtures keep the dashboard functional.
+- All SharePoint calls are centralized in `sp-helpers.js`, eliminating duplicate fetch logic.
+- Console logging clearly states which data source is active:
+  - `Loaded 6 ideas and 5 users from sample-data.json`
+  - `Loading ideas from SharePoint...`
+  - `SharePoint not available - updates stored locally only`
+- Local mode uses a mock admin profile with full capabilities for end-to-end UI testing.
+
+---
+
+## Tutorial System
+
+- Two independent flows: **Home (7 steps)** and **Submit (8 steps)**.
+- Auto-starts once per context with `localStorage` keys such as `innovationPortal_tutorial_home_completed`.
+- SVG mask cutouts focus attention while leaving the rest of the screen dimmed.
+- Step metadata defines target selectors, copy, positioning, and optional callbacks.
+- Auto-scroll centers the target element, respecting viewport boundaries.
+
+### Console Commands
 ```javascript
-fallbackAdminEmails: [
-    'your-admin@company.com',
-    'backup-admin@company.com'
-]
-```
+// Global manager reference
+window.tutorialManager
 
-### 3. Deployment
-
-**Upload Files:**
-1. Upload all files to SharePoint Site Assets or Style Library
-2. Maintain folder structure
-3. Update script references if needed
-
-**Test Security:**
-```javascript
-// Open browser console (F12)
-// Try entering test data:
-
-// PCI DSS Test:
-"Card: 4532-1234-5678-9010"  → Should be redacted
-"ID: 784-1990-1234567-1"     → Should be redacted
-
-// XSS Test:
-"<script>alert('test')</script>" → Should be removed
-```
-
-**Test Tutorials:**
-```javascript
-// Open browser console (F12)
+// Reset all progress
 tutorialManager.resetAll()
-location.reload()
-// Home tutorial should start after 1 second
-```
 
----
+// Force start a tutorial
+tutorialManager.get('home').forceStart()
 
-## 📚 Documentation
-
-| Guide | Description | Lines |
-|-------|-------------|-------|
-| **[SECURITY-GUIDE.md](SECURITY-GUIDE.md)** | Complete security implementation (PCI DSS, XSS, admin access, testing) | 450+ |
-| **[TUTORIAL-GUIDE.md](TUTORIAL-GUIDE.md)** | Context-aware tutorial system (setup, customization, SharePoint migration) | 500+ |
-| **[SP-Helpers-Guide.md](SP-Helpers-Guide.md)** | SharePoint REST API helpers reference (user profiles, CRUD operations) | 150+ |
-| **[PCI-DSS-BUG-FIXES.md](PCI-DSS-BUG-FIXES.md)** | Security bug fixes and improvements documentation | 100+ |
-
-**Total Documentation:** 1,200+ lines of comprehensive guides
-
----
-
-## 🛡️ Security Features
-
-### Automatic Detection & Protection
-
-| Feature | What It Detects | Action |
-|---------|-----------------|--------|
-| **PCI DSS** | Credit cards (Luhn valid) | Redacts with `XXXXXXXX (Not PCI DSS Compliant)` |
-| **PCI DSS** | Emirates ID (784-format) | Redacts immediately |
-| **PCI DSS** | Account numbers (8-17 digits) | Redacts with validation |
-| **PCI DSS** | CVV/CVC codes | Redacts when context detected |
-| **PCI DSS** | IBAN (15-34 chars) | Redacts international formats |
-| **XSS** | `<script>` tags | Removes completely |
-| **XSS** | Event handlers (`onclick`, etc.) | Strips attributes |
-| **XSS** | `javascript:` protocols | Removes protocol |
-| **XSS** | Dangerous tags (`<iframe>`, etc.) | Removes completely |
-
-### Visual Security Indicators
-
-- 🛡️ **Security Banner** - Prominent glassmorphism banner with gradient border
-- ⚠️ **Warning Messages** - Real-time yellow (PCI) and red (XSS) warnings
-- ✅ **Protection Badges** - Three green checkmark badges showing active protections
-- 🔒 **Admin Shield** - Unauthorized access prevention screen
-
-### Admin Access Control
-
-**Authentication Layers:**
-1. SharePoint user authentication
-2. Group membership check ("Innovation Portal Administrators")
-3. Fallback admin email list
-4. Site permission validation (Manage Web or Full Control)
-
-**Audit Logging:**
-- All admin logins tracked
-- Unauthorized access attempts logged
-- Idea status changes recorded
-- Bulk operations documented
-
----
-
-## 🎓 Tutorial System
-
-### Context-Aware Design
-
-| Context | Steps | Content |
-|---------|-------|---------|
-| **Home** (`/` or `#home`) | 7 | Dashboard, search, ideas gallery, navigation hints |
-| **Submit** (`#submit`) | 8 | Security notice, form, progress, tips, title field focus |
-
-### Key Features
-
-✅ **First-Time Only** - Runs once per section using localStorage  
-✅ **Smart Positioning** - Viewport boundary detection with 6 fallback positions  
-✅ **SVG Mask Cutouts** - True transparent holes in dark overlay  
-✅ **Auto-Scroll** - Centers elements using: `middle = top - (vh/2) + (height/2)`  
-✅ **Scroll Listener** - Updates cutout position dynamically during scroll  
-✅ **Glassmorphism** - Frosted glass tooltips with gradient step counter  
-✅ **Mobile Responsive** - Auto-centers on small screens (< 768px)  
-
-### Quick Commands
-
-```javascript
-// Reset all tutorials
-tutorialManager.resetAll()
-
-// Force start specific tutorial
-tutorialManager.get("home").forceStart()
-tutorialManager.get("submit").forceStart()
+tutorialManager.get('submit').forceStart()
 
 // Check completion status
-tutorialManager.get("home").hasCompletedTutorial()
-tutorialManager.get("submit").hasCompletedTutorial()
+tutorialManager.get('home').hasCompletedTutorial()
 
-// Reset specific tutorial
-tutorialManager.get("home").resetTutorial()
+tutorialManager.get('submit').hasCompletedTutorial()
 ```
+
+### Storage and Completion Tracking
+- `innovationPortal_tutorial_home_completed` stores completion state for the Home flow.
+- `innovationPortal_tutorial_home_completed_date` records ISO timestamps for audits.
+- Equivalent keys exist for the Submit flow.
+
+### Customization
+1. Update `getHomeSteps()` or `getSubmitSteps()` with new step objects.
+2. Provide `target`, `title`, `content`, `position`, and optional `action` callback.
+3. Extend `TutorialManager` to register additional contexts if new views are introduced.
+4. When migrating to SharePoint tracking, replace `localStorage` calls with helper methods using `sp-helpers.js`.
+
+### Tutorial Troubleshooting
+| Issue | Remedy |
+|-------|--------|
+| Tutorial does not start | Run `tutorialManager.resetAll()`, confirm DOM selectors still exist. |
+| Tooltip appears off-screen | Built-in positioning fallback centers the tooltip; verify styles are loaded. |
+| SVG cutout misaligned | Ensure scroll listener is active; inspect console for warnings. |
+| Auto-scroll feels abrupt | Adjust scroll behavior in step actions (see [Roadmap](#roadmap-and-opportunities) for reduced-motion support). |
 
 ---
 
-## 🎨 Design System
+## SharePoint Helper Reference
 
-### Color Palette
-
-```css
---brand-primary: #667eea      /* Purple-blue gradient start */
---brand-secondary: #764ba2     /* Deep purple gradient end */
---accent: #00d4ff             /* Cyan accent */
---background: #0a0e27          /* Dark navy base */
---surface: rgba(255,255,255,0.08)  /* Glassmorphism */
-```
-
-### Typography
-
-- **Font**: System fonts stack (SF Pro, Segoe UI, Roboto, etc.)
-- **Headings**: 600-700 weight
-- **Body**: 400 weight
-- **Icons**: Font Awesome 6.4.0
-
-### Key Components
-
-**Glassmorphism Cards:**
-```css
-background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08));
-backdrop-filter: blur(20px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.18);
-border-radius: 20px;
-```
-
-**Gradient Buttons:**
-```css
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-```
-
----
-
-## 🌐 Browser Support
-
-| Browser | Version | Glassmorphism | SVG Masks | Status |
-|---------|---------|---------------|-----------|--------|
-| **Chrome** | 90+ | ✅ | ✅ | Fully Supported |
-| **Edge** | 90+ | ✅ | ✅ | Fully Supported |
-| **Firefox** | 88+ | ✅ | ✅ | Fully Supported |
-| **Safari** | 14+ | ✅ | ✅ | Fully Supported |
-| **Opera** | 76+ | ✅ | ✅ | Fully Supported |
-
-**Note:** `backdrop-filter` requires modern browser. Fallback graceful degradation provided.
-
----
-
-## 🧪 Testing
-
-### Security Testing
-
-**PCI DSS Tests:**
-```
-4532 1234 5678 9010           → Visa (Luhn valid) - Should redact
-5425 2334 3010 9903           → MasterCard - Should redact
-3782 822463 10005             → Amex - Should redact
-784-1990-1234567-1            → Emirates ID - Should redact
-GB82 WEST 1234 5698 7654 32   → IBAN - Should redact
-CVV: 123                      → CVV code - Should redact
-```
-
-**XSS Tests:**
-```
-<script>alert('xss')</script>         → Should remove completely
-<img src=x onerror=alert(1)>          → Should sanitize
-javascript:void(0)                    → Should remove protocol
-<iframe src="evil.com"></iframe>      → Should remove completely
-<div onclick=alert(1)>Click</div>     → Should strip event handler
-```
-
-### Tutorial Testing
-
+### Instantiation
 ```javascript
-// Complete test flow
-tutorialManager.resetAll()
-location.reload()
-
-// Expected behavior:
-// 1. Home tutorial starts after 1 second (7 steps)
-// 2. Click "Submit Idea" button
-// 3. Submit tutorial starts after 1 second (8 steps)
-// 4. Complete both tutorials
-// 5. Navigate back to home → No tutorial (already completed)
-// 6. Navigate to submit → No tutorial (already completed)
+const spClient = new SPClient({
+    siteUrl: window.location.origin,
+    verboseLogging: false
+});
 ```
 
-### Integration Testing
+### Current User and Permissions
+- `getCurrentUser(select?)` → `{ Id, Title, Email, LoginName, IsSiteAdmin }`
+- `isUserInGroup(groupName, userId)` → `boolean`
+- `getEffectiveBasePermissions()` → `{ High, Low }`
+- `getUserDetails({ email?, loginName?, userId? })` → combined core and profile metadata
 
-- ✅ Form submission with file attachments
-- ✅ Idea filtering and search functionality
-- ✅ Admin status updates and bulk operations
-- ✅ User profile retrieval from SharePoint
-- ✅ Security sanitization in submit flow
+### List Operations
+```javascript
+await spClient.getListItems('InnovationIdeas', {
+    select: 'Id,Title,Status,Created,Author/Title',
+    expand: 'Author',
+    filter: "Status ne 'Rejected'",
+    orderby: 'Created desc',
+    top: 50
+});
 
----
-
-## 🐛 Known Issues & Fixes
-
-### Recently Fixed
-
-✅ **Security overlay stays after tutorial cancel**  
-- **Issue**: Spotlight element not cleaned up  
-- **Fix**: Added spotlight removal in `complete()` method  
-
-✅ **Tutorial tooltip styling broken**  
-- **Issue**: Wrong CSS class names in HTML generation  
-- **Fix**: Changed `tutorial-header` → `tutorial-tooltip-header`, added step indicator badge  
-
-✅ **SVG cutout misalignment on scroll**  
-- **Issue**: Fixed-position SVG doesn't update with page scroll  
-- **Fix**: Added scroll event listener with dynamic position updates  
-
-✅ **Tutorial positioning off-screen**  
-- **Issue**: Tooltips exceed viewport boundaries  
-- **Fix**: Added viewport boundary checks with 6-position fallback logic  
-
-### Pending Enhancements
-
-- [ ] SharePoint List migration for tutorial tracking (currently localStorage)
-- [ ] Keyboard navigation for tutorials (Tab, Esc keys)
-- [ ] ARIA labels for screen reader accessibility
-- [ ] Analytics tracking for tutorial completion rates
-- [ ] Tutorial for "Track Ideas" page (currently only Home and Submit)
-
----
-
-## 📦 Dependencies
-
-### CDN Resources
-```html
-<!-- Font Awesome 6.4.0 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- Optional: PnPjs for enhanced SharePoint operations -->
-<script src="https://cdn.jsdelivr.net/npm/@pnp/sp@latest/dist/sp.min.js"></script>
+const idea = await spClient.createListItem('InnovationIdeas', payload);
+await spClient.updateListItem('InnovationIdeas', idea.Id, { Status: 'In review' });
+await spClient.deleteListItem('InnovationIdeas', idea.Id);
 ```
 
-### Included Libraries
-- `pci-dss-checker.js` (350+ lines) - PCI DSS compliance
-- `xss-protection.js` (250+ lines) - XSS prevention
-- `sp-helpers.js` (200+ lines) - SharePoint helpers
-- `onboarding-tutorial.js` (630+ lines) - Tutorial system
+### File Operations
+```javascript
+const uploadResult = await spClient.uploadFile('/sites/innovation/IdeaAttachments', file, true);
+const fileInfo = await spClient.getFileByServerRelativeUrl(uploadResult.ServerRelativeUrl);
+```
 
-**Total Custom Code:** 1,430+ lines of security and onboarding features
-
----
-
-## 📊 Performance
-
-| Metric | Value | Impact |
-|--------|-------|--------|
-| Security libraries size | ~5KB minified | Negligible |
-| Tutorial system size | ~8KB minified | Minimal |
-| Initialization time | ~50ms | Fast |
-| Per-keystroke overhead | <1ms | Imperceptible |
-| Memory footprint | ~2MB | Low |
-| First paint | <1s | Excellent |
+### Tips
+- Digest tokens are cached and auto-refreshed via `getRequestDigest()`.
+- Use `verboseLogging: true` during development to trace REST calls.
+- `ensureUser(email)` normalizes login names when working with claims.
 
 ---
 
-## 📞 Support
-
-### For Issues
-
-1. **Check Documentation** - Review relevant markdown guides
-2. **Browser Console** - Look for error messages (F12)
-3. **Test Data** - Use sample patterns from this README
-4. **SharePoint Permissions** - Verify list/library access
-
-### For Customization
-
-**Security Patterns:** Edit `pci-dss-checker.js`  
-**Tutorial Steps:** Edit `onboarding-tutorial.js`  
-**Styling:** Edit `styles.css` and `onboarding-tutorial.css`  
-**SharePoint Operations:** Edit `sp-helpers.js`  
+## Sample Data Reference
+- `sample-data.json` mirrors the SharePoint schema for seamless swaps between local and production.
+- Includes:
+  - Six richly populated ideas (comments, status history, ROI, implementation data).
+  - Five user profiles with submission counts and acceptance metrics.
+- Update the file to craft targeted QA scenarios without touching production data.
 
 ---
 
-## 🎉 What's New in V5
+## Performance
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Security libraries | ~5 KB minified | Negligible footprint |
+| Tutorial system | ~8 KB minified | Lightweight overlay logic |
+| App initialization | ~50 ms | Measured on modern laptops |
+| Memory footprint | ~2 MB | Includes cached ideas and drafts |
+| First paint | < 1 s | Dark theme with gradients preloads quickly |
 
-### Version 5.0 (October 2025)
-
-🔒 **Security System**
-- PCI DSS compliance checker with 8+ pattern types
-- XSS protection with multiple attack vector coverage
-- Visual security indicators and warnings
-- Admin access control with audit logging
-
-🎓 **Tutorial System**
-- Context-aware tutorials (Home + Submit)
-- SVG mask cutouts for overlay transparency
-- Auto-scroll with viewport centering
-- Glassmorphism design matching portal theme
-
-🐛 **Bug Fixes**
-- Fixed security overlay cleanup
-- Fixed tutorial tooltip styling
-- Fixed SVG cutout scroll alignment
-- Fixed tooltip viewport positioning
-
-📚 **Documentation**
-- 1,200+ lines of comprehensive guides
-- Consolidated into 4 focused documents
-- Testing examples and troubleshooting
-- SharePoint migration instructions
+Performance is maintained by debounced listeners, memoized status dictionaries, and lightweight DOM updates.
 
 ---
 
-## 📝 License
-
-**Internal use only** - Property of the organization
+## Compliance
+- **PCI DSS**: Requirements 3, 4, 6, and 8 addressed through redaction, encryption-ready transmission, secure coding, and authenticated access.
+- **OWASP Top 10**: Covers Injection (A03) and Security Misconfiguration (A05) via sanitation and defaults.
+- **Auditability**: Admin actions can be extended with SharePoint audit logs and tracked via `statusHistory` fields.
 
 ---
 
-## 🏆 Credits
+## Roadmap and Opportunities
+1. **Reduced Motion Support**: Respect `prefers-reduced-motion` in animations and tutorial scroll behavior.
+2. **Theming Engine**: Add automatic light/dark detection using `prefers-color-scheme` with a manual toggle.
+3. **Server-Side Persistence for Tutorials**: Store completion state in SharePoint for true roam-anywhere experiences.
+4. **Real-Time Admin Updates**: Introduce push notifications or polling hooks for live collaboration.
+5. **Advanced Analytics**: Predictive scoring, clustering of idea topics, and integration with Power BI.
+6. **Accessibility Enhancements**: ARIA landmarks, keyboard shortcuts for tutorial navigation, and high-contrast mode support.
+7. **Automated Testing**: UI smoke tests using Playwright and security regression scripts for PCI patterns.
 
-Built with ❤️ using:
-- Vanilla JavaScript (ES6+)
-- CSS3 with Glassmorphism
-- SharePoint REST API
-- Font Awesome 6.4.0
-- Modern web standards
+---
 
-**Version:** 5.0  
-**Last Updated:** October 2, 2025  
-**Status:** Production Ready 🚀  
-**Total Code:** 3,500+ lines  
-**Total Documentation:** 1,200+ lines  
-**Total Project:** 4,700+ lines
+## Support
+1. Review this README for setup, security, and troubleshooting guidance.
+2. Use browser developer tools for console logs from security and SharePoint helpers.
+3. Validate permissions and group membership when admin features appear restricted.
+4. Keep `sp-helpers.js`, `pci-dss-checker.js`, and `xss-protection.js` up to date when threat patterns evolve.
+
+---
+
+## Changelog and Bug Fixes
+- Updated credit card detection regex to handle spaces, dashes, and contiguous digits.
+- Prevented account-number pattern from intercepting full credit card numbers by adding Luhn checks.
+- Added `change` event listeners to strengthen paste detection reliability.
+- Documented complete testing scenarios in `test-security.html`.
+- Consolidated documentation from nine Markdown guides into this single reference.
+
+---
+
+**Version**: 5.0
+**Last Updated**: October 5, 2025
+**Maintainers**: Innovation Platform Team

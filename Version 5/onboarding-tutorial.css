@@ -1,3 +1,16 @@
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-overlay,
+  .tutorial-overlay-fade-out,
+  .tutorial-spotlight,
+  .tutorial-tooltip,
+  .tutorial-progress-bar,
+  .tutorial-progress-bar-inner,
+  .tutorial-controls button {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /**
  * Onboarding Tutorial Styles
  * Modern, futuristic glassmorphism design

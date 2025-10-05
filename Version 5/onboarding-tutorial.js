@@ -15,6 +15,54 @@ class OnboardingTutorial {
     
     // Define tutorial steps based on context
     this.steps = this.getStepsForContext(context);
+    this.setupMotionPreference();
+  }
+
+  setupMotionPreference() {
+    if (typeof window.matchMedia !== 'function') {
+      this.prefersReducedMotion = false;
+      return;
+    }
+
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.prefersReducedMotion = preference.matches;
+    this.motionPreference = preference;
+
+    const handleChange = (event) => {
+      this.prefersReducedMotion = event.matches;
+    };
+    this.motionPreferenceHandler = handleChange;
+
+    if (typeof preference.addEventListener === 'function') {
+      preference.addEventListener('change', handleChange);
+    } else if (typeof preference.addListener === 'function') {
+      preference.addListener(handleChange);
+    }
+
+    const cleanup = () => {
+      if (typeof preference.removeEventListener === 'function') {
+        preference.removeEventListener('change', handleChange);
+      } else if (typeof preference.removeListener === 'function') {
+        preference.removeListener(handleChange);
+      }
+    };
+    this.motionPreferenceCleanup = cleanup;
+    window.addEventListener('beforeunload', cleanup, { once: true });
+  }
+
+  getScrollBehavior() {
+    return this.prefersReducedMotion ? 'auto' : 'smooth';
+  }
+
+  scrollToPosition(top) {
+    try {
+      window.scrollTo({
+        top,
+        behavior: this.getScrollBehavior()
+      });
+    } catch (error) {
+      window.scrollTo(0, top);
+    }
   }
 
   getStepsForContext(context) {
@@ -36,7 +84,7 @@ class OnboardingTutorial {
         position: 'center',
         highlightArea: '.hero-section',
         action: () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToPosition(0);
         }
       },
       {
@@ -70,7 +118,7 @@ class OnboardingTutorial {
         position: 'bottom',
         highlightArea: '[data-view="submit"]',
         action: () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToPosition(0);
         }
       },
       {
@@ -80,7 +128,7 @@ class OnboardingTutorial {
         position: 'bottom',
         highlightArea: '[data-view="track"]',
         action: () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToPosition(0);
         }
       },
       {
@@ -90,7 +138,7 @@ class OnboardingTutorial {
         position: 'center',
         highlightArea: null,
         action: () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToPosition(0);
         }
       }
     ];
@@ -165,7 +213,7 @@ class OnboardingTutorial {
         position: 'center',
         highlightArea: null,
         action: () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToPosition(0);
         }
       }
     ];
@@ -189,18 +237,18 @@ class OnboardingTutorial {
     const key = `innovationPortal_tutorial_${this.context}_completed`;
     localStorage.removeItem(key);
     localStorage.removeItem(`${key}_date`);
-    console.log(`🔄 ${this.context} tutorial reset. Refresh to see it again.`);
+    console.log(`${this.context} tutorial reset. Refresh to see it again.`);
   }
 
   // Start tutorial if not completed
   start() {
     if (this.hasCompletedTutorial()) {
-      console.log(`✅ ${this.context} tutorial already completed`);
+      console.log(`${this.context} tutorial already completed`);
       return false;
     }
 
     if (this.isActive) {
-      console.log('⚠️ Tutorial already active');
+      console.log('Tutorial already active');
       return false;
     }
 
@@ -208,7 +256,7 @@ class OnboardingTutorial {
     this.currentStep = 0;
     this.createOverlay();
     this.showStep(0);
-    console.log(`🎓 Starting ${this.context} tutorial`);
+    console.log(`Starting ${this.context} tutorial`);
     return true;
   }
 
@@ -224,7 +272,7 @@ class OnboardingTutorial {
     this.currentStep = 0;
     this.createOverlay();
     this.showStep(0);
-    console.log(`🎓 Force starting ${this.context} tutorial`);
+    console.log(`Force starting ${this.context} tutorial`);
   }
 
   createOverlay() {
@@ -484,10 +532,7 @@ class OnboardingTutorial {
     const absoluteElementTop = elementRect.top + window.scrollY;
     const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
 
-    window.scrollTo({
-      top: middle,
-      behavior: 'smooth'
-    });
+    this.scrollToPosition(middle);
   }
 
   next() {
@@ -511,7 +556,7 @@ class OnboardingTutorial {
   complete(markCompleted = true) {
     if (markCompleted) {
       this.markAsCompleted();
-      console.log(`🎉 ${this.context} tutorial completed!`);
+      console.log(`${this.context} tutorial completed!`);
     }
 
     this.isActive = false;
@@ -586,7 +631,7 @@ class OnboardingTutorial {
     localStorage.removeItem('innovationPortal_tutorial_home_completed_date');
     localStorage.removeItem('innovationPortal_tutorial_submit_completed');
     localStorage.removeItem('innovationPortal_tutorial_submit_completed_date');
-    console.log('🔄 All tutorials reset. Navigate to home or submit to see them again.');
+    console.log('All tutorials reset. Navigate to home or submit to see them again.');
   }
 }
 
@@ -634,8 +679,8 @@ class TutorialManager {
 window.tutorialManager = new TutorialManager();
 
 // Console helpers
-console.log('🎓 Context-Aware Tutorial System Loaded');
-console.log('💡 Commands:');
+console.log('Context-Aware Tutorial System Loaded');
+console.log('Commands:');
 console.log('   - tutorialManager.get("home").forceStart() - Start home tutorial');
 console.log('   - tutorialManager.get("submit").forceStart() - Start submit tutorial');
 console.log('   - tutorialManager.resetAll() - Reset all tutorials');

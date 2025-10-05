@@ -15,7 +15,9 @@ class InnovationAdminPortal {
             category: '',
             priority: ''
         };
-        
+
+        this.setupMotionPreference();
+
         // SharePoint Configuration
         this.sharePointConfig = {
             siteUrl: window.location.origin, // Adjust as needed
@@ -48,6 +50,38 @@ class InnovationAdminPortal {
         }) : null;
         
         this.init();
+    }
+
+    setupMotionPreference() {
+        if (typeof window.matchMedia !== 'function') {
+            this.prefersReducedMotion = false;
+            return;
+        }
+
+        const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.prefersReducedMotion = preference.matches;
+        this.motionPreference = preference;
+
+        const handleChange = (event) => {
+            this.prefersReducedMotion = event.matches;
+        };
+        this.motionPreferenceHandler = handleChange;
+
+        if (typeof preference.addEventListener === 'function') {
+            preference.addEventListener('change', handleChange);
+        } else if (typeof preference.addListener === 'function') {
+            preference.addListener(handleChange);
+        }
+
+        const cleanup = () => {
+            if (typeof preference.removeEventListener === 'function') {
+                preference.removeEventListener('change', handleChange);
+            } else if (typeof preference.removeListener === 'function') {
+                preference.removeListener(handleChange);
+            }
+        };
+        this.motionPreferenceCleanup = cleanup;
+        window.addEventListener('beforeunload', cleanup, { once: true });
     }
 
     async init() {
@@ -2711,6 +2745,11 @@ class InnovationAdminPortal {
         const element = document.getElementById(elementId);
         if (!element) return;
 
+        if (this.prefersReducedMotion) {
+            element.textContent = target;
+            return;
+        }
+
         const start = parseInt(element.textContent) || 0;
         const duration = 1000;
         const increment = (target - start) / (duration / 16);
@@ -2839,7 +2878,8 @@ let adminApp;
 
 document.addEventListener('DOMContentLoaded', async () => {
     adminApp = new InnovationAdminPortal();
-    
+    window.adminApp = adminApp;
+
     // Handle URL hash for deep linking
     const hash = window.location.hash.slice(1);
     if (hash && ['dashboard', 'ideas', 'analytics', 'users', 'settings'].includes(hash)) {
@@ -2847,5 +2887,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Global app reference for onclick handlers
-window.adminApp = adminApp;

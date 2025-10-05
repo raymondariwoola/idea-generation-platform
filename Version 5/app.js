@@ -14,6 +14,7 @@ class InnovationPortal {
             id: 'user123'
         };
         this.drafts = this.loadDrafts();
+        this.setupMotionPreference();
         
         // Status dictionary (SharePoint-backed with code fallback)
         this.statusDictionaryMap = {}; // { RawStatus: { label, description, colorHex?, icon? } }
@@ -51,6 +52,38 @@ class InnovationPortal {
         this.init();
     }
 
+    setupMotionPreference() {
+        if (typeof window.matchMedia !== 'function') {
+            this.prefersReducedMotion = false;
+            return;
+        }
+
+        const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.prefersReducedMotion = preference.matches;
+        this.motionPreference = preference;
+
+        const handleChange = (event) => {
+            this.prefersReducedMotion = event.matches;
+        };
+        this.motionPreferenceHandler = handleChange;
+
+        if (typeof preference.addEventListener === 'function') {
+            preference.addEventListener('change', handleChange);
+        } else if (typeof preference.addListener === 'function') {
+            preference.addListener(handleChange);
+        }
+
+        const cleanup = () => {
+            if (typeof preference.removeEventListener === 'function') {
+                preference.removeEventListener('change', handleChange);
+            } else if (typeof preference.removeListener === 'function') {
+                preference.removeListener(handleChange);
+            }
+        };
+        this.motionPreferenceCleanup = cleanup;
+        window.addEventListener('beforeunload', cleanup, { once: true });
+    }
+
     async init() {
         this.setupNavigation();
         this.setupSearch();
@@ -59,8 +92,8 @@ class InnovationPortal {
         this.setupSubmitForm();
         this.setupTrackingView();
         this.setupModals();
-    await this.loadStatusDictionary();
-    await this.loadSampleData();
+        await this.loadStatusDictionary();
+        await this.loadSampleData();
         this.renderAll();
         this.animateKPIs();
         // console.log('🚀 Innovation Portal V5 initialized with SharePoint integration');
@@ -650,6 +683,11 @@ class InnovationPortal {
     }
 
     animateNumber(element, start, end) {
+        if (this.prefersReducedMotion) {
+            element.textContent = `${end}%`;
+            return;
+        }
+
         const duration = 600;
         const startTime = performance.now();
         
@@ -672,16 +710,20 @@ class InnovationPortal {
     }
 
     addCompletionCelebration(container) {
+        if (this.prefersReducedMotion) {
+            return;
+        }
+
         const celebration = document.createElement('div');
         celebration.className = 'completion-celebration';
         celebration.innerHTML = `
-            <div class="sparkle sparkle-1">✨</div>
-            <div class="sparkle sparkle-2">🎉</div>
-            <div class="sparkle sparkle-3">⭐</div>
-            <div class="sparkle sparkle-4">💫</div>
+            <div class="sparkle sparkle-1">&#10024;</div>
+            <div class="sparkle sparkle-2">&#10024;&#10024;</div>
+            <div class="sparkle sparkle-3">&#10024;</div>
+            <div class="sparkle sparkle-4">&#10024;&#10024;</div>
         `;
         container.appendChild(celebration);
-        
+
         // Remove celebration after animation
         setTimeout(() => {
             if (celebration.parentNode) {
@@ -1269,6 +1311,11 @@ class InnovationPortal {
     animateCounter(elementId, target) {
         const element = document.getElementById(elementId);
         if (!element) return;
+
+        if (this.prefersReducedMotion) {
+            element.textContent = target;
+            return;
+        }
 
         const start = 0;
         const duration = 1500;
@@ -1877,7 +1924,8 @@ let app;
 
 document.addEventListener('DOMContentLoaded', async () => {
     app = new InnovationPortal();
-    
+    window.app = app;
+
     // Handle URL hash for deep linking
     const hash = window.location.hash.slice(1);
     if (hash && ['home', 'submit', 'track'].includes(hash)) {
@@ -1892,5 +1940,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Global app reference for onclick handlers
-window.app = app;
