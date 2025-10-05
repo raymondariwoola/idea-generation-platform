@@ -93,6 +93,8 @@ class InnovationPortal {
         this.setupTrackingView();
         this.setupModals();
         await this.loadStatusDictionary();
+        // Ensure Status filter reflects friendly labels after dictionary load
+        this.applyFriendlyLabelsToStatusFilter();
         await this.loadSampleData();
         this.renderAll();
         this.animateKPIs();
@@ -257,6 +259,9 @@ class InnovationPortal {
                 this.renderIdeas();
             });
         }
+
+        // Apply user-friendly labels to Status dropdown on load
+        this.applyFriendlyLabelsToStatusFilter();
     }
 
     applyFilters() {
@@ -265,7 +270,7 @@ class InnovationPortal {
         const department = document.getElementById('filter-department')?.value.toLowerCase() || '';
 
         let filteredIdeas = this.ideas.filter(idea => {
-            const matchesStatus = !status || idea.status === status;
+            const matchesStatus = !status || (idea.status || '').toLowerCase() === status.toLowerCase();
             const matchesCategory = !category || idea.category === category;
             const matchesDepartment = !department || 
                 (idea.dept || '').toLowerCase().includes(department);
@@ -274,6 +279,43 @@ class InnovationPortal {
         });
 
         this.renderIdeas(filteredIdeas);
+    }
+
+    // Update Status filter options to show friendly labels while keeping raw values
+    applyFriendlyLabelsToStatusFilter() {
+        const select = document.getElementById('filter-status');
+        if (!select) return;
+        [...select.options].forEach(opt => {
+            if (!opt.value) return; // keep "Any"
+            const normalized = this.normalizeRawStatus(opt.value);
+            opt.value = normalized; // ensure value matches canonical raw status
+            const meta = this.getUserFriendlyStatus(normalized);
+            if (meta && meta.label) {
+                opt.textContent = meta.label;
+                opt.title = `${normalized} — ${meta.description || meta.label}`;
+            }
+        });
+    }
+
+    // Normalize common raw status variants to canonical form
+    normalizeRawStatus(raw) {
+        const map = {
+            'submitted': 'Submitted',
+            'in review': 'In review',
+            'in-review': 'In review',
+            'accepted': 'Accepted',
+            'rejected': 'Rejected',
+            'deferred': 'Deferred',
+            'on hold': 'On hold',
+            'on-hold': 'On hold',
+            'duplicate': 'Duplicate',
+            'needs info': 'Needs Info',
+            'needs-info': 'Needs Info',
+            'implemented': 'Implemented',
+            'archived': 'Archived'
+        };
+        const key = (raw || '').trim().toLowerCase();
+        return map[key] || raw;
     }
 
     // ===== IDEAS VIEW TOGGLE (GRID/LIST) =====
@@ -1983,6 +2025,19 @@ document.addEventListener('DOMContentLoaded', () => {
   applyFriendlyLabelsToStatusFilter(); // fallback mapping now
   loadStatusDictionary();              // attempt SharePoint override (no-op if unavailable)
 });
+
+// ===== UTILITY FUNCTIONS =====
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func.apply(this, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 // ===== INITIALIZATION =====
 let app;
