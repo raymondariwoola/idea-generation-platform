@@ -15,11 +15,27 @@ class InnovationPortal {
         };
         this.drafts = this.loadDrafts();
         
+        // Status dictionary (SharePoint-backed with code fallback)
+        this.statusDictionaryMap = {}; // { RawStatus: { label, description, colorHex?, icon? } }
+        this.defaultStatusDictionary = {
+            'Submitted': { label: 'Received', description: 'Your idea has been received.' },
+            'In review': { label: 'Under review', description: 'Your idea is being assessed.' },
+            'Accepted': { label: 'Moving forward', description: 'Selected to proceed.' },
+            'Rejected': { label: 'Not selected', description: 'Not proceeding at this time.' },
+            'Deferred': { label: 'Future consideration', description: 'Revisit in a future cycle.' },
+            'On hold': { label: 'Paused', description: 'Temporarily on hold.' },
+            'Duplicate': { label: 'Already addressed', description: 'Similar idea already exists.' },
+            'Needs Info': { label: 'Needs info', description: 'More details requested.' },
+            'Implemented': { label: 'Delivered', description: 'Implemented and available.' },
+            'Archived': { label: 'Closed', description: 'No further action.' }
+        };
+        
         // SharePoint Configuration
         this.sharePointConfig = {
             siteUrl: window.location.origin, // Adjust as needed
             listName: 'InnovationIdeas',
             libraryName: 'IdeaAttachments',
+            statusDictionaryListName: 'StatusDictionary',
             maxFileSize: 10 * 1024 * 1024, // 10MB
             allowedFileTypes: ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.doc', '.docx', '.txt'],
             allowedMimeTypes: [
@@ -43,7 +59,8 @@ class InnovationPortal {
         this.setupSubmitForm();
         this.setupTrackingView();
         this.setupModals();
-        await this.loadSampleData();
+    await this.loadStatusDictionary();
+    await this.loadSampleData();
         this.renderAll();
         this.animateKPIs();
         // console.log('🚀 Innovation Portal V5 initialized with SharePoint integration');
@@ -1098,11 +1115,12 @@ class InnovationPortal {
     createIdeasListRow(idea) {
         const date = new Date(idea.updated).toLocaleDateString();
         const statusClass = this.getStatusClass(idea.status);
+        const friendly = this.getUserFriendlyStatus(idea.status);
         return `
             <tr onclick="app.showIdeaDetails('${idea.id}')" style="cursor: pointer;">
                 <td><strong>${idea.title}</strong></td>
                 <td>${idea.category}${idea.dept ? ` · <span style='color: var(--text-muted)'>${idea.dept}</span>` : ''}</td>
-                <td><span class="idea-status ${statusClass}">${idea.status}</span></td>
+                <td><span class="idea-status ${statusClass}" title="${idea.status} — ${friendly.description}">${friendly.label}</span></td>
                 <td>${date}</td>
                 <td>
                     <div class="idea-progress-bar">
@@ -1120,6 +1138,7 @@ class InnovationPortal {
             `<span class="idea-tag">#${tag}</span>`
         ).join(' ');
 
+        const friendly = this.getUserFriendlyStatus(idea.status);
         return `
             <div class="idea-card" onclick="app.showIdeaDetails('${idea.id}')" data-category="${idea.category}" data-status="${idea.status}">
                 <div class="idea-header">
@@ -1131,7 +1150,7 @@ class InnovationPortal {
                             ${tags}
                         </div>
                     </div>
-                    <span class="idea-status ${statusClass}">${idea.status}</span>
+                    <span class="idea-status ${statusClass}" title="${idea.status} — ${friendly.description}">${friendly.label}</span>
                 </div>
                 <p class="idea-description">${idea.problem}</p>
                 <div class="idea-footer">
@@ -1165,6 +1184,44 @@ class InnovationPortal {
             'Rejected': 'status-rejected'
         };
         return statusMap[status] || 'status-submitted';
+    }
+
+    // ===== STATUS DICTIONARY (SharePoint + Fallback) =====
+    async loadStatusDictionary() {
+        const map = await this.loadStatusDictionaryFromSharePoint();
+        if (map && Object.keys(map).length) {
+            this.statusDictionaryMap = map;
+        } else {
+            this.statusDictionaryMap = { ...this.defaultStatusDictionary };
+        }
+    }
+
+    async loadStatusDictionaryFromSharePoint() {
+        try {
+            const url = `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.statusDictionaryListName}')/items?$select=RawStatus,FriendlyStatus,Description,ColorHex,Icon`;
+            const res = await fetch(url, { headers: { 'Accept': 'application/json;odata=verbose' } });
+            if (!res.ok) return null;
+            const data = await res.json();
+            const map = {};
+            (data?.d?.results || []).forEach(item => {
+                if (!item.RawStatus) return;
+                map[item.RawStatus] = {
+                    label: item.FriendlyStatus || this.defaultStatusDictionary[item.RawStatus]?.label || item.RawStatus,
+                    description: item.Description || this.defaultStatusDictionary[item.RawStatus]?.description || item.RawStatus,
+                    colorHex: item.ColorHex || null,
+                    icon: item.Icon || null
+                };
+            });
+            return map;
+        } catch (e) {
+            return null; // fallback silently
+        }
+    }
+
+    getUserFriendlyStatus(rawStatus) {
+        if (!rawStatus) return { label: '', description: '' };
+        const entry = this.statusDictionaryMap[rawStatus] || this.defaultStatusDictionary[rawStatus];
+        return entry ? entry : { label: rawStatus, description: rawStatus };
     }
 
     // ===== KPI DASHBOARD (ENHANCED V3) =====
@@ -1275,6 +1332,7 @@ class InnovationPortal {
     createIdeaDetailsContent(idea) {
         const date = new Date(idea.updated).toLocaleDateString();
         const statusClass = this.getStatusClass(idea.status);
+        const friendly = this.getUserFriendlyStatus(idea.status);
         const tags = (idea.tags || []).map(tag => `<span class="idea-tag">#${tag}</span>`).join(' ');
 
         return `
@@ -1284,7 +1342,7 @@ class InnovationPortal {
                         <span style="color: var(--text-muted);"><i class="fas fa-user"></i> ${idea.owner}</span>
                         ${idea.dept ? `<span style="color: var(--text-muted);"><i class="fas fa-building"></i> ${idea.dept}</span>` : ''}
                         <span style="color: var(--text-muted);"><i class="fas fa-clock"></i> ${date}</span>
-                        <span class="idea-status ${statusClass}">${idea.status}</span>
+                        <span class="idea-status ${statusClass}" title="${idea.status} — ${friendly.description}">${friendly.label}</span>
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <strong>Category:</strong> ${idea.category}
@@ -1433,6 +1491,7 @@ class InnovationPortal {
                     dept: 'Engineering',
                     tags: ['AI', 'automation', 'code-quality'],
                     status: 'Accepted',
+                    userFriendlyStatus: (this.getUserFriendlyStatus && this.getUserFriendlyStatus('Accepted').label) || 'Moving forward',
                     owner: 'Alice Johnson',
                     updated: Date.now() - 86400000 * 5,
                     progress: 85,
@@ -1451,6 +1510,7 @@ class InnovationPortal {
                     dept: 'Human Resources',
                     tags: ['wellness', 'dashboard', 'analytics'],
                     status: 'In review',
+                    userFriendlyStatus: (this.getUserFriendlyStatus && this.getUserFriendlyStatus('In review').label) || 'Under review',
                     owner: 'Michael Chen',
                     updated: Date.now() - 86400000 * 2,
                     progress: 45,
@@ -1469,6 +1529,7 @@ class InnovationPortal {
                     dept: 'Operations',
                     tags: ['IoT', 'energy', 'sustainability'],
                     status: 'Submitted',
+                    userFriendlyStatus: (this.getUserFriendlyStatus && this.getUserFriendlyStatus('Submitted').label) || 'Received',
                     owner: 'Sarah Williams',
                     updated: Date.now() - 86400000 * 1,
                     progress: 15,
@@ -1487,6 +1548,7 @@ class InnovationPortal {
                     dept: 'Marketing',
                     tags: ['analytics', 'customer', 'journey'],
                     status: 'In review',
+                    userFriendlyStatus: (this.getUserFriendlyStatus && this.getUserFriendlyStatus('In review').label) || 'Under review',
                     owner: 'David Rodriguez',
                     updated: Date.now() - 86400000 * 3,
                     progress: 60,
