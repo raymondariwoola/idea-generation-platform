@@ -1920,7 +1920,7 @@ input:checked + .toggle-slider:hover {
 
 .view-mode.active {
     background: var(--brand-primary);
-    color: #08101c;
+    color: #ffffff;
     border-color: var(--brand-primary);
 }
 

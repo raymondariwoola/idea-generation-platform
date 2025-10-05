@@ -46,14 +46,19 @@ body.brand-theme .brand-text {
     background-clip: initial;
 }
 
+/* Logo container in brand theme: use official negative logo on brand blue background, no effects */
 body.brand-theme .logo {
-    background: #072447;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0 12px 30px rgba(7, 36, 71, 0.24);
+    --logo-h: 42px; /* used for clear space math */
+    background: #072447; /* Emirates NBD Blue per brand guide */
+    border: 0;
+    border-radius: 0; /* no rounding around the mark */
+    box-shadow: none;
+    padding: 0; /* let the artwork define its own edges */
 }
 
+/* Logo must remain unaltered per brand guidelines (no effects/recoloring) */
 body.brand-theme .logo-image {
-    filter: drop-shadow(0 4px 12px rgba(7, 36, 71, 0.35));
+    filter: none;
 }
 
 body.brand-theme .profile-avatar {
@@ -64,6 +69,17 @@ body.brand-theme .profile-avatar {
 
 body.brand-theme .profile-avatar:hover {
     box-shadow: 0 16px 36px rgba(7, 36, 71, 0.28);
+}
+
+/* Ensure minimum clear space around the logo (≈ 1/4 of brandmark height) */
+body.brand-theme .nav-brand {
+    gap: max(0.75rem, calc(var(--logo-h, 42px) * 0.25));
+}
+
+/* Disable hover transform/glow on logo in brand theme */
+body.brand-theme .logo:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 body.brand-theme .nav-btn {
@@ -434,14 +450,24 @@ body.brand-theme .theme-toggle {
 }
 
 body.brand-theme .theme-toggle-option i,
-body.brand-theme .nav-btn i,
 body.brand-theme .btn-cta i,
 body.brand-theme .profile-avatar i,
 body.brand-theme .tip-item i,
 body.brand-theme .progress-panel h4 i,
 body.brand-theme .security-notice-content h4 i,
 body.brand-theme .view-mode button i,
+body.brand-theme .view-mode.active button,
 body.brand-theme .pill i {
+    color: #ffffff;
+}
+
+body.brand-theme .nav-btn i {
+    color: var(--brand-primary);
+    transition: color var(--transition);
+}
+
+body.brand-theme .nav-btn.active i,
+body.brand-theme .nav-btn:hover i {
     color: #ffffff;
 }
 
@@ -467,10 +493,6 @@ body.brand-theme .tip-item i {
     height: 26px;
     font-size: 0.75rem;
     box-shadow: 0 6px 14px rgba(7, 36, 71, 0.18);
-}
-
-body.brand-theme .tutorial-overlay {
-    /* background: radial-gradient(circle at 20% 20%, rgba(7, 36, 71, 0.85) 0%, rgba(7, 36, 71, 0.75) 45%, rgba(7, 36, 71, 0.55) 100%); */
 }
 
 body.brand-theme .tutorial-spotlight {
