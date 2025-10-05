@@ -5,6 +5,8 @@ class InnovationPortal {
     constructor() {
         this.currentView = 'home';
         this.ideas = [];
+        // Track Ideas section view mode (grid | list)
+        this.ideasView = 'grid';
         this.currentUser = {
             name: 'John Doe',
             department: 'Engineering',
@@ -37,6 +39,7 @@ class InnovationPortal {
         this.setupNavigation();
         this.setupSearch();
         this.setupFilters();
+        this.setupIdeasViewToggle();
         this.setupSubmitForm();
         this.setupTrackingView();
         this.setupModals();
@@ -91,7 +94,7 @@ class InnovationPortal {
 
             // View-specific actions
             if (viewName === 'home') {
-                this.renderIdeasGrid();
+                this.renderIdeas();
                 this.updateKPIs();
                 
                 // Start home tutorial for first-time visitors
@@ -171,7 +174,7 @@ class InnovationPortal {
             return matchesSearch && matchesCategory;
         });
 
-        this.renderIdeasGrid(filteredIdeas);
+        this.renderIdeas(filteredIdeas);
     }
 
     // ===== ADVANCED FILTERS (V3) =====
@@ -201,7 +204,7 @@ class InnovationPortal {
                 document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
                 document.querySelector('.pill[data-chip="all"]')?.classList.add('active');
                 document.getElementById('global-search').value = '';
-                this.renderIdeasGrid();
+                this.renderIdeas();
             });
         }
     }
@@ -220,7 +223,28 @@ class InnovationPortal {
             return matchesStatus && matchesCategory && matchesDepartment;
         });
 
-        this.renderIdeasGrid(filteredIdeas);
+        this.renderIdeas(filteredIdeas);
+    }
+
+    // ===== IDEAS VIEW TOGGLE (GRID/LIST) =====
+    setupIdeasViewToggle() {
+        const toggles = document.querySelectorAll('.ideas-header .view-toggle');
+        if (!toggles || toggles.length === 0) return;
+
+        toggles.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.getAttribute('data-view');
+                if (!mode || (mode !== 'grid' && mode !== 'list')) return;
+
+                // Update active state
+                toggles.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Set current mode and re-render
+                this.ideasView = mode;
+                this.renderIdeas();
+            });
+        });
     }
 
     // ===== ENHANCED SUBMIT FORM (V3 + V4) =====
@@ -994,10 +1018,23 @@ class InnovationPortal {
         container.innerHTML = ideas.map(idea => this.createIdeaCard(idea, true)).join('');
     }
 
+    // ===== IDEAS RENDERING (GRID/LIST) =====
+    renderIdeas(filteredIdeas = null) {
+        if (this.ideasView === 'list') {
+            this.renderIdeasList(filteredIdeas);
+        } else {
+            this.renderIdeasGrid(filteredIdeas);
+        }
+    }
+
     // ===== IDEAS GRID RENDERING (ENHANCED V3 + V4) =====
     renderIdeasGrid(filteredIdeas = null) {
         const container = document.getElementById('ideas-grid');
         if (!container) return;
+
+        // Ensure proper class for grid layout
+        container.classList.add('ideas-grid');
+        container.classList.remove('ideas-list');
 
         const ideasToShow = filteredIdeas || this.ideas;
 
@@ -1013,6 +1050,67 @@ class InnovationPortal {
         }
 
         container.innerHTML = ideasToShow.map(idea => this.createIdeaCard(idea)).join('');
+    }
+
+    // ===== IDEAS LIST RENDERING =====
+    renderIdeasList(filteredIdeas = null) {
+        const container = document.getElementById('ideas-grid');
+        if (!container) return;
+
+        // Switch container to list layout (remove grid styles)
+        container.classList.remove('ideas-grid');
+        container.classList.add('ideas-list');
+
+        const ideasToShow = filteredIdeas || this.ideas;
+
+        if (ideasToShow.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <h3>No ideas found</h3>
+                    <p>Try adjusting your search criteria or filters.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const rows = ideasToShow.map(idea => this.createIdeasListRow(idea)).join('');
+        container.innerHTML = `
+            <div class="list-wrapper" style="grid-column: 1 / -1;">
+                <table class="ideas-table">
+                    <thead>
+                        <tr>
+                            <th>Idea</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Updated</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    createIdeasListRow(idea) {
+        const date = new Date(idea.updated).toLocaleDateString();
+        const statusClass = this.getStatusClass(idea.status);
+        return `
+            <tr onclick="app.showIdeaDetails('${idea.id}')" style="cursor: pointer;">
+                <td><strong>${idea.title}</strong></td>
+                <td>${idea.category}${idea.dept ? ` · <span style='color: var(--text-muted)'>${idea.dept}</span>` : ''}</td>
+                <td><span class="idea-status ${statusClass}">${idea.status}</span></td>
+                <td>${date}</td>
+                <td>
+                    <div class="idea-progress-bar">
+                        <div class="idea-progress-fill" style="width: ${idea.progress}%"></div>
+                    </div>
+                </td>
+            </tr>
+        `;
     }
 
     createIdeaCard(idea, isMyIdea = false) {
@@ -1608,7 +1706,7 @@ class InnovationPortal {
 
     // ===== UTILITY METHODS =====
     renderAll() {
-        this.renderIdeasGrid();
+        this.renderIdeas();
         this.updateKPIs();
         this.renderTrackingView();
     }
