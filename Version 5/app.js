@@ -16,6 +16,10 @@ class InnovationPortal {
         this.drafts = this.loadDrafts();
         this.setupMotionPreference();
         
+        this.themeStorageKey = 'think-space-theme';
+        this.currentTheme = this.loadThemePreference();
+        this.applyTheme(this.currentTheme, { persist: false });
+        
         // Status dictionary (SharePoint-backed with code fallback)
         this.statusDictionaryMap = {}; // { RawStatus: { label, description, colorHex?, icon? } }
         this.defaultStatusDictionary = {
@@ -84,8 +88,105 @@ class InnovationPortal {
         window.addEventListener('beforeunload', cleanup, { once: true });
     }
 
+    loadThemePreference() {
+        try {
+            const stored = localStorage.getItem(this.themeStorageKey);
+            if (stored === 'brand' || stored === 'futuristic') {
+                return stored;
+            }
+        } catch (error) {
+            console.warn('Unable to access saved theme preference.', error);
+        }
+        return 'futuristic';
+    }
+
+    applyTheme(theme, options = {}) {
+        const normalized = theme === 'brand' ? 'brand' : 'futuristic';
+        const { persist = true } = options;
+
+        this.currentTheme = normalized;
+
+        const body = document.body;
+        if (body) {
+            body.classList.toggle('brand-theme', normalized === 'brand');
+            body.classList.toggle('futuristic-theme', normalized === 'futuristic');
+            body.dataset.theme = normalized;
+        }
+
+        const root = document.documentElement;
+        if (root) {
+            root.dataset.theme = normalized;
+            root.style.setProperty('color-scheme', normalized === 'brand' ? 'light' : 'dark');
+        }
+
+        if (persist) {
+            try {
+                localStorage.setItem(this.themeStorageKey, normalized);
+            } catch (error) {
+                console.warn('Unable to persist theme preference.', error);
+            }
+        }
+
+        this.syncThemeToggle(normalized);
+    }
+
+    syncThemeToggle(theme) {
+        const toggleButtons = document.querySelectorAll('.theme-toggle-option');
+        if (!toggleButtons.length) {
+            return;
+        }
+
+        toggleButtons.forEach(button => {
+            const buttonTheme = button.dataset.theme === 'brand' ? 'brand' : 'futuristic';
+            const isActive = buttonTheme === theme;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
+        });
+
+        const toggleContainer = document.querySelector('.theme-toggle');
+        if (toggleContainer) {
+            toggleContainer.setAttribute('data-active-theme', theme);
+        }
+    }
+
+    setupThemeToggle() {
+        const buttons = Array.from(document.querySelectorAll('.theme-toggle-option'));
+        if (!buttons.length) {
+            return;
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const requested = button.dataset.theme === 'brand' ? 'brand' : 'futuristic';
+                if (requested !== this.currentTheme) {
+                    this.applyTheme(requested);
+                } else {
+                    this.syncThemeToggle(requested);
+                }
+            });
+
+            button.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    const requested = event.key === 'ArrowRight' ? 'brand' : 'futuristic';
+                    this.applyTheme(requested);
+                    const targetButton = buttons.find(btn => {
+                        const btnTheme = btn.dataset.theme === 'brand' ? 'brand' : 'futuristic';
+                        return btnTheme === requested;
+                    });
+                    if (targetButton) {
+                        targetButton.focus();
+                    }
+                }
+            });
+        });
+
+        this.syncThemeToggle(this.currentTheme);
+    }
+
     async init() {
         this.setupNavigation();
+        this.setupThemeToggle();
         this.setupSearch();
         this.setupFilters();
         this.setupIdeasViewToggle();
@@ -2059,4 +2160,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
-

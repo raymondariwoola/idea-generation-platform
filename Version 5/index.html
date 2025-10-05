@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="onboarding-tutorial.css">
+    <link rel="stylesheet" href="brandStyle.css">
 </head>
 <body>
     <!-- Enhanced Navigation with glassmorphism from V3 + functionality from V4 -->
@@ -38,6 +39,16 @@
                 </button>
             </nav>
             <div class="nav-actions">
+                <div class="theme-toggle" role="group" aria-label="Theme selection">
+                    <button type="button" class="theme-toggle-option active" data-theme="futuristic" aria-pressed="true">
+                        <i class="fas fa-rocket"></i>
+                        <span>Futuristic</span>
+                    </button>
+                    <button type="button" class="theme-toggle-option" data-theme="brand" aria-pressed="false">
+                        <i class="fas fa-landmark"></i>
+                        <span>Brand</span>
+                    </button>
+                </div>
                 <button class="btn-cta" data-action="submit-idea">
                     <i class="fas fa-plus"></i>
                     <span>New Idea</span>

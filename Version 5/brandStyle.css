@@ -1,0 +1,394 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+/* Emirates NBD brand theme */
+body.brand-theme {
+    --font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --bg-primary: #f4f7fb;
+    --bg-secondary: #eef2f8;
+    --bg-elevated: #f9fbff;
+    --bg-card: #ffffff;
+
+    --text-primary: #072447;
+    --text-secondary: #4c515a;
+    --text-muted: #6b7280;
+    --text-hint: #9295a0;
+
+    --brand-primary: #072447;
+    --brand-secondary: #2765ff;
+    --brand-tertiary: #4c515a;
+
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(7, 36, 71, 0.12);
+    --glass-hover: rgba(39, 101, 255, 0.2);
+
+    --shadow-glass: 0 20px 45px rgba(7, 36, 71, 0.12);
+    --shadow-card: 0 14px 32px rgba(7, 36, 71, 0.12);
+    --shadow-elevated: 0 28px 60px rgba(7, 36, 71, 0.16);
+}
+
+body.brand-theme {
+    background: linear-gradient(180deg, #f4f7fb 0%, #e6ecf5 100%);
+    color: var(--text-primary);
+}
+
+body.brand-theme .navbar {
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid rgba(7, 36, 71, 0.12);
+    box-shadow: 0 10px 30px rgba(7, 36, 71, 0.08);
+    backdrop-filter: none;
+}
+
+body.brand-theme .brand-text {
+    background: none;
+    color: var(--brand-primary);
+    -webkit-text-fill-color: var(--brand-primary);
+    -webkit-background-clip: initial;
+    background-clip: initial;
+}
+
+body.brand-theme .logo {
+    background: #072447;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 12px 30px rgba(7, 36, 71, 0.24);
+}
+
+body.brand-theme .logo svg path {
+    fill: #ffffff;
+}
+
+body.brand-theme .profile-avatar {
+    background: rgba(7, 36, 71, 0.12);
+    color: var(--brand-primary);
+    box-shadow: none;
+}
+
+body.brand-theme .profile-avatar:hover {
+    box-shadow: 0 12px 28px rgba(7, 36, 71, 0.18);
+}
+
+body.brand-theme .nav-btn {
+    border-color: rgba(7, 36, 71, 0.12);
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+body.brand-theme .nav-btn:hover {
+    background: rgba(39, 101, 255, 0.08);
+    color: var(--brand-primary);
+    border-color: rgba(39, 101, 255, 0.18);
+}
+
+body.brand-theme .nav-btn.active {
+    background: linear-gradient(135deg, #072447, #0f3d7a);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 12px 28px rgba(7, 36, 71, 0.24);
+}
+
+body.brand-theme .btn-cta {
+    background: linear-gradient(135deg, #2765ff, #0f3d7a);
+    color: #ffffff;
+    box-shadow: 0 15px 35px rgba(39, 101, 255, 0.25);
+}
+
+body.brand-theme .btn-cta:hover {
+    box-shadow: 0 18px 45px rgba(39, 101, 255, 0.32);
+}
+
+body.brand-theme .btn-primary {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(7, 36, 71, 0.18);
+}
+
+body.brand-theme .btn-primary:hover {
+    box-shadow: 0 18px 38px rgba(7, 36, 71, 0.22);
+}
+
+body.brand-theme .btn-secondary {
+    background: #eef2f8;
+    border: 1px solid rgba(7, 36, 71, 0.12);
+    color: var(--brand-primary);
+}
+
+body.brand-theme .btn-secondary:hover {
+    background: #dde5f2;
+    border-color: rgba(39, 101, 255, 0.2);
+}
+
+body.brand-theme .btn-ghost {
+    border: 1px solid rgba(7, 36, 71, 0.15);
+    color: var(--brand-primary);
+}
+
+body.brand-theme .btn-ghost:hover {
+    background: rgba(39, 101, 255, 0.08);
+    color: var(--brand-primary);
+}
+
+body.brand-theme .hero-section {
+    background: linear-gradient(135deg, rgba(7, 36, 71, 0.1) 0%, rgba(39, 101, 255, 0.08) 55%, rgba(255, 255, 255, 0.22) 100%);
+}
+
+body.brand-theme .quarterly-theme {
+    background: rgba(7, 36, 71, 0.08);
+    border: 1px solid rgba(7, 36, 71, 0.12);
+    color: var(--brand-primary);
+}
+
+body.brand-theme .theme-tag strong {
+    color: var(--brand-secondary);
+}
+
+body.brand-theme .gradient-text {
+    background: linear-gradient(135deg, #072447 0%, #2765ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.brand-theme .search-input {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(7, 36, 71, 0.12);
+}
+
+body.brand-theme .search-input:focus {
+    border-color: #2765ff;
+    box-shadow: 0 0 0 3px rgba(39, 101, 255, 0.15);
+}
+
+body.brand-theme .search-icon {
+    color: var(--text-muted);
+}
+
+body.brand-theme .progress-bar {
+    background: rgba(7, 36, 71, 0.1);
+}
+
+body.brand-theme .kpi-dashboard {
+    background: var(--bg-card);
+    border: 1px solid rgba(7, 36, 71, 0.08);
+    box-shadow: 0 20px 40px rgba(7, 36, 71, 0.1);
+}
+
+body.brand-theme .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(7, 36, 71, 0.08);
+}
+
+body.brand-theme .kpi-number {
+    background: linear-gradient(90deg, #072447, #2765ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.brand-theme .pill {
+    border: 1px solid rgba(7, 36, 71, 0.12);
+    color: var(--text-secondary);
+    background: rgba(7, 36, 71, 0.04);
+}
+
+body.brand-theme .pill:hover {
+    background: rgba(39, 101, 255, 0.08);
+    border-color: rgba(39, 101, 255, 0.18);
+    color: var(--brand-primary);
+}
+
+body.brand-theme .pill.active {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(7, 36, 71, 0.22);
+}
+
+body.brand-theme .idea-meta,
+body.brand-theme .idea-tag,
+body.brand-theme .idea-footer {
+    border-color: rgba(7, 36, 71, 0.12);
+}
+
+body.brand-theme .status-submitted {
+    background: rgba(39, 101, 255, 0.18);
+    color: #072447;
+    border-color: rgba(39, 101, 255, 0.32);
+}
+
+body.brand-theme .status-in-review {
+    background: rgba(146, 149, 160, 0.18);
+    color: #4c515a;
+    border-color: rgba(146, 149, 160, 0.32);
+}
+
+body.brand-theme .status-accepted {
+    background: rgba(31, 143, 95, 0.15);
+    color: #1f8f5f;
+    border-color: rgba(31, 143, 95, 0.35);
+}
+
+body.brand-theme .status-rejected {
+    background: rgba(197, 48, 48, 0.12);
+    color: #b33030;
+    border-color: rgba(197, 48, 48, 0.3);
+}
+
+body.brand-theme .ideas-table thead th {
+    background: #072447;
+    color: #ffffff;
+    border-bottom: none;
+}
+
+body.brand-theme .ideas-table tbody tr {
+    background: #ffffff;
+    border-bottom: 1px solid rgba(7, 36, 71, 0.08);
+}
+
+body.brand-theme .ideas-table tbody tr:hover {
+    background: rgba(39, 101, 255, 0.05);
+}
+
+body.brand-theme .modal {
+    background: rgba(7, 36, 71, 0.65);
+}
+
+body.brand-theme .modal-content {
+    background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+    border: 1px solid rgba(7, 36, 71, 0.12);
+    box-shadow: 0 30px 60px rgba(7, 36, 71, 0.18);
+}
+
+body.brand-theme .modal-header {
+    background: #ffffff;
+    border-bottom: 1px solid rgba(7, 36, 71, 0.12);
+}
+
+body.brand-theme input,
+body.brand-theme textarea,
+body.brand-theme select {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(7, 36, 71, 0.12);
+    color: var(--text-primary);
+}
+
+body.brand-theme input:focus,
+body.brand-theme textarea:focus,
+body.brand-theme select:focus {
+    border-color: #2765ff;
+    box-shadow: 0 0 0 3px rgba(39, 101, 255, 0.15);
+    outline: none;
+}
+
+body.brand-theme .glass-card,
+body.brand-theme .impact-card,
+body.brand-theme .trend-card,
+body.brand-theme .persona-card,
+body.brand-theme .idea-card,
+body.brand-theme .idea-detail-card,
+body.brand-theme .submit-sidebar,
+body.brand-theme .submit-form,
+body.brand-theme .timeline-card,
+body.brand-theme .workspace-card,
+body.brand-theme .scorecard,
+body.brand-theme .analysis-card,
+body.brand-theme .data-card,
+body.brand-theme .evaluation-card,
+body.brand-theme .metric-card,
+body.brand-theme .stat-card,
+body.brand-theme .insight-card,
+body.brand-theme .canvas-card,
+body.brand-theme .admin-card,
+body.brand-theme .announcement-card,
+body.brand-theme .future-card,
+body.brand-theme .resource-card,
+body.brand-theme .action-card,
+body.brand-theme .quick-stat-card,
+body.brand-theme .progress-card,
+body.brand-theme .feedback-card,
+body.brand-theme .innovation-card,
+body.brand-theme .persona-tile,
+body.brand-theme .module-card,
+body.brand-theme .overview-card,
+body.brand-theme .initiative-card,
+body.brand-theme .report-card,
+body.brand-theme .panel,
+body.brand-theme .detail-panel {
+    background: var(--bg-card);
+    border: 1px solid rgba(7, 36, 71, 0.08);
+    box-shadow: 0 14px 32px rgba(7, 36, 71, 0.08);
+    backdrop-filter: none;
+}
+
+body.brand-theme .insight-metric strong,
+body.brand-theme .stat-value {
+    color: var(--brand-primary);
+}
+
+body.brand-theme .idea-progress .progress-text {
+    color: var(--brand-primary);
+}
+
+body.brand-theme .idea-progress .progress-fill {
+    background: linear-gradient(90deg, #072447, #2765ff);
+}
+
+body.brand-theme .cta-banner,
+body.brand-theme .spotlight-card {
+    background: linear-gradient(120deg, rgba(7, 36, 71, 0.9) 0%, rgba(39, 101, 255, 0.75) 100%);
+    color: #ffffff;
+}
+
+body.brand-theme footer,
+body.brand-theme .footer {
+    background: #072447;
+    color: #ffffff;
+}
+
+body.brand-theme .footer a {
+    color: #ffffff;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 12px rgba(7, 36, 71, 0.08);
+}
+
+.theme-toggle-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.theme-toggle-option i,
+.theme-toggle-option svg {
+    font-size: 0.85rem;
+}
+
+.theme-toggle-option.active {
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(39, 101, 255, 0.2);
+}
+
+.theme-toggle-option:focus-visible {
+    outline: 2px solid rgba(39, 101, 255, 0.5);
+    outline-offset: 2px;
+}
+
+body.brand-theme .theme-toggle {
+    background: #ffffff;
+    border-color: rgba(7, 36, 71, 0.12);
+    box-shadow: 0 6px 18px rgba(7, 36, 71, 0.12);
+}
