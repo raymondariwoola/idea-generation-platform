@@ -1332,7 +1332,7 @@ class InnovationPortal {
             }
         };
 
-        updateCounter();
+        requestAnimationFrame(updateCounter);
     }
 
     // ===== MODAL SYSTEM (V4) =====
@@ -1906,18 +1906,83 @@ class InnovationPortal {
     }
 }
 
-// ===== UTILITY FUNCTIONS =====
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+// Short, user-friendly fallback labels (used if SharePoint dictionary isn't available)
+const DEFAULT_STATUS_DICTIONARY = {
+  'Submitted':  { label: 'Received',       description: 'We’ve got your idea and will review it shortly.' },
+  'In review':  { label: 'Under review',   description: 'Experts are evaluating your idea.' },
+  'Accepted':   { label: 'Moving forward', description: 'Your idea is advancing to the next step.' },
+  'Rejected':   { label: 'Not selected',   description: 'Thanks for contributing—this one won’t move ahead right now.' },
+  'Deferred':   { label: 'Future consideration', description: 'We’ll revisit this later.' },
+  'On hold':    { label: 'Paused',         description: 'Temporarily on hold.' },
+  'Duplicate':  { label: 'Already covered',description: 'A similar idea already exists.' },
+  'Needs Info': { label: 'More info needed', description: 'Please add a few details to proceed.' },
+  'Implemented':{ label: 'Delivered',      description: 'Implemented and closed.' },
+  'Archived':   { label: 'Closed',         description: 'Archived for reference.' },
+};
+
+// Cache (SharePoint result merges over this)
+window.tsStatusDict = { ...DEFAULT_STATUS_DICTIONARY };
+
+// Try to load the StatusDictionary list from SharePoint. Falls back silently if not available.
+async function loadStatusDictionary() {
+  try {
+    if (window.SPHelpers && typeof SPHelpers.getListItems === 'function') {
+      const rows = await SPHelpers.getListItems('StatusDictionary', {
+        select: ['RawStatus', 'FriendlyStatus', 'Description']
+      });
+      if (Array.isArray(rows) && rows.length) {
+        const dict = {};
+        for (const r of rows) {
+          const raw = (r.RawStatus || '').trim();
+          if (!raw) continue;
+          dict[raw] = {
+            label: (r.FriendlyStatus || '').trim() || raw,
+            description: (r.Description || '').trim() || ''
+          };
+        }
+        window.tsStatusDict = { ...DEFAULT_STATUS_DICTIONARY, ...dict };
+      }
+    }
+  } catch (err) {
+    console.warn('StatusDictionary: using fallback mapping', err);
+  } finally {
+    applyFriendlyLabelsToStatusFilter();
+    document.dispatchEvent(new CustomEvent('status-dictionary-ready', { detail: window.tsStatusDict }));
+  }
 }
+
+function getFriendlyStatusMeta(raw) {
+  if (!raw) return null;
+  // Normalize minor variants like "In Review" vs "In review"
+  const candidates = [raw, raw.toLowerCase(), raw.replace(/Review/i, 'review')];
+  for (const key of Object.keys(window.tsStatusDict)) {
+    if (candidates.includes(key) || candidates.includes(key.toLowerCase())) {
+      return window.tsStatusDict[key];
+    }
+  }
+  return null;
+}
+
+// Update the Status filter dropdown: keep value=raw, show friendly text, add hover tooltip.
+function applyFriendlyLabelsToStatusFilter() {
+  const select = document.getElementById('filter-status');
+  if (!select) return;
+
+  [...select.options].forEach(opt => {
+    if (!opt.value) return; // keep "Any"
+    const meta = getFriendlyStatusMeta(opt.value);
+    if (meta && meta.label) {
+      opt.textContent = meta.label; // visible label (short/friendly)
+      opt.title = `${opt.value} — ${meta.description || meta.label}`; // hover detail
+    }
+  });
+}
+
+// Ensure dropdown is updated immediately and again after any async SP load.
+document.addEventListener('DOMContentLoaded', () => {
+  applyFriendlyLabelsToStatusFilter(); // fallback mapping now
+  loadStatusDictionary();              // attempt SharePoint override (no-op if unavailable)
+});
 
 // ===== INITIALIZATION =====
 let app;
