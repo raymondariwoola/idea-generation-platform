@@ -294,10 +294,10 @@ class InnovationAdminPortal {
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <h1>Access Denied</h1>
-                    <p>You don't have permission to access the Innovation Portal Admin Dashboard.</p>
+                    <p>You don't have permission to access the Think Space Admin Dashboard.</p>
                     <div class="unauthorized-details">
                         <p><strong>User:</strong> ${this.currentAdmin.email}</p>
-                        <p><strong>Required:</strong> Innovation Portal Administrator permissions</p>
+                        <p><strong>Required:</strong> Think Space Administrator permissions</p>
                     </div>
                     <div class="unauthorized-actions">
                         <a href="index.html" class="btn btn-primary">

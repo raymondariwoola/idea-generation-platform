@@ -31,7 +31,7 @@ class OnboardingTutorial {
     return [
       {
         target: '.hero-section',
-        title: '👋 Welcome to the Innovation Portal!',
+  title: '👋 Welcome to Think Space!',
         content: 'Let\'s take a quick tour of the home page. We\'ll show you how to explore ideas, track progress, and navigate the platform.',
         position: 'center',
         highlightArea: '.hero-section',
@@ -41,8 +41,8 @@ class OnboardingTutorial {
       },
       {
         target: '.kpi-grid',
-        title: '💡 Innovation Dashboard',
-        content: 'This is your innovation dashboard showing key metrics: total ideas submitted, ideas in progress, and successfully implemented innovations.',
+  title: '💡 Think Space Dashboard',
+  content: 'This is your ideas dashboard showing key metrics: total ideas submitted, ideas in progress, and successfully implemented outcomes.',
         position: 'bottom',
         highlightArea: '.kpi-grid',
         action: () => this.scrollToElement('.kpi-grid')
@@ -66,7 +66,7 @@ class OnboardingTutorial {
       {
         target: '[data-view="submit"]',
         title: '🎯 Submit Your Ideas',
-        content: 'Ready to share your innovation? Click the "Submit Idea" button in the navigation to go to the submission form. You\'ll get a tutorial there too!',
+  content: 'Ready to share your idea? Click the "Submit Idea" button in the navigation to go to the submission form. You\'ll get a tutorial there too!',
         position: 'bottom',
         highlightArea: '[data-view="submit"]',
         action: () => {
@@ -548,7 +548,7 @@ class OnboardingTutorial {
       home: {
         icon: 'fa-home',
         title: 'Home Tour Complete!',
-        description: 'You\'re ready to explore the innovation portal.'
+  description: 'You\'re ready to explore Think Space.'
       },
       submit: {
         icon: 'fa-lightbulb',
