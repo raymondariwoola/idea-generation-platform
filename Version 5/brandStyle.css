@@ -52,24 +52,32 @@ body.brand-theme .logo {
     box-shadow: 0 12px 30px rgba(7, 36, 71, 0.24);
 }
 
-body.brand-theme .logo svg path {
-    fill: #ffffff;
+body.brand-theme .logo-image {
+    filter: drop-shadow(0 4px 12px rgba(7, 36, 71, 0.35));
 }
 
 body.brand-theme .profile-avatar {
-    background: rgba(7, 36, 71, 0.12);
-    color: var(--brand-primary);
-    box-shadow: none;
+    background: linear-gradient(135deg, #072447, #2765ff);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(7, 36, 71, 0.22);
 }
 
 body.brand-theme .profile-avatar:hover {
-    box-shadow: 0 12px 28px rgba(7, 36, 71, 0.18);
+    box-shadow: 0 16px 36px rgba(7, 36, 71, 0.28);
 }
 
 body.brand-theme .nav-btn {
     border-color: rgba(7, 36, 71, 0.12);
     color: var(--text-secondary);
     background: transparent;
+}
+
+body.brand-theme .fa,
+body.brand-theme .fas,
+body.brand-theme .far,
+body.brand-theme .fal,
+body.brand-theme .fab {
+    color: #ffffff;
 }
 
 body.brand-theme .nav-btn:hover {
@@ -142,22 +150,29 @@ body.brand-theme .theme-tag strong {
 
 body.brand-theme .gradient-text {
     background: linear-gradient(135deg, #072447 0%, #2765ff 100%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 body.brand-theme .search-input {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(7, 36, 71, 0.12);
+    background: linear-gradient(135deg, rgba(7, 36, 71, 0.18) 0%, rgba(39, 101, 255, 0.15) 100%);
+    border: 1px solid rgba(7, 36, 71, 0.28);
+    color: #ffffff;
+}
+
+body.brand-theme .search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 body.brand-theme .search-input:focus {
-    border-color: #2765ff;
-    box-shadow: 0 0 0 3px rgba(39, 101, 255, 0.15);
+    border-color: rgba(39, 101, 255, 0.6);
+    box-shadow: 0 0 0 3px rgba(39, 101, 255, 0.25);
 }
 
 body.brand-theme .search-icon {
-    color: var(--text-muted);
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(7, 36, 71, 0.45);
 }
 
 body.brand-theme .progress-bar {
@@ -175,8 +190,15 @@ body.brand-theme .kpi-card {
     border: 1px solid rgba(7, 36, 71, 0.08);
 }
 
+body.brand-theme .kpi-icon {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(7, 36, 71, 0.22);
+}
+
 body.brand-theme .kpi-number {
     background: linear-gradient(90deg, #072447, #2765ff);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -228,6 +250,12 @@ body.brand-theme .status-rejected {
     background: rgba(197, 48, 48, 0.12);
     color: #b33030;
     border-color: rgba(197, 48, 48, 0.3);
+}
+
+body.brand-theme .overview-icon {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    color: #ffffff;
+    box-shadow: 0 12px 32px rgba(7, 36, 71, 0.18);
 }
 
 body.brand-theme .ideas-table thead th {
@@ -310,9 +338,9 @@ body.brand-theme .initiative-card,
 body.brand-theme .report-card,
 body.brand-theme .panel,
 body.brand-theme .detail-panel {
-    background: var(--bg-card);
+    /* background: var(--bg-card);
     border: 1px solid rgba(7, 36, 71, 0.08);
-    box-shadow: 0 14px 32px rgba(7, 36, 71, 0.08);
+    box-shadow: 0 14px 32px rgba(7, 36, 71, 0.08); */
     backdrop-filter: none;
 }
 
@@ -322,7 +350,19 @@ body.brand-theme .stat-value {
 }
 
 body.brand-theme .idea-progress .progress-text {
+
     color: var(--brand-primary);
+    fill: black !important;
+}
+
+body.brand-theme .overall-progress .progress-text {
+    color: #000000;
+    fill: #000000 !important;
+}
+
+body.brand-theme .svg-progress .progress-text {
+    fill: #000000 !important;
+    opacity: 0.9;
 }
 
 body.brand-theme .idea-progress .progress-fill {
@@ -391,4 +431,125 @@ body.brand-theme .theme-toggle {
     background: #ffffff;
     border-color: rgba(7, 36, 71, 0.12);
     box-shadow: 0 6px 18px rgba(7, 36, 71, 0.12);
+}
+
+body.brand-theme .theme-toggle-option i,
+body.brand-theme .nav-btn i,
+body.brand-theme .btn-cta i,
+body.brand-theme .profile-avatar i,
+body.brand-theme .tip-item i,
+body.brand-theme .progress-panel h4 i,
+body.brand-theme .security-notice-content h4 i,
+body.brand-theme .view-mode button i,
+body.brand-theme .pill i {
+    color: #ffffff;
+}
+
+body.brand-theme .security-notice-content h4 i,
+body.brand-theme .progress-panel h4 i {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(7, 36, 71, 0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+body.brand-theme .tip-item i {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    box-shadow: 0 6px 14px rgba(7, 36, 71, 0.18);
+}
+
+body.brand-theme .tutorial-overlay {
+    /* background: radial-gradient(circle at 20% 20%, rgba(7, 36, 71, 0.85) 0%, rgba(7, 36, 71, 0.75) 45%, rgba(7, 36, 71, 0.55) 100%); */
+}
+
+body.brand-theme .tutorial-spotlight {
+    border-color: rgba(39, 101, 255, 0.9);
+    box-shadow: 0 0 30px rgba(39, 101, 255, 0.3), 0 0 0 8px rgba(39, 101, 255, 0.12);
+}
+
+body.brand-theme .tutorial-tooltip {
+    background: linear-gradient(135deg, rgba(7, 36, 71, 0.96) 0%, rgba(39, 101, 255, 0.92) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    box-shadow: 0 24px 60px rgba(7, 36, 71, 0.35);
+}
+
+body.brand-theme .tutorial-tooltip-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+body.brand-theme .tutorial-title,
+body.brand-theme .tutorial-content {
+    color: #ffffff;
+}
+
+body.brand-theme .tutorial-step-indicator {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body.brand-theme .tutorial-step-current {
+    /* background: #ffffff; */
+    color: #ffffff;
+}
+
+body.brand-theme .tutorial-step-total {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.brand-theme .tutorial-dot {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+body.brand-theme .tutorial-dot.active {
+    background: #ffffff;
+}
+
+body.brand-theme .tutorial-dot.completed {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+body.brand-theme .tutorial-progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.brand-theme .tutorial-progress-bar-inner {
+    background: linear-gradient(135deg, #20a4ff, #72c6ff);
+}
+
+body.brand-theme .tutorial-btn-primary {
+    background: linear-gradient(135deg, #072447, #2765ff);
+    color: #ffffff;
+    box-shadow: 0 18px 35px rgba(7, 36, 71, 0.25);
+}
+
+body.brand-theme .tutorial-btn-primary:hover {
+    box-shadow: 0 20px 45px rgba(7, 36, 71, 0.3);
+}
+
+body.brand-theme .tutorial-btn-secondary {
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+}
+
+body.brand-theme .tutorial-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+body.brand-theme .tutorial-close {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.brand-theme .tutorial-close:hover {
+    color: #ffffff;
 }

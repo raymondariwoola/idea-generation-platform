@@ -127,6 +127,7 @@ class InnovationPortal {
             }
         }
 
+        this.updateProgressVisualTheme(normalized);
         this.syncThemeToggle(normalized);
     }
 
@@ -822,6 +823,64 @@ class InnovationPortal {
             } else {
                 progressPath.style.animation = 'none';
             }
+        }
+
+        this.updateProgressVisualTheme();
+    }
+
+    updateProgressVisualTheme(theme = this.currentTheme) {
+        const activeTheme = theme || this.currentTheme || 'futuristic';
+
+        const svgProgress = document.querySelector('.svg-progress');
+        if (svgProgress) {
+            const gradient = svgProgress.querySelector('#progressGradient');
+            if (gradient) {
+                const stops = gradient.querySelectorAll('stop');
+                if (stops.length >= 3) {
+                    const colorSets = {
+                        brand: ['#072447', '#155ac4', '#49b2ff'],
+                        futuristic: ['#00d4ff', '#7c3aed', '#00ff88']
+                    };
+                    const chosen = activeTheme === 'brand' ? colorSets.brand : colorSets.futuristic;
+                    stops.forEach((stop, index) => {
+                        const color = chosen[Math.min(index, chosen.length - 1)];
+                        stop.setAttribute('stop-color', color);
+                        stop.setAttribute('stop-opacity', '1');
+                        stop.setAttribute('style', `stop-color:${color};stop-opacity:1`);
+                    });
+                }
+            }
+
+            const backgroundCircle = svgProgress.querySelector('circle:not(.progress-path)');
+            if (backgroundCircle) {
+                const stroke = activeTheme === 'brand' ? 'rgba(7, 36, 71, 0.18)' : 'rgba(255,255,255,0.1)';
+                backgroundCircle.setAttribute('stroke', stroke);
+            }
+
+            const progressPath = svgProgress.querySelector('.progress-path');
+            if (progressPath) {
+                progressPath.setAttribute('stroke', 'url(#progressGradient)');
+                if (activeTheme === 'brand') {
+                    progressPath.removeAttribute('filter');
+                    progressPath.style.filter = 'drop-shadow(0 6px 18px rgba(7, 36, 71, 0.25))';
+                } else {
+                    progressPath.setAttribute('filter', 'url(#glow)');
+                    progressPath.style.filter = '';
+                }
+            }
+
+            const progressText = svgProgress.querySelector('.progress-text');
+            if (progressText) {
+                const fillColor = activeTheme === 'brand' ? '#000000' : '#e8f0ff';
+                progressText.setAttribute('fill', fillColor);
+                progressText.style.fill = fillColor;
+                progressText.style.opacity = activeTheme === 'brand' ? '0.9' : '1';
+            }
+        }
+
+        const legacyText = document.querySelector('.progress-circle > .progress-text');
+        if (legacyText) {
+            legacyText.style.color = activeTheme === 'brand' ? '#000000' : '#e6ecf8';
         }
     }
 

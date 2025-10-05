@@ -128,17 +128,21 @@ html, body {
     cursor: pointer;
 }
 
+
 .logo {
-    width: 42px;
+    width: clamp(120px, 18vw, 160px);
     height: 42px;
+    padding: 0.3rem 0.75rem;
     border-radius: var(--border-radius-sm);
-    display: grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: conic-gradient(from 200deg, var(--brand-primary), var(--brand-secondary));
     box-shadow: 
         0 0 0 2px var(--glass-border) inset,
         0 10px 30px rgba(106, 227, 255, 0.3);
     transition: var(--transition);
+    overflow: hidden;
 }
 
 .logo:hover {
@@ -148,8 +152,11 @@ html, body {
         0 15px 40px rgba(106, 227, 255, 0.4);
 }
 
-.logo svg {
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+.logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .brand-text {
