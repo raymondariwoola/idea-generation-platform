@@ -131,8 +131,8 @@ body.brand-theme .hero-section {
 }
 
 body.brand-theme .quarterly-theme {
-    background: rgba(7, 36, 71, 0.08);
-    border: 1px solid rgba(7, 36, 71, 0.12);
+    /* background: rgba(7, 36, 71, 0.08);
+    border: 1px solid rgba(7, 36, 71, 0.12); */
     color: var(--brand-primary);
 }
 
