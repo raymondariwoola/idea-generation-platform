@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome • Think Space</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="brandStyle.css" />
+  <link rel="stylesheet" href="welcome.css" />
+</head>
+<body class="welcome-page">
+  <!-- Header -->
+  <header class="welcome-header">
+    <div class="logo"><img src="enbd-logo.svg" alt="Emirates NBD" style="width:24px;height:24px;opacity:.9"/></div>
+    <div class="brand">Think Space</div>
+  </header>
+
+  <!-- Hero -->
+  <main class="welcome-hero">
+    <div class="frame">
+      <h1 class="headline">
+        <span class="welcome">Welcome to</span>
+        <span class="brand-name">Think Space</span>
+      </h1>
+      <p class="tagline">Transform sparks into outcomes. Share ideas, collaborate, and track progress—confidently.</p>
+
+      <a id="enter-btn" class="enter-btn" href="index.html">
+        <span class="icon"><i class="fas fa-arrow-right"></i></span>
+        <span>Click to enter</span>
+      </a>
+      <div class="hint">Press Enter to proceed</div>
+    </div>
+  </main>
+
+  <footer class="welcome-footer">
+    © <span id="year"></span> Think Space • Powered by your ideas
+  </footer>
+
+  <script>
+    (function(){
+      const btn = document.getElementById('enter-btn');
+      const go = () => { btn.classList.add('pulse'); window.location.href = btn.getAttribute('href'); };
+      document.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

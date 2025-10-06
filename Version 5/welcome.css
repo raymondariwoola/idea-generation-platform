@@ -1,0 +1,139 @@
+/* Welcome Page - Minimal, modern, and futuristic. Scoped styles to avoid collisions. */
+:root {
+  --bg: #0b1220;
+  --bg-alt: #0e172c;
+  --brand: #0b5cff; /* fallback brand blue */
+  --brand-2: #7c3aed; /* accent purple */
+  --text: #e8f0ff;
+  --muted: #a9b6d3;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+}
+
+/* If brandStyle defines variables, inherit them; otherwise fallbacks above apply */
+.welcome-page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(124,58,237,0.15), transparent 60%),
+              radial-gradient(900px 500px at -10% 100%, rgba(11,92,255,0.12), transparent 55%),
+              linear-gradient(180deg, var(--bg), var(--bg-alt));
+  color: var(--text);
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Brand header */
+.welcome-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1.25rem 1.5rem;
+  user-select: none;
+}
+.welcome-header .logo {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.welcome-header .brand {
+  font-weight: 800; letter-spacing: .2px; opacity: .9;
+}
+
+/* Hero */
+.welcome-hero {
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.5rem 3rem;
+  text-align: center;
+  position: relative;
+}
+
+/* Floating orbs */
+.welcome-hero::before,
+.welcome-hero::after {
+  content: '';
+  position: absolute;
+  width: 46vmin; height: 46vmin;
+  border-radius: 50%;
+  filter: blur(30px);
+  opacity: .28;
+  pointer-events: none;
+}
+.welcome-hero::before {
+  background: radial-gradient(circle at 30% 30%, var(--brand), transparent 60%);
+  top: 12%; left: 10%;
+  animation: floatA 9s ease-in-out infinite;
+}
+.welcome-hero::after {
+  background: radial-gradient(circle at 70% 70%, var(--brand-2), transparent 60%);
+  bottom: 8%; right: 6%;
+  animation: floatB 11s ease-in-out infinite;
+}
+@keyframes floatA { 0%,100%{ transform: translateY(0) } 50% { transform: translateY(12px) } }
+@keyframes floatB { 0%,100%{ transform: translateY(0) } 50% { transform: translateY(-14px) } }
+
+/******** Headline ********/
+.headline {
+  line-height: 1.1;
+  margin: 6vh 0 1rem;
+}
+.headline .welcome {
+  display: block;
+  font-size: clamp(.9rem, 2.2vw, 1.2rem);
+  color: var(--muted);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+.headline .brand-name {
+  display: inline-block;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: clamp(.95rem, 1.8vw, 1.1rem);
+  margin-bottom: 2.25rem;
+}
+
+/* Primary CTA */
+.enter-btn {
+  display: inline-flex; align-items: center; gap: .6rem;
+  padding: .95rem 1.35rem;
+  border-radius: 14px; border: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+  color: var(--text); text-decoration: none; font-weight: 700;
+  box-shadow: 0 12px 35px rgba(0, 89, 255, 0.2);
+  transition: transform .18s ease, box-shadow .18s ease, background .2s ease;
+}
+.enter-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0, 89, 255, 0.28); }
+.enter-btn:active { transform: translateY(0); }
+.enter-btn .icon { width: 1.15em; height: 1.15em; display: inline-grid; place-items: center; }
+
+.hint { margin-top: 1rem; color: var(--muted); font-size: .9rem; opacity: .85; }
+
+/* Footer */
+.welcome-footer { color: var(--muted); font-size: .85rem; padding: 1.25rem; text-align: center; }
+
+/* Glass framing card */
+.frame {
+  position: relative;
+  max-width: 1100px; width: 100%;
+  margin: 0 auto; padding: clamp(1rem, 3vw, 2rem);
+  border-radius: 22px;
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(16px);
+}
+
+/* Motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .welcome-hero::before, .welcome-hero::after { animation: none; }
+  .enter-btn { transition: none; }
+}
