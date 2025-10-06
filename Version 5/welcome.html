@@ -16,6 +16,17 @@
   <header class="welcome-header">
     <div class="logo"><img src="enbd-logo.svg" alt="Emirates NBD" style="width:24px;height:24px;opacity:.9"/></div>
     <div class="brand">Think Space</div>
+    <div class="spacer"></div>
+    <div class="theme-toggle" role="group" aria-label="Theme selection">
+      <button type="button" class="theme-toggle-option" data-theme="futuristic" aria-pressed="false">
+        <i class="fas fa-rocket"></i>
+        <span>Futuristic</span>
+      </button>
+      <button type="button" class="theme-toggle-option" data-theme="brand" aria-pressed="false">
+        <i class="fas fa-landmark"></i>
+        <span>Brand</span>
+      </button>
+    </div>
   </header>
 
   <!-- Hero -->
@@ -41,9 +52,44 @@
 
   <script>
     (function(){
+      const THEME_KEY = 'think-space-theme';
+      const root = document.documentElement;
+      const body = document.body;
+      const buttons = Array.from(document.querySelectorAll('.theme-toggle-option'));
+
+      function applyTheme(theme, persist = true) {
+        const normalized = theme === 'brand' ? 'brand' : 'futuristic';
+        body.classList.toggle('brand-theme', normalized === 'brand');
+        body.classList.toggle('futuristic-theme', normalized === 'futuristic');
+        root.dataset.theme = normalized;
+        root.style.setProperty('color-scheme', normalized === 'brand' ? 'light' : 'dark');
+        if (persist) try { localStorage.setItem(THEME_KEY, normalized); } catch {}
+        // update toggle state
+        buttons.forEach(btn => {
+          const isActive = btn.dataset.theme === normalized;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      }
+
+      // Initial theme
+      let initial = 'futuristic';
+      try { const stored = localStorage.getItem(THEME_KEY); if (stored) initial = stored; } catch {}
+      applyTheme(initial, false);
+
+      // Toggle listeners
+      buttons.forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.theme)));
+
+      // CTA + keyboard enter
       const btn = document.getElementById('enter-btn');
-      const go = () => { btn.classList.add('pulse'); window.location.href = btn.getAttribute('href'); };
+      const go = () => {
+        btn.classList.add('enter-anim');
+        setTimeout(() => { window.location.href = btn.getAttribute('href'); }, 220);
+      };
       document.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+      btn.addEventListener('click', (e) => { e.preventDefault(); go(); });
+
+      // Footer year
       document.getElementById('year').textContent = new Date().getFullYear();
     })();
   </script>
