@@ -221,6 +221,10 @@ class InnovationPortal {
         await this.loadStatusDictionary();
         // Ensure Status filter reflects friendly labels after dictionary load
         this.applyFriendlyLabelsToStatusFilter();
+        if (!this.ideas.length) {
+            this.homePagination.loading = true;
+            this.renderIdeas();
+        }
         await this.loadSampleData();
         this.renderAll();
         this.animateKPIs();
@@ -1453,6 +1457,19 @@ class InnovationPortal {
         const container = document.getElementById('ideas-grid');
         if (!container) return;
 
+        const initialLoading = this.homePagination.loading && this.ideas.length === 0 && !this.isFilteringHome;
+        if (initialLoading) {
+            container.classList.add('ideas-grid');
+            container.classList.remove('ideas-list');
+            container.innerHTML = `
+                <div class="ideas-loading" role="status" aria-live="polite">
+                    <span class="loading" aria-hidden="true"></span>
+                    <span>Loading ideas...</span>
+                </div>
+            `;
+            return;
+        }
+
         // Ensure proper class for grid layout
         container.classList.add('ideas-grid');
         container.classList.remove('ideas-list');
@@ -1481,6 +1498,17 @@ class InnovationPortal {
         // Switch container to list layout (remove grid styles)
         container.classList.remove('ideas-grid');
         container.classList.add('ideas-list');
+
+        const initialLoading = this.homePagination.loading && this.ideas.length === 0 && !this.isFilteringHome;
+        if (initialLoading) {
+            container.innerHTML = `
+                <div class="ideas-loading" role="status" aria-live="polite">
+                    <span class="loading" aria-hidden="true"></span>
+                    <span>Loading ideas...</span>
+                </div>
+            `;
+            return;
+        }
 
         const ideasToShow = filteredIdeas || this.ideas;
 
@@ -1694,9 +1722,23 @@ class InnovationPortal {
     // ===== KPI DASHBOARD (ENHANCED V3) =====
     updateKPIs() {
         const total = this.homePagination.totalCount ?? this.ideas.length;
-        const accepted = this.ideas.filter(i => i.status === 'Accepted').length;
-        const inReview = this.ideas.filter(i => i.status === 'In review').length;
-        const participants = new Set(this.ideas.map(i => i.owner)).size;
+        let accepted = 0;
+        let inReview = 0;
+        const participantSet = new Set();
+
+        this.ideas.forEach(idea => {
+            if (!idea) return;
+            if (idea.status === 'Accepted') {
+                accepted += 1;
+            } else if (idea.status === 'In review') {
+                inReview += 1;
+            }
+            if (idea.owner) {
+                participantSet.add(idea.owner);
+            }
+        });
+
+        const participants = participantSet.size;
 
         this.animateCounter('kpi-total', total);
         this.animateCounter('kpi-accepted', accepted);
@@ -2037,11 +2079,13 @@ class InnovationPortal {
             this.homePagination.nextLink = null;
             this.homePagination.totalCount = fallbackIdeas.length;
             this.homePagination.cacheTimestamp = Date.now();
+            this.homePagination.loading = false;
 
             this.myIdeasCache = fallbackIdeas.filter(idea => idea.self);
             this.myIdeasPagination.nextLink = null;
             this.myIdeasPagination.totalCount = this.myIdeasCache.length;
             this.myIdeasPagination.cacheTimestamp = Date.now();
+            this.myIdeasPagination.loading = false;
 
             this.saveIdeas();
         }
