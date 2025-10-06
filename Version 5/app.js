@@ -292,7 +292,7 @@ class InnovationPortal {
                     }, 1000);
                 }
             } else if (viewName === 'track') {
-                this.renderTrackingView();
+                this.refreshTrackView();
             } else if (viewName === 'submit') {
                 // Initialize progress tracking for submit form
                 setTimeout(() => {
@@ -1081,8 +1081,13 @@ class InnovationPortal {
             this.showNotification('Idea submitted successfully! 🎉', 'success');
             // Subtle success animation before navigating to Track view
             await this.playSubmitSuccessAnimation();
-            // Refresh "My Ideas" from SharePoint (server is source of truth)
-            try { await this.loadIdeasFromSharePoint(true); } catch {}
+            // Refresh local cache from SharePoint (server is source of truth)
+            try {
+                const refreshedIdeas = await this.loadIdeasFromSharePoint();
+                if (refreshedIdeas.length) {
+                    this.ideas = refreshedIdeas;
+                }
+            } catch {}
             this.switchView('track');
             
         } catch (error) {
@@ -1232,6 +1237,19 @@ class InnovationPortal {
         }
 
         this.renderTrackingView();
+    }
+
+    async refreshTrackView() {
+        try {
+            const updatedIdeas = await this.loadIdeasFromSharePoint();
+            if (updatedIdeas.length) {
+                this.ideas = updatedIdeas;
+            }
+        } catch (err) {
+            console.warn('Could not refresh ideas from SharePoint for Track view.', err);
+        } finally {
+            this.renderTrackingView();
+        }
     }
 
     renderTrackingView() {
@@ -1957,10 +1975,40 @@ class InnovationPortal {
 
     async loadIdeasFromSharePoint(onlyMine = false) {
         try {
-            const me = (this.currentUser && this.currentUser.email) ? this.currentUser.email : '';
-            const filter = (onlyMine && me) ? `&$filter=SubmitterEmail eq '${encodeURIComponent(me)}'` : '';
+            const rawEmail = (this.currentUser && this.currentUser.email)
+                ? this.currentUser.email.trim()
+                : '';
+            const currentEmail = rawEmail ? rawEmail.toLowerCase() : '';
+            const currentUserId = this.currentUser?.id ? parseInt(this.currentUser.id, 10) : null;
+
+            const selectFields = [
+                'Id', 'Title', 'Category', 'Department', 'Problem', 'Solution',
+                'ExpectedImpact', 'EstimatedEffort', 'RequiredResources',
+                'SubmitterName', 'SubmitterEmail', 'Tags', 'Status',
+                'AttachmentUrls', 'IsAnonymous', 'Modified', 'Votes',
+                'Author/Id', 'Author/Title', 'Author/EMail', 'AuthorId'
+            ];
+
+            const baseUrl = `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items`;
+            const selectQuery = `&$select=${selectFields.join(',')}`;
+            const expandQuery = '&$expand=Author';
+            const orderQuery = '?$orderby=Created desc';
+
+            const filters = [];
+            if (onlyMine) {
+                if (Number.isInteger(currentUserId)) {
+                    filters.push(`Author/Id eq ${currentUserId}`);
+                }
+                if (rawEmail) {
+                    filters.push(`SubmitterEmail eq '${escapeODataString(rawEmail)}'`);
+                }
+            }
+            const filterQuery = filters.length > 0
+                ? `&$filter=${filters.join(' or ')}`
+                : '';
+
             const response = await fetch(
-                `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items?$orderby=Created desc${filter}`,
+                `${baseUrl}${orderQuery}${selectQuery}${expandQuery}${filterQuery}`,
                 {
                     headers: {
                         'Accept': 'application/json;odata=verbose'
@@ -1968,34 +2016,54 @@ class InnovationPortal {
                     credentials: 'include'
                 }
             );
-            
+
             if (!response.ok) {
                 throw new Error(`Load failed: ${response.statusText}`);
             }
-            
+
             const data = await response.json();
             const items = (data.d && data.d.results) ? data.d.results : [];
-            const ideas = items.map(item => ({
-                id: item.Id.toString(),
-                title: item.Title,
-                category: item.Category,
-                dept: item.Department,
-                problem: item.Problem,
-                solution: item.Solution,
-                impact: item.ExpectedImpact,
-                effort: item.EstimatedEffort,
-                resources: item.RequiredResources,
-                owner: item.IsAnonymous ? 'Anonymous' : item.SubmitterName,
-                email: item.SubmitterEmail,
-                tags: item.Tags ? item.Tags.split(';') : [],
-                status: item.Status || 'Submitted',
-                updated: new Date(item.Modified).getTime(),
-                progress: this.calculateProgress(item.Status),
-                self: item.SubmitterEmail?.toLowerCase() === (this.currentUser.email || '').toLowerCase(),
-                votes: item.Votes || 0,
-                attachmentUrls: item.AttachmentUrls ? item.AttachmentUrls.split(';') : []
-            }));
-            // If a filter wasn't applied server-side, restrict to my items here for the Track view use case
+            const ideas = items.map(item => {
+                const author = item.Author || {};
+                const authorId = (author.Id ?? item.AuthorId) ? parseInt(author.Id ?? item.AuthorId, 10) : null;
+                const authorEmail = (author.EMail || '').toLowerCase();
+                const authorName = author.Title || '';
+
+                const submitterEmail = (item.SubmitterEmail || '').trim().toLowerCase();
+                const isMineById = Number.isInteger(currentUserId) && Number.isInteger(authorId)
+                    ? authorId === currentUserId
+                    : false;
+                const isMineByEmail = currentEmail && submitterEmail
+                    ? submitterEmail === currentEmail
+                    : false;
+
+                const ownerName = item.IsAnonymous
+                    ? 'Anonymous'
+                    : (item.SubmitterName || authorName || 'Unknown submitter');
+                const ownerEmail = item.IsAnonymous ? '' : (item.SubmitterEmail || authorEmail || '');
+
+                return {
+                    id: item.Id.toString(),
+                    title: item.Title,
+                    category: item.Category,
+                    dept: item.Department,
+                    problem: item.Problem,
+                    solution: item.Solution,
+                    impact: item.ExpectedImpact,
+                    effort: item.EstimatedEffort,
+                    resources: item.RequiredResources,
+                    owner: ownerName,
+                    email: ownerEmail,
+                    tags: item.Tags ? item.Tags.split(';').filter(Boolean) : [],
+                    status: item.Status || 'Submitted',
+                    updated: new Date(item.Modified).getTime(),
+                    progress: this.calculateProgress(item.Status),
+                    self: isMineById || isMineByEmail,
+                    votes: item.Votes || 0,
+                    attachmentUrls: item.AttachmentUrls ? item.AttachmentUrls.split(';').filter(Boolean) : []
+                };
+            });
+
             return onlyMine ? ideas.filter(i => i.self) : ideas;
         } catch (error) {
             console.error('Error loading ideas from SharePoint:', error);
@@ -2203,6 +2271,10 @@ class InnovationPortal {
         const stored = localStorage.getItem('innovation-portal-v5-drafts');
         return stored ? JSON.parse(stored) : [];
     }
+}
+
+function escapeODataString(value = '') {
+    return String(value).replace(/'/g, "''");
 }
 
 // Short, user-friendly fallback labels (used if SharePoint dictionary isn't available)
