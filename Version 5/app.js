@@ -58,6 +58,23 @@ class InnovationPortal {
         };
         
         this.uploadedFiles = [];
+        this.pageSize = 25;
+        this.cacheTTL = 5 * 60 * 1000; // 5 minutes
+        this.homePagination = {
+            nextLink: null,
+            loading: false,
+            cacheTimestamp: 0,
+            totalCount: null
+        };
+        this.myIdeasCache = [];
+        this.myIdeasPagination = {
+            nextLink: null,
+            loading: false,
+            cacheTimestamp: 0,
+            totalCount: null
+        };
+        this.isFilteringHome = false;
+        this.lastRenderTrigger = 'default';
         this.init();
     }
 
@@ -282,6 +299,17 @@ class InnovationPortal {
 
             // View-specific actions
             if (viewName === 'home') {
+                const staleHomeFeed = !this.homePagination.loading && (Date.now() - this.homePagination.cacheTimestamp > this.cacheTTL);
+                if (staleHomeFeed) {
+                    this.loadHomeIdeas({ reset: true, force: true })
+                        .then(() => {
+                            this.lastRenderTrigger = 'default';
+                            this.renderIdeas();
+                            this.updateKPIs();
+                        })
+                        .catch(err => console.warn('Home feed refresh failed', err));
+                }
+                this.lastRenderTrigger = 'default';
                 this.renderIdeas();
                 this.updateKPIs();
                 
@@ -349,6 +377,7 @@ class InnovationPortal {
     performSearch() {
         const query = document.getElementById('global-search')?.value.toLowerCase() || '';
         const activeCategory = document.querySelector('.pill.active')?.dataset.chip || 'all';
+        const isSearchActive = !!query || activeCategory !== 'all';
         
         let filteredIdeas = this.ideas.filter(idea => {
             const matchesSearch = !query || 
@@ -362,6 +391,7 @@ class InnovationPortal {
             return matchesSearch && matchesCategory;
         });
 
+        this.lastRenderTrigger = isSearchActive ? 'search' : 'default';
         this.renderIdeas(filteredIdeas);
     }
 
@@ -392,6 +422,7 @@ class InnovationPortal {
                 document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
                 document.querySelector('.pill[data-chip="all"]')?.classList.add('active');
                 document.getElementById('global-search').value = '';
+                this.lastRenderTrigger = 'default';
                 this.renderIdeas();
             });
         }
@@ -414,6 +445,8 @@ class InnovationPortal {
             return matchesStatus && matchesCategory && matchesDepartment;
         });
 
+        const hasFilters = !!status || !!category || !!department;
+        this.lastRenderTrigger = hasFilters ? 'filter' : 'default';
         this.renderIdeas(filteredIdeas);
     }
 
@@ -470,7 +503,14 @@ class InnovationPortal {
 
                 // Set current mode and re-render
                 this.ideasView = mode;
-                this.renderIdeas();
+                if (this.lastRenderTrigger === 'search') {
+                    this.performSearch();
+                } else if (this.lastRenderTrigger === 'filter') {
+                    this.applyFilters();
+                } else {
+                    this.lastRenderTrigger = 'default';
+                    this.renderIdeas();
+                }
             });
         });
     }
@@ -1081,13 +1121,16 @@ class InnovationPortal {
             this.showNotification('Idea submitted successfully! 🎉', 'success');
             // Subtle success animation before navigating to Track view
             await this.playSubmitSuccessAnimation();
-            // Refresh local cache from SharePoint (server is source of truth)
+            // Refresh paged caches from SharePoint (server is source of truth)
             try {
-                const refreshedIdeas = await this.loadIdeasFromSharePoint();
-                if (refreshedIdeas.length) {
-                    this.ideas = refreshedIdeas;
-                }
-            } catch {}
+                await this.loadHomeIdeas({ reset: true, force: true });
+                await this.loadMyIdeas({ reset: true, force: true });
+                this.lastRenderTrigger = 'default';
+                this.renderIdeas();
+                this.updateKPIs();
+            } catch (refreshError) {
+                console.warn('Post-submit refresh failed; cached data may be stale.', refreshError);
+            }
             this.switchView('track');
             
         } catch (error) {
@@ -1239,24 +1282,29 @@ class InnovationPortal {
         this.renderTrackingView();
     }
 
-    async refreshTrackView() {
-        try {
-            const updatedIdeas = await this.loadIdeasFromSharePoint();
-            if (updatedIdeas.length) {
-                this.ideas = updatedIdeas;
+    async refreshTrackView(force = false) {
+        const now = Date.now();
+        const cacheStale = force || !this.myIdeasCache.length || (now - this.myIdeasPagination.cacheTimestamp > this.cacheTTL);
+
+        if (cacheStale && !this.myIdeasPagination.loading) {
+            try {
+                await this.loadMyIdeas({ reset: true, force: true });
+            } catch (err) {
+                console.warn('Could not refresh ideas from SharePoint for Track view.', err);
             }
-        } catch (err) {
-            console.warn('Could not refresh ideas from SharePoint for Track view.', err);
-        } finally {
-            this.renderTrackingView();
         }
+
+        this.renderTrackingView();
     }
 
     renderTrackingView() {
-        const myIdeas = this.ideas.filter(idea => idea.self);
+        const myIdeas = this.myIdeasCache.length > 0
+            ? this.myIdeasCache
+            : this.ideas.filter(idea => idea.self);
         this.updateMyStats(myIdeas);
         this.renderMyIdeasTable(myIdeas);
         this.renderMyIdeasCards(myIdeas);
+        this.updateMyIdeasLoadMoreControl();
     }
 
     updateMyStats(myIdeas) {
@@ -1338,13 +1386,66 @@ class InnovationPortal {
         container.innerHTML = ideas.map(idea => this.createIdeaCard(idea, true)).join('');
     }
 
+    updateMyIdeasLoadMoreControl() {
+        const panelContent = document.querySelector('.track-content .panel-content');
+        if (!panelContent) return;
+
+        let container = document.getElementById('my-ideas-load-more');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'my-ideas-load-more';
+            container.className = 'load-more-container';
+            panelContent.appendChild(container);
+        }
+
+        container.innerHTML = '';
+
+        if (this.myIdeasPagination.loading) {
+            const loading = document.createElement('div');
+            loading.className = 'loading-text';
+            loading.textContent = 'Loading your ideas...';
+            container.appendChild(loading);
+            return;
+        }
+
+        const hasIdeas = this.myIdeasCache.length > 0;
+        const total = this.myIdeasPagination.totalCount ?? (hasIdeas ? this.myIdeasCache.length : 0);
+
+        if (!hasIdeas && !this.myIdeasPagination.nextLink) {
+            container.innerHTML = '';
+            return;
+        }
+
+        if (hasIdeas) {
+            const summary = document.createElement('div');
+            summary.className = 'load-more-summary';
+            summary.textContent = total
+                ? `Showing ${this.myIdeasCache.length} of ${total} ideas you submitted.`
+                : `Showing ${this.myIdeasCache.length} ideas you submitted.`;
+            container.appendChild(summary);
+        }
+
+        if (this.myIdeasPagination.nextLink) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-secondary';
+            btn.textContent = 'Load more of your ideas';
+            btn.addEventListener('click', () => this.loadMoreMyIdeas());
+            container.appendChild(btn);
+        }
+    }
+
     // ===== IDEAS RENDERING (GRID/LIST) =====
     renderIdeas(filteredIdeas = null) {
+        const isFiltered = Array.isArray(filteredIdeas);
+        this.isFilteringHome = isFiltered;
+
         if (this.ideasView === 'list') {
-            this.renderIdeasList(filteredIdeas);
+            this.renderIdeasList(isFiltered ? filteredIdeas : null);
         } else {
-            this.renderIdeasGrid(filteredIdeas);
+            this.renderIdeasGrid(isFiltered ? filteredIdeas : null);
         }
+
+        this.updateHomeLoadMoreControl();
     }
 
     // ===== IDEAS GRID RENDERING (ENHANCED V3 + V4) =====
@@ -1413,6 +1514,66 @@ class InnovationPortal {
                 </table>
             </div>
         `;
+    }
+
+    updateHomeLoadMoreControl() {
+        const ideasMain = document.querySelector('.ideas-main');
+        if (!ideasMain) return;
+
+        let container = document.getElementById('ideas-load-more');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'ideas-load-more';
+            container.className = 'load-more-container';
+            ideasMain.appendChild(container);
+        }
+
+        container.innerHTML = '';
+
+        if (this.homePagination.loading) {
+            const loading = document.createElement('div');
+            loading.className = 'loading-text';
+            loading.textContent = 'Loading ideas...';
+            container.appendChild(loading);
+            return;
+        }
+
+        if (this.isFilteringHome) {
+            const note = document.createElement('div');
+            note.className = 'load-more-summary';
+            note.textContent = 'Showing filtered results from loaded ideas.';
+            container.appendChild(note);
+
+            if (this.homePagination.nextLink && !this.homePagination.loading) {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-secondary';
+                btn.textContent = 'Load more ideas';
+                btn.addEventListener('click', () => this.loadMoreHomeIdeas());
+                container.appendChild(btn);
+            }
+            return;
+        }
+
+        if (this.ideas.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        const total = this.homePagination.totalCount ?? this.ideas.length;
+        const summary = document.createElement('div');
+        summary.className = 'load-more-summary';
+        summary.textContent = total
+            ? `Showing ${this.ideas.length} of ${total} ideas.`
+            : `Showing ${this.ideas.length} ideas.`;
+        container.appendChild(summary);
+
+        if (this.homePagination.nextLink) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-secondary';
+            btn.textContent = 'Load more ideas';
+            btn.addEventListener('click', () => this.loadMoreHomeIdeas());
+            container.appendChild(btn);
+        }
     }
 
     createIdeasListRow(idea) {
@@ -1532,7 +1693,7 @@ class InnovationPortal {
 
     // ===== KPI DASHBOARD (ENHANCED V3) =====
     updateKPIs() {
-        const total = this.ideas.length;
+        const total = this.homePagination.totalCount ?? this.ideas.length;
         const accepted = this.ideas.filter(i => i.status === 'Accepted').length;
         const inReview = this.ideas.filter(i => i.status === 'In review').length;
         const participants = new Set(this.ideas.map(i => i.owner)).size;
@@ -1782,19 +1943,18 @@ class InnovationPortal {
     // ===== DATA LOADING (SHAREPOINT INTEGRATION) =====
     async loadSampleData() {
         try {
-            // Try to load from SharePoint first
-            const sharepointIdeas = await this.loadIdeasFromSharePoint();
-            if (sharepointIdeas.length > 0) {
-                this.ideas = sharepointIdeas;
+            await this.loadHomeIdeas({ reset: true, force: true });
+            await this.loadMyIdeas({ reset: true, force: true });
+            if (this.ideas.length > 0) {
                 return;
             }
         } catch (error) {
             console.warn('Could not load from SharePoint, using sample data:', error);
         }
-        
+
         // Fallback to sample data if SharePoint is not available
         if (this.ideas.length === 0) {
-            this.ideas = [
+            const fallbackIdeas = [
                 {
                     id: this.generateId(),
                     title: 'AI-Powered Code Review Assistant',
@@ -1872,6 +2032,17 @@ class InnovationPortal {
                     votes: 12
                 }
             ];
+
+            this.ideas = fallbackIdeas;
+            this.homePagination.nextLink = null;
+            this.homePagination.totalCount = fallbackIdeas.length;
+            this.homePagination.cacheTimestamp = Date.now();
+
+            this.myIdeasCache = fallbackIdeas.filter(idea => idea.self);
+            this.myIdeasPagination.nextLink = null;
+            this.myIdeasPagination.totalCount = this.myIdeasCache.length;
+            this.myIdeasPagination.cacheTimestamp = Date.now();
+
             this.saveIdeas();
         }
     }
@@ -1973,7 +2144,7 @@ class InnovationPortal {
         }
     }
 
-    async loadIdeasFromSharePoint(onlyMine = false) {
+    async loadIdeasFromSharePoint({ onlyMine = false, nextLink = null, top = this.pageSize } = {}) {
         try {
             const rawEmail = (this.currentUser && this.currentUser.email)
                 ? this.currentUser.email.trim()
@@ -1989,33 +2160,40 @@ class InnovationPortal {
                 'Author/Id', 'Author/Title', 'Author/EMail', 'AuthorId'
             ];
 
-            const baseUrl = `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items`;
-            const selectQuery = `&$select=${selectFields.join(',')}`;
-            const expandQuery = '&$expand=Author';
-            const orderQuery = '?$orderby=Created desc';
+            let requestUrl = nextLink;
+            if (!requestUrl) {
+                const baseUrl = `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items`;
+                const params = [
+                    `$orderby=Created desc`,
+                    `$select=${selectFields.join(',')}`,
+                    `$expand=Author`,
+                    `$top=${top}`,
+                    `$inlinecount=allpages`
+                ];
 
-            const filters = [];
-            if (onlyMine) {
-                if (Number.isInteger(currentUserId)) {
-                    filters.push(`Author/Id eq ${currentUserId}`);
+                const filters = [];
+                if (onlyMine) {
+                    if (Number.isInteger(currentUserId)) {
+                        filters.push(`Author/Id eq ${currentUserId}`);
+                    }
+                    if (rawEmail) {
+                        filters.push(`SubmitterEmail eq '${escapeODataString(rawEmail)}'`);
+                    }
                 }
-                if (rawEmail) {
-                    filters.push(`SubmitterEmail eq '${escapeODataString(rawEmail)}'`);
+
+                if (filters.length > 0) {
+                    params.push(`$filter=${filters.map(f => `(${f})`).join(' or ')}`);
                 }
+
+                requestUrl = `${baseUrl}?${params.join('&')}`;
             }
-            const filterQuery = filters.length > 0
-                ? `&$filter=${filters.join(' or ')}`
-                : '';
 
-            const response = await fetch(
-                `${baseUrl}${orderQuery}${selectQuery}${expandQuery}${filterQuery}`,
-                {
-                    headers: {
-                        'Accept': 'application/json;odata=verbose'
-                    },
-                    credentials: 'include'
-                }
-            );
+            const response = await fetch(requestUrl, {
+                headers: {
+                    'Accept': 'application/json;odata=verbose'
+                },
+                credentials: 'include'
+            });
 
             if (!response.ok) {
                 throw new Error(`Load failed: ${response.statusText}`);
@@ -2023,9 +2201,15 @@ class InnovationPortal {
 
             const data = await response.json();
             const items = (data.d && data.d.results) ? data.d.results : [];
+            const nextLinkResponse = (data.d && data.d.__next) ? data.d.__next : null;
+            const totalCount = data.d && typeof data.d.__count !== 'undefined'
+                ? parseInt(data.d.__count, 10)
+                : null;
+
             const ideas = items.map(item => {
                 const author = item.Author || {};
-                const authorId = (author.Id ?? item.AuthorId) ? parseInt(author.Id ?? item.AuthorId, 10) : null;
+                const authorIdValue = author.Id ?? item.AuthorId;
+                const authorId = authorIdValue ? parseInt(authorIdValue, 10) : null;
                 const authorEmail = (author.EMail || '').toLowerCase();
                 const authorName = author.Title || '';
 
@@ -2064,11 +2248,115 @@ class InnovationPortal {
                 };
             });
 
-            return onlyMine ? ideas.filter(i => i.self) : ideas;
+            return {
+                items: ideas,
+                nextLink: nextLinkResponse,
+                totalCount: Number.isNaN(totalCount) ? null : totalCount
+            };
         } catch (error) {
             console.error('Error loading ideas from SharePoint:', error);
-            return [];
+            throw error;
         }
+    }
+
+    async loadHomeIdeas({ reset = false, useNextLink = false, force = false } = {}) {
+        if (this.homePagination.loading) return;
+
+        const now = Date.now();
+        const hasData = this.ideas.length > 0;
+        const cacheFresh = !reset && !useNextLink && !force && hasData && (now - this.homePagination.cacheTimestamp < this.cacheTTL);
+        if (cacheFresh) return;
+
+        this.homePagination.loading = true;
+        if (reset) {
+            this.homePagination.nextLink = null;
+            this.homePagination.totalCount = null;
+            this.ideas = [];
+        }
+        this.updateHomeLoadMoreControl();
+
+        try {
+            const options = (useNextLink && this.homePagination.nextLink)
+                ? { nextLink: this.homePagination.nextLink }
+                : { top: this.pageSize };
+
+            const { items, nextLink, totalCount } = await this.loadIdeasFromSharePoint({ ...options, onlyMine: false });
+            const shouldReset = reset || (!useNextLink && (!hasData || force));
+            this.mergeIdeaCollections(this.ideas, items, { reset: shouldReset });
+            this.homePagination.nextLink = nextLink || null;
+            if (typeof totalCount === 'number' && !Number.isNaN(totalCount)) {
+                this.homePagination.totalCount = totalCount;
+            } else if (this.homePagination.totalCount == null && !useNextLink) {
+                this.homePagination.totalCount = this.ideas.length;
+            }
+            this.homePagination.cacheTimestamp = Date.now();
+        } catch (error) {
+            console.error('Failed to load home ideas from SharePoint:', error);
+            if (reset) throw error;
+        } finally {
+            this.homePagination.loading = false;
+            this.updateHomeLoadMoreControl();
+        }
+    }
+
+    async loadMoreHomeIdeas() {
+        if (!this.homePagination.nextLink || this.homePagination.loading) return;
+        await this.loadHomeIdeas({ useNextLink: true, force: true });
+        if (this.lastRenderTrigger === 'search') {
+            this.performSearch();
+        } else if (this.lastRenderTrigger === 'filter') {
+            this.applyFilters();
+        } else {
+            this.lastRenderTrigger = 'default';
+            this.renderIdeas();
+        }
+        this.updateKPIs();
+    }
+
+    async loadMyIdeas({ reset = false, useNextLink = false, force = false } = {}) {
+        if (this.myIdeasPagination.loading) return;
+
+        const now = Date.now();
+        const hasData = this.myIdeasCache.length > 0;
+        const cacheFresh = !reset && !useNextLink && !force && hasData && (now - this.myIdeasPagination.cacheTimestamp < this.cacheTTL);
+        if (cacheFresh) return;
+
+        this.myIdeasPagination.loading = true;
+        if (reset) {
+            this.myIdeasPagination.nextLink = null;
+            this.myIdeasPagination.totalCount = null;
+            this.myIdeasCache = [];
+        }
+        this.updateMyIdeasLoadMoreControl();
+
+        try {
+            const options = (useNextLink && this.myIdeasPagination.nextLink)
+                ? { nextLink: this.myIdeasPagination.nextLink }
+                : { top: this.pageSize, onlyMine: true };
+
+            const { items, nextLink, totalCount } = await this.loadIdeasFromSharePoint(options);
+            const shouldReset = reset || (!useNextLink && force);
+            this.mergeIdeaCollections(this.myIdeasCache, items, { reset: shouldReset });
+            this.myIdeasPagination.nextLink = nextLink || null;
+            if (typeof totalCount === 'number' && !Number.isNaN(totalCount)) {
+                this.myIdeasPagination.totalCount = totalCount;
+            } else if (this.myIdeasPagination.totalCount == null && !useNextLink) {
+                this.myIdeasPagination.totalCount = this.myIdeasCache.length;
+            }
+            this.myIdeasPagination.cacheTimestamp = Date.now();
+        } catch (error) {
+            console.error('Failed to load user ideas from SharePoint:', error);
+            if (reset) throw error;
+        } finally {
+            this.myIdeasPagination.loading = false;
+            this.updateMyIdeasLoadMoreControl();
+        }
+    }
+
+    async loadMoreMyIdeas() {
+        if (!this.myIdeasPagination.nextLink || this.myIdeasPagination.loading) return;
+        await this.loadMyIdeas({ useNextLink: true, force: true });
+        this.renderTrackingView();
     }
 
     // Lightweight success animation before navigating to Track view
@@ -2181,7 +2469,34 @@ class InnovationPortal {
     }
 
     // ===== UTILITY METHODS =====
+    mergeIdeaCollections(target, items, { reset = false } = {}) {
+        if (!Array.isArray(target) || !Array.isArray(items)) return;
+
+        if (reset) {
+            target.splice(0, target.length);
+        }
+
+        const indexMap = new Map();
+        target.forEach((idea, idx) => {
+            if (idea && idea.id) {
+                indexMap.set(idea.id, idx);
+            }
+        });
+
+        items.forEach(item => {
+            if (!item || !item.id) return;
+            if (indexMap.has(item.id)) {
+                const existingIndex = indexMap.get(item.id);
+                target[existingIndex] = { ...target[existingIndex], ...item };
+            } else {
+                indexMap.set(item.id, target.length);
+                target.push(item);
+            }
+        });
+    }
+
     renderAll() {
+        this.lastRenderTrigger = 'default';
         this.renderIdeas();
         this.updateKPIs();
         this.renderTrackingView();

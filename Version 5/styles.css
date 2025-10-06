@@ -719,6 +719,26 @@ html, body {
     transform: translateY(-4px);
     border-color: var(--glass-hover);
     box-shadow: var(--shadow-elevated);
+
+/* Load more controls */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0 0;
+    flex-wrap: wrap;
+}
+
+.load-more-container .load-more-summary,
+.load-more-container .loading-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.load-more-container .btn {
+    min-width: 180px;
+}
 }
 
 .idea-header {
