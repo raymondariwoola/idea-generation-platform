@@ -191,6 +191,8 @@ class InnovationPortal {
     }
 
     async init() {
+        // Resolve the current SharePoint user so we can filter "My Ideas"
+        await this.resolveCurrentUser();
         this.setupNavigation();
         this.setupThemeToggle();
         this.setupSearch();
@@ -206,6 +208,33 @@ class InnovationPortal {
         this.renderAll();
         this.animateKPIs();
         // console.log('🚀 Innovation Portal V5 initialized with SharePoint integration');
+    }
+
+    // Resolve current user from SharePoint for accurate filtering of "My Ideas"
+    async resolveCurrentUser() {
+        try {
+            // Prefer SharePoint page context when available
+            const spctx = window._spPageContextInfo;
+            if (spctx && (spctx.userEmail || spctx.userLoginName)) {
+                this.currentUser.email = spctx.userEmail || this.currentUser.email;
+                this.currentUser.name = spctx.userDisplayName || this.currentUser.name;
+                this.currentUser.id = (spctx.userId || this.currentUser.id).toString();
+                return;
+            }
+
+            // Fallback to SPClient helper if loaded
+            if (typeof SPClient !== 'undefined') {
+                const sp = new SPClient({ siteUrl: this.sharePointConfig.siteUrl, verboseLogging: false });
+                const me = await sp.getCurrentUser('Id,Title,Email,LoginName');
+                if (me) {
+                    this.currentUser.email = me.Email || this.currentUser.email;
+                    this.currentUser.name = me.Title || this.currentUser.name;
+                    this.currentUser.id = (me.Id || this.currentUser.id).toString();
+                }
+            }
+        } catch (e) {
+            console.warn('Could not resolve current SharePoint user; using defaults.', e);
+        }
     }
 
     // ===== NAVIGATION SYSTEM =====
@@ -995,9 +1024,13 @@ class InnovationPortal {
     }
 
     async submitIdea() {
+        // Guard against double-submission (rapid clicks or Enter presses)
+        if (this.isSubmitting) return;
+        this.isSubmitting = true;
         const formData = this.getFormData();
         
         if (!this.validateForm(formData)) {
+            this.isSubmitting = false;
             return;
         }
 
@@ -1046,15 +1079,18 @@ class InnovationPortal {
             this.clearForm();
             this.showLoading(false);
             this.showNotification('Idea submitted successfully! 🎉', 'success');
-            
-            setTimeout(() => {
-                this.switchView('track');
-            }, 1500);
+            // Subtle success animation before navigating to Track view
+            await this.playSubmitSuccessAnimation();
+            // Refresh "My Ideas" from SharePoint (server is source of truth)
+            try { await this.loadIdeasFromSharePoint(true); } catch {}
+            this.switchView('track');
             
         } catch (error) {
             console.error('Submission error:', error);
             this.showLoading(false);
             this.showNotification('Failed to submit idea. Please try again.', 'error');
+        } finally {
+            this.isSubmitting = false;
         }
     }
 
@@ -1897,7 +1933,8 @@ class InnovationPortal {
                         'EstimatedEffort': ideaData.effort,
                         'RequiredResources': ideaData.resources,
                         'SubmitterName': ideaData.owner,
-                        'SubmitterEmail': ideaData.email,
+                        // Always store the currently authenticated user's email for reliable filtering
+                        'SubmitterEmail': this.currentUser?.email || ideaData.email,
                         'Tags': ideaData.tags ? ideaData.tags.join(';') : '',
                         'Status': 'Submitted',
                         'AttachmentUrls': ideaData.attachmentUrls ? ideaData.attachmentUrls.join(';') : '',
@@ -1918,10 +1955,12 @@ class InnovationPortal {
         }
     }
 
-    async loadIdeasFromSharePoint() {
+    async loadIdeasFromSharePoint(onlyMine = false) {
         try {
+            const me = (this.currentUser && this.currentUser.email) ? this.currentUser.email : '';
+            const filter = (onlyMine && me) ? `&$filter=SubmitterEmail eq '${encodeURIComponent(me)}'` : '';
             const response = await fetch(
-                `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items?$orderby=Created desc`,
+                `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.listName}')/items?$orderby=Created desc${filter}`,
                 {
                     headers: {
                         'Accept': 'application/json;odata=verbose'
@@ -1935,7 +1974,8 @@ class InnovationPortal {
             }
             
             const data = await response.json();
-            return data.d.results.map(item => ({
+            const items = (data.d && data.d.results) ? data.d.results : [];
+            const ideas = items.map(item => ({
                 id: item.Id.toString(),
                 title: item.Title,
                 category: item.Category,
@@ -1951,14 +1991,59 @@ class InnovationPortal {
                 status: item.Status || 'Submitted',
                 updated: new Date(item.Modified).getTime(),
                 progress: this.calculateProgress(item.Status),
-                self: item.SubmitterEmail === this.currentUser.email,
+                self: item.SubmitterEmail?.toLowerCase() === (this.currentUser.email || '').toLowerCase(),
                 votes: item.Votes || 0,
                 attachmentUrls: item.AttachmentUrls ? item.AttachmentUrls.split(';') : []
             }));
+            // If a filter wasn't applied server-side, restrict to my items here for the Track view use case
+            return onlyMine ? ideas.filter(i => i.self) : ideas;
         } catch (error) {
             console.error('Error loading ideas from SharePoint:', error);
             return [];
         }
+    }
+
+    // Lightweight success animation before navigating to Track view
+    async playSubmitSuccessAnimation() {
+        return new Promise(resolve => {
+            try {
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.inset = '0';
+                overlay.style.pointerEvents = 'none';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.background = 'transparent';
+                overlay.style.zIndex = '9999';
+
+                const check = document.createElement('div');
+                check.innerHTML = '<i class="fas fa-check-circle"></i>';
+                check.style.fontSize = '64px';
+                check.style.color = 'var(--brand-primary, #2563eb)';
+                check.style.opacity = '0';
+                check.style.transform = 'scale(0.8)';
+                check.style.transition = 'transform 300ms ease, opacity 300ms ease';
+                overlay.appendChild(check);
+
+                document.body.appendChild(overlay);
+                requestAnimationFrame(() => {
+                    check.style.opacity = '1';
+                    check.style.transform = 'scale(1)';
+                });
+
+                setTimeout(() => {
+                    check.style.opacity = '0';
+                    check.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        overlay.remove();
+                        resolve();
+                    }, 250);
+                }, 650);
+            } catch {
+                resolve();
+            }
+        });
     }
 
     calculateProgress(status) {
