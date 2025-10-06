@@ -37,7 +37,12 @@ class InnovationPortal {
         
         // SharePoint Configuration
         this.sharePointConfig = {
-            siteUrl: window.location.origin, // Adjust as needed
+            // IMPORTANT: Use the current Web (subsite) URL, not just the origin.
+            // Hitting the tenant root (e.g., https://contoso.com/_api/...) often triggers 401s
+            // and repeated auth prompts if you don’t have root access. This detects the current
+            // web URL via _spPageContextInfo and falls back to a safe heuristic.
+            siteUrl: (window._spPageContextInfo && window._spPageContextInfo.webAbsoluteUrl)
+                || inferSharePointWebUrl(window.location),
             listName: 'InnovationIdeas',
             libraryName: 'IdeaAttachments',
             statusDictionaryListName: 'StatusDictionary',
@@ -1443,7 +1448,10 @@ class InnovationPortal {
     async loadStatusDictionaryFromSharePoint() {
         try {
             const url = `${this.sharePointConfig.siteUrl}/_api/web/lists/getbytitle('${this.sharePointConfig.statusDictionaryListName}')/items?$select=RawStatus,FriendlyStatus,Description,ColorHex,Icon`;
-            const res = await fetch(url, { headers: { 'Accept': 'application/json;odata=verbose' } });
+            const res = await fetch(url, {
+                headers: { 'Accept': 'application/json;odata=verbose' },
+                credentials: 'include'
+            });
             if (!res.ok) return null;
             const data = await res.json();
             const map = {};
@@ -1822,7 +1830,8 @@ class InnovationPortal {
                 headers: {
                     'Accept': 'application/json;odata=verbose',
                     'Content-Type': 'application/json;odata=verbose'
-                }
+                },
+                credentials: 'include'
             });
             
             const data = await response.json();
@@ -1847,7 +1856,8 @@ class InnovationPortal {
                         'Content-Type': 'application/json;odata=verbose',
                         'X-RequestDigest': digest
                     },
-                    body: arrayBuffer
+                    body: arrayBuffer,
+                    credentials: 'include'
                 }
             );
             
@@ -1892,7 +1902,8 @@ class InnovationPortal {
                         'Status': 'Submitted',
                         'AttachmentUrls': ideaData.attachmentUrls ? ideaData.attachmentUrls.join(';') : '',
                         'IsAnonymous': ideaData.anonymous
-                    })
+                    }),
+                    credentials: 'include'
                 }
             );
             
@@ -1914,7 +1925,8 @@ class InnovationPortal {
                 {
                     headers: {
                         'Accept': 'application/json;odata=verbose'
-                    }
+                    },
+                    credentials: 'include'
                 }
             );
             
@@ -2187,6 +2199,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===== UTILITY FUNCTIONS =====
+// Best‑effort helper: infer the current SharePoint Web URL from location when
+// _spPageContextInfo is not available (e.g., classic/aspx page embeds).
+function inferSharePointWebUrl(loc) {
+    try {
+        const url = new URL(loc.href);
+        // Common SP path roots: /sites/<collection>/<web>/..., /teams/<collection>/...
+        // We preserve up to the page library or web root.
+        const parts = url.pathname.split('/').filter(Boolean);
+        const prefixes = ['sites', 'teams'];
+        const idx = parts.findIndex(p => prefixes.includes(p.toLowerCase()));
+        if (idx >= 0) {
+            // Keep up to at least collection; if deeper webs exist, keep until 'Pages' or 'SitePages'
+            let end = parts.length;
+            const stopAt = parts.findIndex(p => /^(pages|sitepages)$/i.test(p));
+            if (stopAt > idx) end = stopAt; // stop before Pages/SitePages for a clean web URL
+            const webPath = [''].concat(parts.slice(0, Math.max(idx + 2, end))).join('/');
+            return `${url.origin}${webPath}`;
+        }
+        // Fallback to origin if structure is unknown
+        return url.origin;
+    } catch {
+        return window.location.origin;
+    }
+}
+
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
