@@ -20,7 +20,9 @@ class InnovationAdminPortal {
 
         // SharePoint Configuration
         this.sharePointConfig = {
-            siteUrl: window.location.origin, // Adjust as needed
+            // Use the current Web (subsite) URL. Avoid calling the tenant root to prevent auth prompts/401s.
+            siteUrl: (window._spPageContextInfo && window._spPageContextInfo.webAbsoluteUrl)
+                || inferSharePointWebUrl(window.location),
             listName: 'InnovationIdeas',
             libraryName: 'IdeaAttachments',
             adminGroupName: 'Innovation Portal Administrators', // SharePoint group name
@@ -311,7 +313,8 @@ class InnovationAdminPortal {
                         '__metadata': { 'type': 'SP.Data.AdminAuditLogListItem' },
                         'Title': eventType,
                         'EventData': JSON.stringify(eventData)
-                    })
+                    }),
+                    credentials: 'include'
                 }
             );
         } catch (error) {
@@ -2886,4 +2889,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminApp.switchView(hash);
     }
 });
+
+// ===== Helpers appended for SharePoint URL/digest =====
+// Reuse inferSharePointWebUrl from app.js if present; otherwise define here.
+if (typeof inferSharePointWebUrl !== 'function') {
+    function inferSharePointWebUrl(loc) {
+        try {
+            const url = new URL(loc.href);
+            const parts = url.pathname.split('/').filter(Boolean);
+            const prefixes = ['sites', 'teams'];
+            const idx = parts.findIndex(p => prefixes.includes(p.toLowerCase()));
+            if (idx >= 0) {
+                let end = parts.length;
+                const stopAt = parts.findIndex(p => /^(pages|sitepages)$/i.test(p));
+                if (stopAt > idx) end = stopAt;
+                const webPath = [''].concat(parts.slice(0, Math.max(idx + 2, end))).join('/');
+                return `${url.origin}${webPath}`;
+            }
+            return url.origin;
+        } catch {
+            return window.location.origin;
+        }
+    }
+}
+
+// Provide a local digest helper when SPClient is not present.
+InnovationAdminPortal.prototype.getRequestDigest = async function () {
+    try {
+        if (this.spClient && typeof this.spClient.getRequestDigest === 'function') {
+            return await this.spClient.getRequestDigest();
+        }
+        const res = await fetch(`${this.sharePointConfig.siteUrl}/_api/contextinfo`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json;odata=verbose',
+                'Content-Type': 'application/json;odata=verbose'
+            },
+            credentials: 'include'
+        });
+        const data = await res.json();
+        return data.d.GetContextWebInformation.FormDigestValue;
+    } catch (e) {
+        console.warn('Admin digest retrieval failed:', e);
+        throw e;
+    }
+};
 
