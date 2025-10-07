@@ -126,8 +126,8 @@
 
 /* Click ripple animation */
 .enter-anim { position: relative; }
-.enter-anim::after { content: ''; position: absolute; inset: -2px; border-radius: inherit; border: 2px solid rgba(124,58,237,0.35); filter: blur(1px); opacity: 0; animation: ring .22s ease forwards; }
-@keyframes ring { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+.enter-anim::after { content: ''; position: absolute; inset: -2px; border-radius: inherit; border: 2px solid rgba(124,58,237,0.45); background: radial-gradient(circle, rgba(124,58,237,0.25), transparent 65%); filter: blur(1px); opacity: 0; animation: ring .45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+@keyframes ring { 0% { opacity: 0; transform: scale(.9); } 50% { opacity: 0.85; transform: scale(1.05); } 100% { opacity: 0; transform: scale(1.12); } }
 
 .hint { margin-top: 1rem; color: var(--muted); font-size: .9rem; opacity: .85; }
 

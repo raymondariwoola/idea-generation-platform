@@ -82,9 +82,12 @@
 
       // CTA + keyboard enter
       const btn = document.getElementById('enter-btn');
+      const CTA_DELAY = 480;
       const go = () => {
+        btn.classList.remove('enter-anim');
+        void btn.offsetWidth;
         btn.classList.add('enter-anim');
-        setTimeout(() => { window.location.href = btn.getAttribute('href'); }, 220);
+        setTimeout(() => { window.location.href = btn.getAttribute('href'); }, CTA_DELAY);
       };
       document.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
       btn.addEventListener('click', (e) => { e.preventDefault(); go(); });

@@ -8,24 +8,24 @@ This checklist walks through the full user journey across **Welcome**, **Index (
 
 | # | Step | Pass | Bug | Notes |
 |---|------|:----:|:---:|-------|
-| P0.1 | Confirm SharePoint site/web URL matches the subsite used in configuration ( `_spPageContextInfo.webAbsoluteUrl` ) | [ ] | [ ] | |
-| P0.2 | Ensure SharePoint lists/libraries exist with required columns:<br/>• `InnovationIdeas` (Title, Category, Department, Problem, Solution, ExpectedImpact, EstimatedEffort, RequiredResources, SubmitterName, SubmitterEmail, Tags, Status, AttachmentUrls, IsAnonymous, Votes)<br/>• `StatusDictionary`<br/>• `IdeaAttachments` library | [ ] | [ ] | |
-| P0.3 | Verify current account has permissions to read/write the above lists and libraries | [ ] | [ ] | |
-| P0.4 | Clear browser cache/localStorage to start from a clean state (so theme choices, drafts, etc. reset) | [ ] | [ ] | |
-| P0.5 | Open browser dev tools (Console + Network) to monitor requests and errors while testing | [ ] | [ ] | |
+| P0.1 | Confirm SharePoint site/web URL matches the subsite used in configuration ( `_spPageContextInfo.webAbsoluteUrl` ) | [x] | [ ] | |
+| P0.2 | Ensure SharePoint lists/libraries exist with required columns:<br/>• `InnovationIdeas` (Title, Category, Department, Problem, Solution, ExpectedImpact, EstimatedEffort, RequiredResources, SubmitterName, SubmitterEmail, Tags, Status, AttachmentUrls, IsAnonymous, Votes)<br/>• `StatusDictionary`<br/>• `IdeaAttachments` library | [x] | [ ] | |
+| P0.3 | Verify current account has permissions to read/write the above lists and libraries | [x] | [ ] | |
+| P0.4 | Clear browser cache/localStorage to start from a clean state (so theme choices, drafts, etc. reset) | [x] | [ ] | |
+| P0.5 | Open browser dev tools (Console + Network) to monitor requests and errors while testing | [x] | [ ] | |
 
 ## 1. Welcome Page (`welcome.html`)
 
 | # | Scenario | Pass | Bug | Notes |
 |---|----------|:----:|:---:|-------|
-| W1.1 | Page loads without errors; background animations and typography render correctly | [ ] | [ ] | |
-| W1.2 | Initial theme defaults to **Futuristic** if `think-space-theme` is absent | [ ] | [ ] | |
-| W1.3 | Toggle to **Brand** theme updates colors instantly and persists to localStorage | [ ] | [ ] | |
-| W1.4 | Refresh page—theme persists (matches last selection) | [ ] | [ ] | |
-| W1.5 | Toggle back to Futuristic; verify localStorage updates accordingly | [ ] | [ ] | |
-| W1.6 | CTA "Click to enter" navigates to `index.html` after the ripple animation (ENTER key also works) | [ ] | [ ] | |
-| W1.7 | Accessibility: ensure focus styles are visible on toggle buttons and CTA; screen reader announces toggle state | [ ] | [ ] | |
-| W1.8 | No console errors/warnings during interactions | [ ] | [ ] | |
+| W1.1 | Page loads without errors; background animations and typography render correctly | [x] | [ ] | |
+| W1.2 | Initial theme defaults to **Futuristic** if `think-space-theme` is absent | [x] | [ ] | |
+| W1.3 | Toggle to **Brand** theme updates colors instantly and persists to localStorage | [x] | [ ] | |
+| W1.4 | Refresh page—theme persists (matches last selection) | [x] | [ ] | |
+| W1.5 | Toggle back to Futuristic; verify localStorage updates accordingly | [x] | [ ] | |
+| W1.6 | CTA "Click to enter" navigates to `index.html` after the ripple animation (ENTER key also works) | [ ] | [x] |It directly and immediatly goes to the next page, there is no ripple or loading animation to the next page, it just loads the page immediately |
+| W1.7 | Accessibility: ensure focus styles are visible on toggle buttons and CTA; screen reader announces toggle state | [x] | [ ] | |
+| W1.8 | No console errors/warnings during interactions | [x] | [ ] | |
 
 ## 2. Main Portal – Home View (`index.html` > `app.js`)
 
@@ -33,10 +33,10 @@ This checklist walks through the full user journey across **Welcome**, **Index (
 
 | # | Scenario | Pass | Bug | Notes |
 |---|----------|:----:|:---:|-------|
-| H1.1 | Opening `index.html` shows spinner (“Loading ideas…”) until first SharePoint page returns | [ ] | [ ] | |
-| H1.2 | KPI cards animate with counts matching SharePoint totals (`Total ideas` reflects `__count` when available) | [ ] | [ ] | |
-| H1.3 | Theme from Welcome page persists; toggling within the nav updates localStorage and UI | [ ] | [ ] | |
-| H1.4 | Navigation buttons highlight the current view; URL hash updates (`#home`, `#submit`, `#track`) | [ ] | [ ] | |
+| H1.1 | Opening `index.html` shows spinner (“Loading ideas…”) until first SharePoint page returns | [x] | [ ] | |
+| H1.2 | KPI cards animate with counts matching SharePoint totals (`Total ideas` reflects `__count` when available) | [x] | [ ] | |
+| H1.3 | Theme from Welcome page persists; toggling within the nav updates localStorage and UI | [x] | [ ] | |
+| H1.4 | Navigation buttons highlight the current view; URL hash updates (`#home`, `#submit`, `#track`) | [x] | [ ] | |
 | H1.5 | No failed network requests in console (pay attention to `_api` calls) | [ ] | [ ] | |
 
 ### 2.2 Ideas Feed – Pagination, Search & Filters
