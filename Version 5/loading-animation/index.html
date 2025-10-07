@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Think Space Loading</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background animated gradient -->
+  <div class="bg-gradient"></div>
+  
+  <!-- Particle background -->
+  <div class="particles" id="particles"></div>
+  
+  <!-- Main loader container -->
+  <div class="loader-container">
+    <!-- Outer rings -->
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    
+    <!-- Brain SVG with glow -->
+    <div class="brain-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" class="brain-svg">
+        <defs>
+          <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0078d4;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#50e6ff;stop-opacity:1" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <g fill="none" stroke="url(#brainGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+          <g id="mesh">
+            <line x1="60" y1="140" x2="80" y2="100"/>
+            <line x1="80" y1="100" x2="120" y2="80"/>
+            <line x1="120" y1="80" x2="170" y2="60"/>
+            <line x1="170" y1="60" x2="210" y2="55"/>
+            <line x1="210" y1="55" x2="240" y2="80"/>
+            <line x1="240" y1="80" x2="270" y2="110"/>
+            <line x1="270" y1="110" x2="290" y2="140"/>
+            <line x1="60" y1="140" x2="120" y2="80"/>
+            <line x1="80" y1="100" x2="170" y2="60"/>
+            <line x1="120" y1="80" x2="210" y2="55"/>
+            <line x1="170" y1="60" x2="240" y2="80"/>
+            <line x1="210" y1="55" x2="270" y2="110"/>
+            <line x1="240" y1="80" x2="290" y2="140"/>
+            <line x1="60" y1="140" x2="130" y2="120"/>
+            <line x1="130" y1="120" x2="110" y2="150"/>
+            <line x1="110" y1="150" x2="90" y2="180"/>
+            <line x1="90" y1="180" x2="120" y2="190"/>
+            <line x1="120" y1="190" x2="150" y2="200"/>
+            <line x1="150" y1="200" x2="170" y2="220"/>
+            <line x1="170" y1="110" x2="130" y2="120"/>
+            <line x1="170" y1="110" x2="210" y2="130"/>
+            <line x1="210" y1="130" x2="250" y2="150"/>
+            <line x1="250" y1="150" x2="290" y2="140"/>
+            <line x1="170" y1="110" x2="120" y2="80"/>
+            <line x1="170" y1="110" x2="170" y2="60"/>
+            <line x1="210" y1="130" x2="210" y2="55"/>
+            <line x1="130" y1="120" x2="170" y2="110"/>
+            <line x1="110" y1="150" x2="170" y2="110"/>
+            <line x1="110" y1="150" x2="210" y2="130"/>
+            <line x1="120" y1="190" x2="200" y2="200"/>
+            <line x1="200" y1="200" x2="230" y2="180"/>
+            <line x1="230" y1="180" x2="260" y2="170"/>
+            <line x1="260" y1="170" x2="285" y2="155"/>
+            <line x1="150" y1="200" x2="200" y2="200"/>
+            <line x1="170" y1="220" x2="200" y2="200"/>
+            <line x1="210" y1="130" x2="200" y2="200"/>
+            <line x1="250" y1="150" x2="230" y2="180"/>
+            <line x1="170" y1="60" x2="210" y2="130"/>
+            <line x1="270" y1="110" x2="260" y2="170"/>
+            <line x1="150" y1="200" x2="182" y2="228"/>
+            <line x1="182" y1="228" x2="200" y2="200"/>
+            <line x1="170" y1="220" x2="182" y2="228"/>
+            <line x1="110" y1="150" x2="150" y2="200"/>
+          </g>
+        </g>
+        <g fill="url(#brainGradient)" stroke="none">
+          <circle cx="60" cy="140" r="3" class="node"/><circle cx="80" cy="100" r="3" class="node"/>
+          <circle cx="120" cy="80" r="3" class="node"/><circle cx="170" cy="60" r="3" class="node"/>
+          <circle cx="210" cy="55" r="3" class="node"/><circle cx="240" cy="80" r="3" class="node"/>
+          <circle cx="270" cy="110" r="3" class="node"/><circle cx="290" cy="140" r="3" class="node"/>
+          <circle cx="250" cy="150" r="3" class="node"/><circle cx="210" cy="130" r="3" class="node"/>
+          <circle cx="170" cy="110" r="3" class="node"/><circle cx="130" cy="120" r="3" class="node"/>
+          <circle cx="110" cy="150" r="3" class="node"/><circle cx="90" cy="180" r="3" class="node"/>
+          <circle cx="120" cy="190" r="3" class="node"/><circle cx="150" cy="200" r="3" class="node"/>
+          <circle cx="170" cy="220" r="3" class="node"/><circle cx="182" cy="228" r="3" class="node"/>
+          <circle cx="200" cy="200" r="3" class="node"/><circle cx="230" cy="180" r="3" class="node"/>
+          <circle cx="260" cy="170" r="3" class="node"/><circle cx="285" cy="155" r="3" class="node"/>
+        </g>
+      </svg>
+    </div>
+    
+    <!-- Orbiting idea icons -->
+    <div class="orbit-container">
+      <div class="orbit-item" style="--orbit-angle: 0deg; --orbit-radius: 180px; --duration: 8s;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+      </div>
+      <div class="orbit-item" style="--orbit-angle: 72deg; --orbit-radius: 180px; --duration: 8s;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+      </div>
+      <div class="orbit-item" style="--orbit-angle: 144deg; --orbit-radius: 180px; --duration: 8s;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div class="orbit-item" style="--orbit-angle: 216deg; --orbit-radius: 180px; --duration: 8s;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </div>
+      <div class="orbit-item" style="--orbit-angle: 288deg; --orbit-radius: 180px; --duration: 8s;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M13 2.05A10 10 0 1 1 2 12.05h10V2z"/>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Loading text with animation -->
+    <div class="loading-text-container">
+      <h1 class="loading-title">Think Space</h1>
+      <p class="loading-subtitle">Generating Ideas...</p>
+      <div class="progress-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

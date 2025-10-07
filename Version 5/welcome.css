@@ -150,3 +150,345 @@
   .welcome-hero::before, .welcome-hero::after { animation: none; }
   .enter-btn { transition: none; }
 }
+
+/* ===== LOADING ANIMATION OVERLAY ===== */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+  z-index: 9999;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.loader-overlay.active {
+  opacity: 1;
+}
+
+.loader-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* Central Brain Animation */
+.brain-wrapper {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  z-index: 10;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.brain-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 30px rgba(124, 58, 237, 0.4));
+}
+
+.brain-path {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: drawBrain 3s ease-in-out forwards, pulse 2s ease-in-out 3s infinite;
+}
+
+@keyframes drawBrain {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { stroke-width: 2.5; opacity: 1; }
+  50% { stroke-width: 3; opacity: 0.8; }
+}
+
+/* Neural nodes animation */
+.node {
+  animation: nodePulse 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.node-1 { animation-delay: 0s; }
+.node-2 { animation-delay: 0.2s; }
+.node-3 { animation-delay: 0.4s; }
+.node-4 { animation-delay: 0.6s; }
+.node-5 { animation-delay: 0.8s; }
+.node-6 { animation-delay: 1s; }
+.node-7 { animation-delay: 1.2s; }
+.node-8 { animation-delay: 1.4s; }
+.node-9 { animation-delay: 1.6s; }
+
+@keyframes nodePulse {
+  0%, 100% { r: 3; opacity: 0.9; }
+  50% { r: 4.5; opacity: 1; }
+}
+
+/* Synapses animation */
+.synapse {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: synapseFlow 2s linear infinite;
+}
+
+@keyframes synapseFlow {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Orbit container */
+.orbit-container {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotateOrbit 30s linear infinite;
+}
+
+@keyframes rotateOrbit {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Orbiting items */
+.orbit-item {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: rgba(124, 58, 237, 0.8);
+  filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.6));
+  animation: counterRotate 30s linear infinite, itemFloat 3s ease-in-out infinite;
+}
+
+@keyframes counterRotate {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes itemFloat {
+  0%, 100% { transform: rotate(0deg) translateY(0px); }
+  50% { transform: rotate(0deg) translateY(-10px); }
+}
+
+.orbit-1 {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+
+.orbit-2 {
+  top: 13%;
+  right: 13%;
+  animation-delay: -5s;
+}
+
+.orbit-3 {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  animation-delay: -10s;
+}
+
+.orbit-4 {
+  bottom: 13%;
+  right: 13%;
+  animation-delay: -15s;
+}
+
+.orbit-5 {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: -20s;
+}
+
+.orbit-6 {
+  bottom: 13%;
+  left: 13%;
+  animation-delay: -25s;
+}
+
+/* Progress Ring */
+.progress-ring {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  animation: rotateRing 3s linear infinite;
+}
+
+@keyframes rotateRing {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.progress-ring-circle {
+  animation: progressFill 4s ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes progressFill {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Loading Text */
+.loading-text {
+  position: absolute;
+  bottom: 15%;
+  text-align: center;
+  z-index: 20;
+}
+
+.text-main {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, rgba(124,58,237,1) 0%, rgba(147,51,234,1) 50%, rgba(124,58,237,1) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.text-sub {
+  font-size: 1.2rem;
+  color: rgba(226, 232, 240, 0.7);
+  letter-spacing: 4px;
+}
+
+.dot {
+  display: inline-block;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-10px); }
+}
+
+/* Particles Effect */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, rgba(124,58,237,0.8), transparent);
+  border-radius: 50%;
+  animation: particleFloat linear infinite;
+  opacity: 0;
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) scale(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(1);
+  }
+}
+
+/* Responsive adjustments for loader */
+@media (max-width: 768px) {
+  .brain-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+
+  .orbit-container {
+    width: 350px;
+    height: 350px;
+  }
+
+  .orbit-item {
+    width: 30px;
+    height: 30px;
+  }
+
+  .progress-ring {
+    width: 280px;
+    height: 280px;
+  }
+
+  .text-main {
+    font-size: 2rem;
+  }
+
+  .text-sub {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .brain-wrapper {
+    width: 160px;
+    height: 160px;
+  }
+
+  .orbit-container {
+    width: 280px;
+    height: 280px;
+  }
+
+  .orbit-item {
+    width: 24px;
+    height: 24px;
+  }
+
+  .progress-ring {
+    width: 220px;
+    height: 220px;
+  }
+
+  .text-main {
+    font-size: 1.5rem;
+  }
+
+  .text-sub {
+    font-size: 0.9rem;
+  }
+}
